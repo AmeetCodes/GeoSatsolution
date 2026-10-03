@@ -10,7 +10,7 @@ import {
   industrySlug,
   getDynamicIndustryBySlug,
   getDynamicIndustries,
-} from "@/lib/industries";
+} from "../_lib/industries";
 
 type IndustryPageProps = {
   params: Promise<{ slug: string }>;
@@ -24,9 +24,34 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
   const { slug } = await params;
   const industry = getDynamicIndustryBySlug(slug);
 
+  if (!industry) {
+    return {
+      title: "Industry | GeoSAT Industries",
+      description: "Industry solutions and spatial intelligence.",
+    };
+  }
+
+  const title = `${industry.title} | GeoSAT Industries`;
+  const description = industry.intro || industry.description;
+  const canonicalUrl = `https://geosatsoln.com/industries/${slug}`;
+
   return {
-    title: industry ? `${industry.title} | GeoSAT Industries` : "Industry | GeoSAT Industries",
-    description: industry?.intro,
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -36,8 +61,25 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
 
   if (!industry) notFound();
 
+  const industryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${industry.title} Geospatial Solutions`,
+    serviceType: "Industry Solutions",
+    description: industry.intro || industry.description,
+    provider: {
+      "@type": "Organization",
+      name: "GeoSAT Solutions",
+      url: "https://geosatsoln.com",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(industryJsonLd) }}
+      />
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
@@ -49,8 +91,8 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
             All industries
           </Link>
 
-          <div className="mt-8 grid items-start gap-10 lg:mt-12 lg:grid-cols-[0.96fr_1.04fr] lg:gap-14">
-            <div className="max-w-xl py-2">
+          <article className="mt-8 grid items-start gap-10 lg:mt-12 lg:grid-cols-[0.96fr_1.08fr] lg:gap-14">
+            <header className="max-w-xl py-2">
               <p className="label text-aqua">Sector focus · {industry.title}</p>
               <h1 className="mt-5 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-[3.8rem]">
                 {industry.title}
@@ -74,13 +116,13 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                   View all industries
                 </Link>
               </div>
-            </div>
+            </header>
 
-            <div className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 sm:p-8">
+            <section className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 sm:p-8" aria-label="Use cases">
               <p className="label text-aqua">Use cases</p>
-              <div className="mt-6 grid gap-3">
+              <ul className="mt-6 grid gap-3">
                 {industry.items.map((item) => (
-                  <div
+                  <li
                     key={item}
                     className="flex items-start gap-3 rounded-2xl border border-line bg-white/[0.02] p-4"
                   >
@@ -88,11 +130,11 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                       <Check className="size-3.5" aria-hidden="true" />
                     </span>
                     <span className="text-sm leading-relaxed text-ink-2">{item}</span>
-                  </div>
+                  </li>
                 ))}
-              </div>
-            </div>
-          </div>
+              </ul>
+            </section>
+          </article>
         </div>
       </main>
       <Footer />

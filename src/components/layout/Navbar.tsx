@@ -6,8 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
-import { solutionSlug } from "@/lib/solutions";
-import { cn } from "@/lib/utils";
+import { cn, solutionSlug } from "@/lib/utils";
 import { Container } from "@/components/ui/Section";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem, NavigationTree } from "@/lib/tree-store";
 

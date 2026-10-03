@@ -4,7 +4,7 @@ import {
   validateAdminCredentials,
   createSessionToken,
   verifySessionToken,
-} from "@/lib/admin-auth";
+} from "@/app/admin/_lib/admin-auth";
 
 export async function POST(req: Request) {
   try {

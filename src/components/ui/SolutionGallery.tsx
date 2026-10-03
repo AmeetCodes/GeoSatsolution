@@ -2,7 +2,12 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { SolutionImage } from "@/lib/solutions";
+
+export type SolutionImage = {
+  src: string;
+  alt: string;
+  caption: string;
+};
 
 export function SolutionGallery({ images }: { images: SolutionImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);

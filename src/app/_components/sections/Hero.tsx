@@ -2,7 +2,7 @@ import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
-import { HeroGlobe } from "@/components/three/HeroGlobe";
+import { HeroGlobe } from "../three/HeroGlobe";
 import { CREDENTIALS, HERO } from "@/lib/content";
 import { cn } from "@/lib/utils";
 

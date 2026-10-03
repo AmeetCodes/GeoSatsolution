@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminSessionServer } from "@/lib/admin-auth";
+import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import {
   getSiteContent,
   saveSiteContent,

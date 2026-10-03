@@ -1,6 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import AccordionGallery from "@/components/company/AccordionGallery";
+import AccordionGallery from "@/components/ui/AccordionGallery";
 import { Container } from "@/components/ui/Section";
 import { EXECUTIVE_LEADS } from "@/lib/content";
 

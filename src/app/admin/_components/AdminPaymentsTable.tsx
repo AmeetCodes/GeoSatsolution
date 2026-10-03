@@ -69,14 +69,26 @@ export const payments = [
   {
     id: "PAY-006",
     customer: {
-      name: "Emily Davis",
+      name: "Emma Davis",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
     },
-    product: "Premium Plan",
-    price: "$99.00",
+    product: "Enterprise Plan",
+    price: "$299.00",
     paymentType: "PayPal",
     status: "Completed",
     date: "2024-01-20",
+  },
+  {
+    id: "PAY-007",
+    customer: {
+      name: "Alex Miller",
+      avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80",
+    },
+    product: "Premium Plan",
+    price: "$99.00",
+    paymentType: "Credit Card",
+    status: "Pending",
+    date: "2024-01-21",
   },
 ];
 

@@ -4,34 +4,83 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BriefcaseBusiness, Check, MapPin } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { CAREER_ROLES } from "@/lib/company-content";
+import { CAREER_ROLES, type CareerRole } from "@/app/company/_lib/company-content";
 
 type CareerDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return CAREER_ROLES.map((role) => ({ slug: role.slug }));
+  return CAREER_ROLES.map((role: CareerRole) => ({ slug: role.slug }));
 }
 
 export async function generateMetadata({ params }: CareerDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const role = CAREER_ROLES.find((entry) => entry.slug === slug);
+  const role = CAREER_ROLES.find((entry: CareerRole) => entry.slug === slug);
+
+  if (!role) {
+    return {
+      title: "Careers | GeoSAT Solutions",
+      description: "Career opportunities at GeoSAT Solutions.",
+    };
+  }
+
+  const title = `${role.title} | GeoSAT Careers`;
+  const description = role.summary;
+  const canonicalUrl = `https://geosatsoln.com/company/careers/${slug}`;
 
   return {
-    title: role ? `${role.title} | GeoSAT Solutions` : "Careers | GeoSAT Solutions",
-    description: role?.summary,
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
 export default async function CareerDetailPage({ params }: CareerDetailPageProps) {
   const { slug } = await params;
-  const role = CAREER_ROLES.find((entry) => entry.slug === slug);
+  const role = CAREER_ROLES.find((entry: CareerRole) => entry.slug === slug);
 
   if (!role) notFound();
 
+  const jobJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: role.title,
+    description: role.summary,
+    employmentType: "FULL_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "GeoSAT Solutions",
+      sameAs: "https://geosatsoln.com",
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: role.location,
+      },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobJsonLd) }}
+      />
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-12">
@@ -44,7 +93,7 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
           </Link>
 
           <article className="mt-8 overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/30">
-            <div className="border-b border-line bg-panel/40 p-6 sm:p-8">
+            <header className="border-b border-line bg-panel/40 p-6 sm:p-8">
               <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.14em] text-ink-3">
                 <span className="inline-flex items-center gap-2">
                   <BriefcaseBusiness className="size-3.5" aria-hidden="true" />
@@ -60,10 +109,10 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
                 {role.title}
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-ink-2">{role.summary}</p>
-            </div>
+            </header>
 
             <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2">
-              <section>
+              <section aria-label="Responsibilities">
                 <h2 className="font-display text-2xl text-ink">Responsibilities</h2>
                 <ul className="mt-5 space-y-3">
                   {role.responsibilities.map((item) => (
@@ -77,7 +126,7 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
                 </ul>
               </section>
 
-              <section>
+              <section aria-label="Requirements">
                 <h2 className="font-display text-2xl text-ink">Requirements</h2>
                 <ul className="mt-5 space-y-3">
                   {role.requirements.map((item) => (

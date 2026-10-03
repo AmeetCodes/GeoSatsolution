@@ -5,7 +5,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CONTACT, CREDENTIALS, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
-import { solutionSlug } from "@/lib/solutions";
+import { solutionSlug } from "@/lib/utils";
 
 type FooterCol = {
   title: string;

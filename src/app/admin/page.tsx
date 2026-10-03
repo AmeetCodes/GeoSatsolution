@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getAdminSessionServer } from "@/lib/admin-auth";
+import { getAdminSessionServer } from "./_lib/admin-auth";
 import { getSiteContent } from "@/lib/data-store";
 import { getNavigationTree } from "@/lib/tree-store";
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { AdminDashboard } from "./_components/AdminDashboard";
 
 export const metadata: Metadata = {
   title: "Admin Console | GeoSAT Solutions",

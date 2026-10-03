@@ -1,8 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, MapPin } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { CAREER_ROLES } from "@/lib/company-content";
+import { CAREER_ROLES } from "@/app/company/_lib/company-content";
+
+export const metadata: Metadata = {
+  title: "Careers | GeoSAT Solutions",
+  description:
+    "Join the GeoSAT team. Explore career opportunities across geospatial surveying, GIS engineering, LiDAR processing, and spatial software.",
+  alternates: {
+    canonical: "https://geosatsoln.com/company/careers",
+  },
+  openGraph: {
+    title: "Careers | GeoSAT Solutions",
+    description:
+      "Join the GeoSAT team. Explore career opportunities across geospatial surveying, GIS engineering, LiDAR processing, and spatial software.",
+    url: "https://geosatsoln.com/company/careers",
+    type: "website",
+  },
+};
 
 export default function CareersPage() {
   return (
@@ -10,7 +27,7 @@ export default function CareersPage() {
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-          <div className="max-w-3xl">
+          <header className="max-w-3xl">
             <p className="label text-aqua">Careers</p>
             <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl">
               Build the systems that make the ground measurable.
@@ -18,7 +35,7 @@ export default function CareersPage() {
             <p className="mt-5 max-w-2xl text-base leading-7 text-ink-3">
               We look for people who can move comfortably across field operations, spatial data quality and practical engineering decisions.
             </p>
-          </div>
+          </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {CAREER_ROLES.map((role) => (

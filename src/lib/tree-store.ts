@@ -735,7 +735,11 @@ export function saveNavigationTree(tree: NavigationTree): void {
 }
 
 /**
- * Search the tree for an item by slug path or title slug
+ * Search the tree for an item by slug path or title slug.
+ * Supports both single-slug lookups and multi-segment paths.
+ * Multi-segment resolution strategy:
+ *   1. If the first segment matches a tab slug, search within that tab only.
+ *   2. Otherwise, fall back to a global search across all tabs.
  */
 export function findTreeItem(slugPath: string[] | string): {
   tab: NavTreeTab;
@@ -746,13 +750,23 @@ export function findTreeItem(slugPath: string[] | string): {
   const searchSlugs = Array.isArray(slugPath) ? slugPath : [slugPath];
   const terminalSlug = searchSlugs[searchSlugs.length - 1];
 
-  for (const tab of tree.tabs) {
+  // Determine which tabs to search: prefer tabs whose slug matches the first segment.
+  const firstSegment = searchSlugs[0];
+  const narrowedTabs = tree.tabs.filter(
+    (t) => t.slug === firstSegment || t.id === firstSegment,
+  );
+  const tabsToSearch = narrowedTabs.length > 0 ? narrowedTabs : tree.tabs;
+
+  for (const tab of tabsToSearch) {
     for (const column of tab.columns) {
       for (const item of column.items) {
         if (
           item.slug === terminalSlug ||
           slugify(item.title) === terminalSlug ||
-          item.href?.endsWith(`/${terminalSlug}`)
+          item.href?.endsWith(`/${terminalSlug}`) ||
+          // Also match by full href path for deeply nested slugs
+          (item.href && searchSlugs.length > 1 &&
+            item.href === `/${searchSlugs.join("/")}`)
         ) {
           return { tab, column, item };
         }
@@ -760,5 +774,43 @@ export function findTreeItem(slugPath: string[] | string): {
     }
   }
 
+  // If narrowed search found nothing, do a global fallback search
+  if (narrowedTabs.length > 0) {
+    for (const tab of tree.tabs) {
+      for (const column of tab.columns) {
+        for (const item of column.items) {
+          if (
+            item.slug === terminalSlug ||
+            slugify(item.title) === terminalSlug ||
+            item.href?.endsWith(`/${terminalSlug}`)
+          ) {
+            return { tab, column, item };
+          }
+        }
+      }
+    }
+  }
+
   return null;
+}
+
+/**
+ * Return all leaf items across the entire navigation tree.
+ * Used by generateStaticParams in the catch-all route.
+ */
+export function getAllTreeItems(): Array<{
+  tab: NavTreeTab;
+  column: NavTreeColumn;
+  item: NavTreeItem;
+}> {
+  const tree = getNavigationTree();
+  const results: Array<{ tab: NavTreeTab; column: NavTreeColumn; item: NavTreeItem }> = [];
+  for (const tab of tree.tabs) {
+    for (const column of tab.columns) {
+      for (const item of column.items) {
+        results.push({ tab, column, item });
+      }
+    }
+  }
+  return results;
 }

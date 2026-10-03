@@ -4,16 +4,16 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { ProductBuyDialog } from "@/components/products/ProductBuyDialog";
-import { SolutionFaq } from "@/components/solutions/SolutionFaq";
-import { SolutionGallery } from "@/components/solutions/SolutionGallery";
+import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
+import { SolutionFaq } from "@/components/ui/SolutionFaq";
+import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import {
   PRODUCTS,
   PRODUCTS_BY_SLUG,
   productSlug,
   getDynamicProductBySlug,
   getDynamicProducts,
-} from "@/lib/products";
+} from "../_lib/products";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -27,9 +27,37 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const { slug } = await params;
   const product = getDynamicProductBySlug(slug);
 
+  if (!product) {
+    return {
+      title: "Product | GeoSAT Products",
+      description: "Geospatial instruments and hardware systems.",
+    };
+  }
+
+  const title = `${product.title} | GeoSAT Products`;
+  const description = product.intro || product.description;
+  const canonicalUrl = `https://geosatsoln.com/products/${slug}`;
+
   return {
-    title: product ? `${product.title} | GeoSAT Products` : "Product | GeoSAT Products",
-    description: product?.intro,
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: "website",
+      images: product.images?.length
+        ? [{ url: product.images[0].src, alt: product.images[0].alt }]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -39,21 +67,46 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    category: product.group,
+    description: product.intro || product.description,
+    brand: {
+      "@type": "Brand",
+      name: "GeoSAT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      priceCurrency: "USD",
+      seller: {
+        "@type": "Organization",
+        name: "GeoSAT Solutions",
+      },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <Link
-            href="/#equipment"
+            href="/products"
             className="inline-flex items-center gap-2 py-2 text-sm text-ink-3 transition-colors hover:text-aqua"
           >
             <ArrowLeft className="size-4" aria-hidden="true" />
             All products
           </Link>
 
-          <div className="mt-8 grid items-center gap-10 lg:mt-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
-            <div className="max-w-xl py-2">
+          <article className="mt-8 grid items-center gap-10 lg:mt-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+            <header className="max-w-xl py-2">
               <p className="label text-aqua">{product.group} · GeoSAT product</p>
               <h1 className="mt-5 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-[3.75rem]">
                 {product.title}
@@ -61,26 +114,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="mt-6 font-display text-xl leading-relaxed text-ink-2 sm:text-2xl">
                 {product.intro}
               </p>
-
               <div className="mt-7 flex flex-wrap items-center gap-4">
                 <ProductBuyDialog productTitle={product.title} productGroup={product.group} />
                 <p className="max-w-60 text-xs leading-relaxed text-ink-3">
-                  Request configuration and pricing for this product.
+                  Talk directly with our equipment team to request quote and specs.
                 </p>
               </div>
-
-              <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">{product.description}</p>
-            </div>
+              <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">
+                {product.description}
+              </p>
+            </header>
 
             <SolutionGallery images={product.images} />
-          </div>
+          </article>
 
-          <section className="mt-16 border-t border-line pt-9 sm:mt-20 sm:pt-12" aria-labelledby="product-deliverables-heading">
+          <section className="mt-16 border-t border-line pt-9 sm:mt-20 sm:pt-12" aria-labelledby="specs-heading">
             <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
               <div>
-                <p className="label text-aqua">What you get</p>
-                <h2 id="product-deliverables-heading" className="mt-4 max-w-sm font-display text-3xl leading-tight text-ink">
-                  Practical value for the way your team works.
+                <p className="label text-aqua">Hardware Specifications</p>
+                <h2 id="specs-heading" className="mt-4 max-w-sm font-display text-3xl leading-tight text-ink">
+                  Engineered for rigorous field conditions.
                 </h2>
               </div>
               <ul className="grid gap-3 sm:grid-cols-2">

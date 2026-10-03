@@ -3,7 +3,7 @@
 import { Activity, ArrowRight, ChevronDown, Compass, Layers, MapPin, type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { INDUSTRIES as STATIC_INDUSTRIES, SECTION_HEADERS } from "@/lib/content";
-import { solutionSlug } from "@/lib/solutions";
+import { solutionSlug } from "@/lib/utils";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
 

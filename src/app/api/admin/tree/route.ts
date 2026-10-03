@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getAdminSessionServer } from "@/lib/admin-auth";
+import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import {
   getNavigationTree,
   saveNavigationTree,
@@ -205,7 +205,10 @@ export async function POST(request: Request) {
       };
       targetColumn.items.push(newItem);
       saveNavigationTree(currentTree);
+      // Revalidate the root layout AND the specific catch-all path so the
+      // new item renders immediately on first visit without a server restart.
       revalidatePath("/", "layout");
+      revalidatePath(generatedHref);
       return NextResponse.json({ success: true, message: `Added item "${title}"`, data: currentTree });
     }
 
@@ -213,6 +216,7 @@ export async function POST(request: Request) {
     if (action === "editItem" && targetTab && targetColumn && itemId) {
       const item = targetColumn.items.find((i) => i.id === itemId);
       if (!item) return NextResponse.json({ success: false, message: "Item not found" }, { status: 404 });
+      const oldHref = item.href;
       if (payload.title) {
         item.title = payload.title;
         item.slug = slugify(payload.title);
@@ -224,7 +228,10 @@ export async function POST(request: Request) {
       if (payload.images !== undefined) item.images = payload.images;
       if (payload.metadata !== undefined) item.metadata = payload.metadata;
       saveNavigationTree(currentTree);
+      // Revalidate both the old and new paths to clear stale cached responses.
       revalidatePath("/", "layout");
+      if (oldHref) revalidatePath(oldHref);
+      if (item.href && item.href !== oldHref) revalidatePath(item.href);
       return NextResponse.json({ success: true, message: `Updated item "${item.title}"`, data: currentTree });
     }
 

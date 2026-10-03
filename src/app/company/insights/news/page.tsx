@@ -1,8 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Tag } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { NEWS_ITEMS } from "@/lib/company-content";
+import { NEWS_ITEMS } from "@/app/company/_lib/company-content";
+
+export const metadata: Metadata = {
+  title: "News & Field Notes | GeoSAT Solutions",
+  description:
+    "Recent updates, case studies, field notes and technology milestones from GeoSAT survey operations.",
+  alternates: {
+    canonical: "https://geosatsoln.com/company/insights/news",
+  },
+  openGraph: {
+    title: "News & Field Notes | GeoSAT Solutions",
+    description:
+      "Recent updates, case studies, field notes and technology milestones from GeoSAT survey operations.",
+    url: "https://geosatsoln.com/company/insights/news",
+    type: "website",
+  },
+};
 
 export default function NewsPage() {
   return (
@@ -10,7 +27,7 @@ export default function NewsPage() {
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-          <div className="max-w-3xl">
+          <header className="max-w-3xl">
             <p className="label text-aqua">Insights</p>
             <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl">
               News &amp; Field Notes
@@ -18,7 +35,7 @@ export default function NewsPage() {
             <p className="mt-5 max-w-2xl text-base leading-7 text-ink-3">
               Recent updates from the field, project delivery, training programmes and continuous positioning work across our sectors.
             </p>
-          </div>
+          </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {NEWS_ITEMS.map((item) => (

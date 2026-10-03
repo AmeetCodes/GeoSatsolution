@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getAdminSessionServer } from "@/lib/admin-auth";
-import { LoginPage } from "@/components/ui/sign-in-page";
+import { getAdminSessionServer } from "../_lib/admin-auth";
+import { LoginPage } from "../_components/SignInPage";
 
 export const metadata: Metadata = {
   title: "Admin Sign In | GeoSAT Solutions",

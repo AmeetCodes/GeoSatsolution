@@ -1,11 +1,10 @@
 import nodemailer from "nodemailer";
-import { SOLUTIONS } from "@/lib/solutions";
+import { getSiteContent } from "@/lib/data-store";
 
 export const runtime = "nodejs";
 
 const MAX_REQUEST_BYTES = 12_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SOLUTION_NAMES = new Set(SOLUTIONS.map((solution) => solution.title));
 
 type ConsultationPayload = {
   name?: unknown;
@@ -78,7 +77,8 @@ export async function POST(request: Request) {
 
   if (name.length < 2) return invalidRequest("Enter your full name.");
   if (!EMAIL_PATTERN.test(email) || /[\r\n]/.test(email)) return invalidRequest("Enter a valid email address.");
-  if (!SOLUTION_NAMES.has(interest) && interest !== "Other") return invalidRequest("Choose a valid area of interest.");
+  const validSolutionNames = new Set(getSiteContent().Solutions.map((s: { title: string }) => s.title));
+  if (!validSolutionNames.has(interest) && interest !== "Other") return invalidRequest("Choose a valid area of interest.");
   if (interest === "Other" && otherInterest.length < 2) return invalidRequest("Tell us what service you need.");
   if (details.length < 12) return invalidRequest("Add a few details so our team can prepare.");
 

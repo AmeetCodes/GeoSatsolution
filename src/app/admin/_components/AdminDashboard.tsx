@@ -10,7 +10,7 @@ import { ProductsManager } from "./ProductsManager";
 import { IndustriesManager } from "./IndustriesManager";
 import { CompanyManager } from "./CompanyManager";
 import { LivePreview } from "./LivePreview";
-import TableComponent from "@/components/ui/table1";
+import TableComponent from "./AdminPaymentsTable";
 import SwipeToast from "@/components/ui/SwipeToast";
 import type { SiteContentData } from "@/lib/data-store";
 import type { NavigationTree } from "@/lib/tree-store";

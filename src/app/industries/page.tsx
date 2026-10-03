@@ -1,8 +1,26 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { INDUSTRIES, industrySlug, getDynamicIndustries } from "@/lib/industries";
+import { INDUSTRIES, industrySlug, getDynamicIndustries } from "./_lib/industries";
+
+export const metadata: Metadata = {
+  title: "Industries | GeoSAT Solutions",
+  description:
+    "Specialized geospatial intelligence and surveying solutions tailored for infrastructure, energy, forestry, mining, and government sectors.",
+  alternates: {
+    canonical: "https://geosatsoln.com/industries",
+  },
+  openGraph: {
+    title: "Industries | GeoSAT Solutions",
+    description:
+      "Specialized geospatial intelligence and surveying solutions tailored for infrastructure, energy, forestry, mining, and government sectors.",
+    url: "https://geosatsoln.com/industries",
+    siteName: "GeoSAT Solutions",
+    type: "website",
+  },
+};
 
 export default function IndustriesPage() {
   const industries = getDynamicIndustries();
@@ -12,7 +30,7 @@ export default function IndustriesPage() {
       <Navbar />
       <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-          <div className="max-w-3xl">
+          <header className="max-w-3xl">
             <p className="label text-aqua">Industries</p>
             <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl">
               Sector intelligence for the work that cannot afford a weak baseline.
@@ -20,7 +38,7 @@ export default function IndustriesPage() {
             <p className="mt-5 max-w-2xl text-base leading-7 text-ink-3">
               We map geospatial data to the realities of each sector, so the outputs match the decisions teams actually need to make.
             </p>
-          </div>
+          </header>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-2">
             {industries.map((industry, index) => (

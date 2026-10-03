@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/dialog";
 import { launchConfetti } from "@/components/ui/confetti";
 import { SpecularButton } from "@/components/ui/SpecularButton";
-import { SOLUTIONS } from "@/lib/solutions";
+const DEFAULT_SOLUTIONS = [
+  { title: "UAV LiDAR & Aerial Survey" },
+  { title: "Drone Photogrammetry" },
+  { title: "Engineering & Topographic Survey" },
+  { title: "GIS & Spatial Intelligence" },
+  { title: "Geotechnical & Displacement Monitoring" },
+  { title: "Cadastral & Land Survey" },
+  { title: "Bathymetric & Hydrographic Survey" },
+];
 
 type ConsultationFields = {
   name: string;
@@ -262,7 +270,7 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
                 className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-ink shadow-sm outline-none transition focus:border-aqua focus:ring-2 focus:ring-aqua/15 aria-invalid:border-rose-500"
               >
                 <option value="" disabled>Select an area</option>
-                {SOLUTIONS.map((solution) => <option key={solution.title} value={solution.title}>{solution.title}</option>)}
+                {DEFAULT_SOLUTIONS.map((solution) => <option key={solution.title} value={solution.title}>{solution.title}</option>)}
                 <option value="Other">Other</option>
               </select>
               {errors.interest ? <p id="interest-error" className="mt-1 text-xs text-rose-700">{errors.interest}</p> : null}

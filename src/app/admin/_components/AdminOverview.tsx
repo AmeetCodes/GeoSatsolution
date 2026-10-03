@@ -16,7 +16,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import TableComponent from "@/components/ui/table1";
+import TableComponent from "./AdminPaymentsTable";
 import type { SiteContentData } from "@/lib/data-store";
 
 interface AdminOverviewProps {

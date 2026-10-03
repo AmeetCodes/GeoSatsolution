@@ -3,12 +3,23 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Layers } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { getDynamicSolutions, solutionSlug } from "@/lib/solutions";
+import { getDynamicSolutions, solutionSlug } from "./_lib/solutions";
 
 export const metadata: Metadata = {
   title: "Solutions | GeoSAT Solutions",
   description:
     "Comprehensive geospatial survey, enterprise GIS, displacement monitoring, and professional engineering services.",
+  alternates: {
+    canonical: "https://geosatsoln.com/solutions",
+  },
+  openGraph: {
+    title: "Solutions | GeoSAT Solutions",
+    description:
+      "Comprehensive geospatial survey, enterprise GIS, displacement monitoring, and professional engineering services.",
+    url: "https://geosatsoln.com/solutions",
+    siteName: "GeoSAT Solutions",
+    type: "website",
+  },
 };
 
 export default function SolutionsPage() {
@@ -60,52 +71,66 @@ export default function SolutionsPage() {
                     </span>
                   </div>
 
-                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((solution) => (
-                      <Link
+                      <div
                         key={solution.title}
-                        href={`/solutions/${solutionSlug(solution.title)}`}
-                        className="group flex flex-col justify-between rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 transition-[border-color,transform,background-color] duration-300 hover:-translate-y-1 hover:border-line-strong hover:bg-panel/60"
+                        className="group flex flex-col justify-between rounded-xl border border-line bg-surface/50 p-6 transition-all hover:border-aqua/40 hover:bg-surface"
                       >
                         <div>
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aqua">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium uppercase tracking-wider text-aqua">
                               {solution.group}
                             </span>
-                            <ArrowUpRight
-                              className="size-4 text-aqua transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                              aria-hidden="true"
-                            />
+                            <Link
+                              href={`/solutions/${solutionSlug(solution.title)}`}
+                              className="text-ink-3 transition-colors hover:text-aqua"
+                              aria-label={`View details for ${solution.title}`}
+                            >
+                              <ArrowUpRight className="size-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                            </Link>
                           </div>
 
-                          <h3 className="mt-4 font-display text-2xl leading-snug text-ink group-hover:text-aqua transition-colors">
-                            {solution.title}
+                          <h3 className="mt-3 font-display text-xl font-medium text-ink">
+                            <Link
+                              href={`/solutions/${solutionSlug(solution.title)}`}
+                              className="hover:underline"
+                            >
+                              {solution.title}
+                            </Link>
                           </h3>
 
-                          <p className="mt-3 text-sm leading-relaxed text-ink-2">
-                            {solution.intro || solution.description}
+                          <p className="mt-2 text-sm leading-relaxed text-ink-3">
+                            {solution.intro}
                           </p>
+
+                          {solution.outcomes && solution.outcomes.length > 0 && (
+                            <div className="mt-4 border-t border-line/50 pt-3">
+                              <p className="text-xs font-medium text-ink-4">Key Deliverables:</p>
+                              <ul className="mt-2 space-y-1.5">
+                                {solution.outcomes.slice(0, 2).map((outcome) => (
+                                  <li
+                                    key={outcome}
+                                    className="flex items-start gap-2 text-xs text-ink-2"
+                                  >
+                                    <CheckCircle2 className="mt-0.5 size-3 shrink-0 text-aqua" />
+                                    <span>{outcome}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
 
-                        {solution.outcomes && solution.outcomes.length > 0 && (
-                          <div className="mt-6 border-t border-line/60 pt-4">
-                            <p className="text-[11px] font-medium uppercase tracking-wider text-ink-3 mb-2">
-                              Key Deliverables:
-                            </p>
-                            <ul className="space-y-1.5">
-                              {solution.outcomes.slice(0, 2).map((outcome, i) => (
-                                <li
-                                  key={i}
-                                  className="flex items-center gap-2 text-xs text-ink-2"
-                                >
-                                  <CheckCircle2 className="size-3 text-aqua shrink-0" />
-                                  <span className="line-clamp-1">{outcome}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </Link>
+                        <div className="mt-6 pt-4">
+                          <Link
+                            href={`/solutions/${solutionSlug(solution.title)}`}
+                            className="inline-flex w-full items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 text-xs font-medium text-ink transition-colors hover:border-aqua/50 hover:bg-aqua/10 hover:text-aqua"
+                          >
+                            Explore Solution
+                          </Link>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

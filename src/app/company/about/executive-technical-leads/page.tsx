@@ -1,8 +1,23 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import AccordionGallery from "@/components/company/AccordionGallery";
+import AccordionGallery from "@/components/ui/AccordionGallery";
 import { LayoutGrid } from "@/components/ui/layout-grid";
 import { EXECUTIVE_LEADS } from "@/lib/content";
+
+export const metadata: Metadata = {
+  title: "Executive & Technical Leads | GeoSAT Solutions",
+  description: "Meet the executive and engineering leadership team guiding GeoSAT geospatial intelligence.",
+  alternates: {
+    canonical: "https://geosatsoln.com/company/about/executive-technical-leads",
+  },
+  openGraph: {
+    title: "Executive & Technical Leads | GeoSAT Solutions",
+    description: "Meet the executive and engineering leadership team guiding GeoSAT geospatial intelligence.",
+    url: "https://geosatsoln.com/company/about/executive-technical-leads",
+    type: "website",
+  },
+};
 
 const galleryItems = EXECUTIVE_LEADS.map((lead) => ({
   image: lead.image,
@@ -34,12 +49,12 @@ export default function ExecutiveTechnicalLeadsPage() {
 
       <main className="flex-1 bg-[#f4f7f8] pt-28">
         <div className="mx-auto w-full max-w-[1500px] px-4 pb-20 pt-8 sm:px-6 lg:px-10">
-          <div className="mb-10 max-w-3xl">
+          <header className="mb-10 max-w-3xl">
             <p className="label text-[#11b7a8]">Company</p>
             <h1 className="mt-4 text-[clamp(2.5rem,5vw,4rem)] font-medium text-[#0f172a]">
               Executive &amp; Technical Leads
             </h1>
-          </div>
+          </header>
 
           <div className="mb-12 overflow-hidden rounded-[2rem] border border-[#e3e8ee] bg-white/50 p-2">
             <AccordionGallery
@@ -58,15 +73,12 @@ export default function ExecutiveTechnicalLeadsPage() {
               tilt={8}
               stagger={0.06}
               height={460}
-              gap={10}
-              radius={16}
-              orientation="horizontal"
             />
           </div>
 
-          <div className="pt-2">
+          <section className="h-[600px] w-full" aria-label="Leadership profiles">
             <LayoutGrid cards={gridCards} />
-          </div>
+          </section>
         </div>
       </main>
 
