@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="LiDAR lead portrait placeholder">
+  <defs>
+    <linearGradient id="bg5" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e7edf2"/>
+      <stop offset="100%" stop-color="#c5d7df"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg5)"/>
+  <circle cx="300" cy="206" r="118" fill="#d9b38d"/>
+  <path d="M182 617c19-99 78-151 118-151 41 0 102 52 119 151" fill="#3a4250"/>
+  <path d="M216 172c16-59 69-103 134-89 62 14 96 61 104 110-27-17-50-25-85-30-34-5-64-2-99 7-17 4-38 17-54 35Z" fill="#212f3e"/>
+  <circle cx="268" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="335" cy="214" r="9" fill="#1f2937"/>
+  <path d="M268 268c19 17 34 24 53 24 19 0 35-7 52-24" fill="none" stroke="#8b5e3d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M230 404L275 330h55l45 74" fill="none" stroke="#d7edf5" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+</svg>

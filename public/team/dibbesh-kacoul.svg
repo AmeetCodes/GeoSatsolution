@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="Managing director portrait placeholder">
+  <defs>
+    <linearGradient id="bg3" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e8edf3"/>
+      <stop offset="100%" stop-color="#ccd7e2"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg3)"/>
+  <circle cx="300" cy="206" r="118" fill="#e7c9a0"/>
+  <path d="M182 618c20-107 79-157 120-157s103 50 118 157" fill="#817f7f"/>
+  <path d="M221 177c11-59 58-100 112-100 56 0 109 32 121 94-21-19-40-29-72-37-31-8-73-7-98 8-18 11-44 22-63 35Z" fill="#cbc7bb"/>
+  <circle cx="267" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="334" cy="214" r="9" fill="#1f2937"/>
+  <path d="M270 272c18 18 34 25 53 25 18 0 35-8 52-24" fill="none" stroke="#8a6140" stroke-width="8" stroke-linecap="round"/>
+</svg>

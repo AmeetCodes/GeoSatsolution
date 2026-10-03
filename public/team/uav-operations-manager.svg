@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="UAV operations manager portrait placeholder">
+  <defs>
+    <linearGradient id="bg6" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e2e8ee"/>
+      <stop offset="100%" stop-color="#c0d4e0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg6)"/>
+  <circle cx="300" cy="205" r="118" fill="#d7b289"/>
+  <path d="M185 618c17-99 78-152 115-152 38 0 100 53 118 152" fill="#41566d"/>
+  <path d="M215 176c16-56 65-101 120-99 60 2 118 46 123 118-19-18-37-29-68-38-33-10-66-9-104-2-26 5-49 17-71 39Z" fill="#2a3a4c"/>
+  <circle cx="269" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="336" cy="214" r="9" fill="#1f2937"/>
+  <path d="M270 270c18 17 35 24 53 24 19 0 35-7 49-23" fill="none" stroke="#8b5d3f" stroke-width="8" stroke-linecap="round"/>
+  <path d="M240 358c27-25 44-34 57-35 18 0 40 9 62 34" fill="none" stroke="#ddedf7" stroke-width="12" stroke-linecap="round"/>
+</svg>

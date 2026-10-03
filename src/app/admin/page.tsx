@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getAdminSessionServer } from "@/lib/admin-auth";
+import { getSiteContent } from "@/lib/data-store";
+import { getNavigationTree } from "@/lib/tree-store";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
+
+export const metadata: Metadata = {
+  title: "Admin Console | GeoSAT Solutions",
+  description: "Administrative control portal for GeoSAT operations and data catalog.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export default async function AdminPage() {
+  const session = await getAdminSessionServer();
+
+  if (!session) {
+    // When user types localhost:3000/admin and is not logged in, redirect to admin login page
+    redirect("/admin/login");
+  }
+
+  // When logged in, provide full access to admin dashboard
+  const content = getSiteContent();
+  const tree = getNavigationTree();
+
+  return <AdminDashboard initialContent={content} initialTree={tree} userEmail={session.email} />;
+}

@@ -1,0 +1,117 @@
+{
+  "GeoSAT_Solutions": {
+    "Solutions": {
+      "Survey & Mapping": [
+        "UAV LiDAR Survey",
+        "Drone Photogrammetry",
+        "Engineering Survey",
+        "GNSS & Total Station Survey",
+        "Mobile Mapping",
+        "Hydrographic Survey"
+      ],
+      "GIS & Data": [
+        "Spatial Database & GIS Solutions",
+        "Enterprise GIS Deployment",
+        "Remote Sensing & Analytics",
+        "Spatial Data Processing"
+      ],
+      "Monitoring": [
+        "Geotechnical Displacement Monitoring",
+        "Geospatial Optical Monitoring",
+        "Hydrological & Meteorological Sensors"
+      ],
+      "Professional Services": [
+        "Equipment Rental",
+        "Software Development",
+        "Capacity Building",
+        "Calibration & Maintenance"
+      ]
+    },
+    "Products": {
+      "UAV & Payloads": [
+        "Unmanned Aerial Vehicles (UAV)",
+        "LiDAR & Photogrammetry Payloads",
+        "Surveillance & Search Payloads"
+      ],
+      "Survey Equipment": [
+        "GNSS Receivers",
+        "Total Stations",
+        "Laser Scanners & SLAM",
+        "Mobile Mapping Systems",
+        "Survey Accessories"
+      ],
+      "Software": [
+        "Trimble Business Center & Access",
+        "DJI Terra & Modify",
+        "LiDAR360 & LiGeoreference",
+        "Pix4D & Agisoft",
+        "PLS-CADD & eCognition"
+      ],
+      "Satellite & Monitoring": [
+        "Satellite Imagery (Multispectral, SAR, DEM)",
+        "Geotechnical Monitoring Sensors",
+        "Geospatial Optical Sensors",
+        "Hydro-Met Logging Sensors"
+      ]
+    },
+    "Industries": {
+      "Infrastructure": [
+        "Hydropower & Energy",
+        "Roads, Highways & Bridges",
+        "Transmission Lines",
+        "Telecom Networks"
+      ],
+      "Government & Urban": [
+        "Smart Cities & Digital Twins",
+        "Municipalities",
+        "National Mapping Agencies"
+      ],
+      "Natural Resources": [
+        "Forestry & Biomass",
+        "Agriculture & Irrigation",
+        "Mining & Quarrying"
+      ],
+      "Safety & Research": [
+        "Disaster & Flood Management",
+        "Construction & Site Layout",
+        "Universities & R&D"
+      ]
+    },
+    "Company": {
+      "About": {
+        "Leadership": "Executive & Technical Leads",
+        "Ecosystem": [
+          "Global Technology Partners",
+          "Institutional Clients"
+        ]
+      },
+      "Projects": [
+        "Hydropower LiDAR Corridors",
+        "Transmission Route Selection",
+        "Municipal Digital Twins",
+        "Forest Biomass Inventories"
+      ],
+      "Training": [
+        "Drone Pilot Training",
+        "LiDAR Data Processing",
+        "GIS & Remote Sensing Courses",
+        "Photogrammetry Workflows"
+      ],
+      "Support": [
+        "Calibration & Servicing",
+        "Firmware & License Support",
+        "Remote & On-site Help",
+        "Consultation & Contact"
+      ],
+      "Insights": [
+        "News & Field Notes",
+        "Downloads & Technical Resources"
+      ],
+      "Careers": [
+        "Survey & GIS Engineering Roles",
+        "UAV & LiDAR Operations Roles",
+        "Software Development Roles"
+      ]
+    }
+  }
+}

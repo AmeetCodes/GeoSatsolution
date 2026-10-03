@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="Survey engineering portrait placeholder">
+  <defs>
+    <linearGradient id="bg2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dfe9f0"/>
+      <stop offset="100%" stop-color="#c5d5df"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg2)"/>
+  <circle cx="300" cy="206" r="118" fill="#dcb692"/>
+  <path d="M182 618c20-106 78-156 118-156 41 0 100 50 120 156" fill="#3d4a5d"/>
+  <path d="M218 182c14-54 56-87 102-87 64 0 111 53 115 113-22-14-42-21-73-28-31-5-58-2-90 6-19 5-37 16-54 33Z" fill="#0d1b2a"/>
+  <circle cx="268" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="336" cy="214" r="9" fill="#1f2937"/>
+  <path d="M271 270c18 17 35 24 53 24 18 0 34-7 50-25" fill="none" stroke="#8a6140" stroke-width="8" stroke-linecap="round"/>
+  <path d="M239 330h123l18 48H219Z" fill="#dfeaf3" opacity="0.8"/>
+</svg>

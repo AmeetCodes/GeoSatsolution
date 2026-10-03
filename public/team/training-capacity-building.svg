@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="Training lead portrait placeholder">
+  <defs>
+    <linearGradient id="bg7" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eaf0f6"/>
+      <stop offset="100%" stop-color="#ccd9e1"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg7)"/>
+  <circle cx="300" cy="205" r="118" fill="#d3b08c"/>
+  <path d="M183 617c17-97 78-150 117-150 40 0 101 53 118 150" fill="#566c7d"/>
+  <path d="M211 176c18-60 72-102 130-96 62 7 109 48 118 112-20-18-41-31-74-37-36-7-72-5-112 9-18 7-40 21-62 39Z" fill="#243447"/>
+  <circle cx="267" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="336" cy="214" r="9" fill="#1f2937"/>
+  <path d="M270 272c18 17 35 24 53 24 19 0 35-7 52-24" fill="none" stroke="#875d3d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M232 360h136M232 390h89M232 420h121" fill="none" stroke="#dbeaf3" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+</svg>

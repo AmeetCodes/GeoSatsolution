@@ -1,0 +1,685 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { NAV } from "@/lib/content";
+import { solutionSlug } from "@/lib/solutions";
+import { cn } from "@/lib/utils";
+import { Container } from "@/components/ui/Section";
+import type { NavTreeTab, NavTreeColumn, NavTreeItem, NavigationTree } from "@/lib/tree-store";
+
+// ---------- types ----------
+type DynIndustry = { title: string; intro?: string; description?: string; items: string[] };
+
+type DynNavData = {
+  tree?: NavigationTree;
+  tabs?: NavTreeTab[];
+  solutionGroups?: { title: string; links: string[] }[];
+  productGroups?: { title: string; links: string[] }[];
+  companyGroups?: { title: string; links: string[] }[];
+  industries?: DynIndustry[];
+} | null;
+
+// ---------- Logo ----------
+function Logo() {
+  return (
+    <a
+      href="/"
+      aria-label="GeoSAT Solutions homepage"
+      className="inline-flex items-center"
+      onClick={() => typeof window !== "undefined" && window.scrollTo({ top: 0, left: 0, behavior: "auto" })}
+    >
+      <Image
+        src="/logo.png"
+        alt="GeoSAT Solutions"
+        width={260}
+        height={78}
+        priority
+        className="h-9 w-auto object-contain sm:h-10"
+      />
+    </a>
+  );
+}
+
+// ---------- hooks ----------
+const SECTION_IDS = ["capabilities", "equipment", "projects", "industries"];
+
+function useActiveSection() {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    const nodes = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+      (n): n is HTMLElement => n !== null,
+    );
+    if (!nodes.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.15, 0.5] },
+    );
+    nodes.forEach((n) => observer.observe(n));
+    return () => observer.disconnect();
+  }, []);
+  return active;
+}
+
+function useScrolled(threshold = 12) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
+/** Periodically fetch dynamic nav data from our API */
+function useDynamicNav(): DynNavData {
+  const [data, setData] = useState<DynNavData>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/content/nav", { cache: "no-store" });
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json.success) setData(json.data);
+    } catch {
+      // silently ignore – static fallback still works
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+    // Re-fetch every 2.5s so admin changes appear quickly
+    const id = setInterval(load, 2500);
+    return () => clearInterval(id);
+  }, [load]);
+
+  return data;
+}
+
+// ---------- Industry accents ----------
+const INDUSTRY_ACCENTS = [
+  {
+    shell: "border-cyan-400/25 bg-cyan-500/10",
+    pill: "border-cyan-400/25 bg-cyan-500/10 text-cyan-100",
+    glow: "from-cyan-500/18 via-cyan-400/10 to-transparent",
+  },
+  {
+    shell: "border-violet-400/25 bg-violet-500/10",
+    pill: "border-violet-400/25 bg-violet-500/10 text-violet-100",
+    glow: "from-violet-500/18 via-violet-400/10 to-transparent",
+  },
+  {
+    shell: "border-emerald-400/25 bg-emerald-500/10",
+    pill: "border-emerald-400/25 bg-emerald-500/10 text-emerald-100",
+    glow: "from-emerald-500/18 via-emerald-400/10 to-transparent",
+  },
+  {
+    shell: "border-amber-400/25 bg-amber-500/10",
+    pill: "border-amber-400/25 bg-amber-500/10 text-amber-100",
+    glow: "from-amber-500/18 via-amber-400/10 to-transparent",
+  },
+] as const;
+
+// ---------- IndustryCardMenu ----------
+function IndustryCardMenu({ industries }: { industries: DynIndustry[] }) {
+  const cols = industries.length <= 2 ? industries.length : industries.length <= 3 ? 3 : 4;
+
+  return (
+    <div
+      className={cn(
+        "grid gap-4",
+        cols === 1
+          ? "grid-cols-1"
+          : cols === 2
+            ? "md:grid-cols-2"
+            : cols === 3
+              ? "md:grid-cols-3"
+              : "md:grid-cols-2 xl:grid-cols-4",
+      )}
+    >
+      {industries.map((industry, index) => {
+        const accent = INDUSTRY_ACCENTS[index % INDUSTRY_ACCENTS.length];
+        return (
+          <motion.div
+            key={industry.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, delay: index * 0.04 }}
+            whileHover={{ y: -4 }}
+            className={cn(
+              "group relative overflow-hidden rounded-[1.35rem] border bg-panel/60 p-4 text-left shadow-[0_18px_48px_-28px_rgba(21,40,52,0.9)] backdrop-blur-sm transition-all duration-300 hover:border-white/15 hover:bg-panel/80",
+              accent.shell,
+            )}
+          >
+            <div
+              aria-hidden="true"
+              className={cn("pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-br opacity-80", accent.glow)}
+            />
+            <div className="relative z-10">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <span
+                  className={cn(
+                    "flex size-10 items-center justify-center rounded-xl border text-xs font-semibold tracking-[0.2em] text-ink",
+                    accent.pill,
+                  )}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="rounded-full border border-line bg-white/[0.03] px-2 py-1 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-ink-3">
+                  Sector
+                </span>
+              </div>
+              <h3 className="text-lg font-medium text-ink">{industry.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-2">
+                {industry.intro || industry.description || ""}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {(industry.items ?? []).map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-line bg-white/[0.03] px-2.5 py-1 text-[0.68rem] text-ink-3"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <a
+                href={`/industries/${solutionSlug(industry.title)}`}
+                className="group/link mt-6 inline-flex items-center gap-2 text-sm font-medium text-aqua transition-colors duration-200 hover:text-aqua-bright"
+              >
+                Explore use cases
+                <ArrowRight className="size-3.5 transition-transform duration-200 group-hover/link:translate-x-1" />
+              </a>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------- Dynamic Column Renderer for Mega-Menu ----------
+function TreeGroupColumn({
+  tabSlug,
+  column,
+}: {
+  tabSlug: string;
+  column: NavTreeColumn;
+}) {
+  return (
+    <div>
+      <p className="label mb-4 text-aqua/70">{column.title}</p>
+      <ul className="space-y-2.5">
+        {column.items.map((item) => {
+          // Resolve target URL
+          let href = item.href;
+          if (!href) {
+            if (tabSlug === "solutions") href = `/solutions/${solutionSlug(item.title)}`;
+            else if (tabSlug === "products") href = `/products/${solutionSlug(item.title)}`;
+            else if (tabSlug === "company") {
+              const colSlug = column.slug || solutionSlug(column.title);
+              const iSlug = item.slug || solutionSlug(item.title);
+              if (item.title === "Executive & Technical Leads") href = "/company/about/executive-technical-leads";
+              else if (item.title === "GeoSat Partners") href = "/company/about/geosat-partners";
+              else if (item.title === "News & Field Notes") href = "/company/insights/news";
+              else if (item.title === "Downloads & Technical Resources") href = "/company/insights/downloads-technical-resources";
+              else if (item.title === "Survey & GIS Engineering Roles") href = "/company/careers/survey-gis-engineering-roles";
+              else if (item.title === "UAV & LiDAR Operations Roles") href = "/company/careers/uav-lidar-operations-roles";
+              else if (item.title === "Software Development Roles") href = "/company/careers/software-development-roles";
+              else href = `/company/${colSlug}/${iSlug}`;
+            } else {
+              href = `/${tabSlug}/${column.slug}/${item.slug || solutionSlug(item.title)}`;
+            }
+          }
+
+          return (
+            <li key={item.id || item.title}>
+              <a
+                href={href}
+                className="group inline-flex items-start gap-2 text-sm text-ink-2 transition-colors duration-200 hover:text-ink"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.5em] size-1 shrink-0 rounded-full bg-aqua/40 transition-colors duration-200 group-hover:bg-aqua"
+                />
+                {item.title}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+// ---------- Build dynamic NAV structure ----------
+function buildDynamicTabs(dynData: DynNavData): NavTreeTab[] {
+  if (dynData?.tree?.tabs && dynData.tree.tabs.length > 0) {
+    return dynData.tree.tabs;
+  }
+  if (dynData?.tabs && dynData.tabs.length > 0) {
+    return dynData.tabs;
+  }
+
+  // Fallback to static NAV
+  return NAV.map((n, index) => ({
+    id: n.label.toLowerCase(),
+    label: n.label,
+    slug: n.label.toLowerCase(),
+    href: n.href,
+    order: index + 1,
+    type: n.label === "Industries" ? "cards" : "columns",
+    footerNote:
+      n.label === "Products"
+        ? "Equipment rental, licensing and operator training available."
+        : "Every engagement is scoped against a tolerance, not a template.",
+    catalogueCta: `Request the full ${n.label.toLowerCase()} catalogue`,
+    columns: (n.groups || []).map((g, gIdx) => ({
+      id: `col-${gIdx}`,
+      title: g.title,
+      slug: solutionSlug(g.title),
+      order: gIdx + 1,
+      items: g.links.map((link, lIdx) => ({
+        id: `item-${lIdx}`,
+        title: link,
+        slug: solutionSlug(link),
+        order: lIdx + 1,
+      })),
+    })),
+  }));
+}
+
+// ---------- Navbar ----------
+export function Navbar() {
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const scrolled = useScrolled();
+  const active = useActiveSection();
+  const reduced = useReducedMotion();
+  const panelId = useId();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const dynData = useDynamicNav();
+  const dynamicTabs = buildDynamicTabs(dynData);
+
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 140);
+  }, [cancelClose]);
+
+  useEffect(() => () => cancelClose(), [cancelClose]);
+
+  useEffect(() => {
+    if (!openMenu && !drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (drawerOpen) setDrawerOpen(false);
+      else setOpenMenu(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [drawerOpen, openMenu]);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [drawerOpen]);
+
+  const isActive = (item: NavTreeTab) =>
+    (item.columns?.length ?? 0) > 0 ? false : active === item.href?.replace("#", "");
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div
+        className={cn(
+          "transition-[background-color,border-color,backdrop-filter] duration-300",
+          scrolled
+            ? "border-b border-line bg-abyss/72 backdrop-blur-xl backdrop-saturate-150"
+            : "border-b border-transparent",
+        )}
+      >
+        <Container className="flex h-[var(--nav-h)] items-center justify-between gap-6">
+          <div className="text-aqua transition-opacity duration-200 hover:opacity-90">
+            <Logo />
+          </div>
+
+          <nav className="hidden items-center lg:flex" aria-label="Primary">
+            {dynamicTabs.map((item, index) => {
+              const hasMenu = (item.columns && item.columns.length > 0) || item.label === "Industries";
+              const expandedState = openMenu === item.label;
+
+              return (
+                <div
+                  key={item.id || item.label}
+                  className="relative"
+                  onMouseEnter={() => {
+                    cancelClose();
+                    setOpenMenu(hasMenu ? item.label : null);
+                  }}
+                  onMouseLeave={scheduleClose}
+                  onFocus={() => {
+                    cancelClose();
+                    setOpenMenu(hasMenu ? item.label : null);
+                  }}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) setOpenMenu(null);
+                  }}
+                >
+                  {hasMenu ? (
+                    <button
+                      ref={(node) => {
+                        triggerRefs.current[index] = node;
+                      }}
+                      type="button"
+                      aria-expanded={expandedState}
+                      aria-controls={panelId}
+                      onClick={() => setOpenMenu(expandedState ? null : item.label)}
+                      className={cn(
+                        "flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm transition-colors duration-200",
+                        expandedState
+                          ? "bg-white/[0.06] text-ink"
+                          : "text-ink-2 hover:bg-white/[0.04] hover:text-ink",
+                      )}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        className={cn("size-3.5 transition-transform duration-200", expandedState && "rotate-180")}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ) : (
+                    <a
+                      href={item.href || `/${item.slug}`}
+                      className={cn(
+                        "relative flex h-9 items-center rounded-full px-3.5 text-sm transition-colors duration-200",
+                        isActive(item) ? "text-ink" : "text-ink-2 hover:text-ink",
+                      )}
+                    >
+                      {item.label}
+                      {isActive(item) ? (
+                        <motion.span
+                          layoutId="nav-active"
+                          className="absolute inset-x-3 -bottom-0.5 h-px bg-aqua"
+                          transition={reduced ? { duration: 0 } : { duration: 0.35 }}
+                        />
+                      ) : null}
+                    </a>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <a
+              href="#contact"
+              className="hidden h-9 items-center rounded-full bg-aqua px-4 text-[0.8125rem] font-medium text-abyss shadow-[0_10px_30px_-14px_rgba(60,227,214,0.9)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-aqua-bright sm:inline-flex"
+            >
+              Request assessment
+            </a>
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="flex size-10 items-center justify-center rounded-full border border-line text-ink transition-colors duration-200 hover:border-line-strong hover:bg-white/[0.05] lg:hidden"
+              aria-label="Open menu"
+              aria-expanded={drawerOpen}
+            >
+              <Menu className="size-5" aria-hidden="true" />
+            </button>
+          </div>
+        </Container>
+      </div>
+
+      {/* Desktop mega menu */}
+      <AnimatePresence>
+        {openMenu
+          ? (() => {
+              const item = dynamicTabs.find((e) => e.label === openMenu);
+              if (!item) return null;
+
+              const isIndustriesCards = item.type === "cards" || item.label === "Industries";
+              const columns = item.columns || [];
+
+              return (
+                <motion.div
+                  id={panelId}
+                  key={openMenu}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: reduced ? 0 : 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  onMouseEnter={cancelClose}
+                  onMouseLeave={scheduleClose}
+                  className="absolute inset-x-0 top-[var(--nav-h)] hidden border-b border-line bg-abyss/92 backdrop-blur-2xl backdrop-saturate-150 lg:block"
+                >
+                  <Container className="py-10">
+                    {isIndustriesCards ? (
+                      <>
+                        <IndustryCardMenu industries={dynData?.industries ?? []} />
+                        <div className="mt-9 flex items-center justify-between border-t border-line pt-6">
+                          <p className="max-w-md text-sm text-ink-3">
+                            Mission-critical data, mapped to the way each sector actually works.
+                          </p>
+                          <a href="/industries" className="group inline-flex items-center gap-2 text-sm text-aqua">
+                            <span className="border-b border-aqua/30 pb-0.5 transition-colors duration-200 group-hover:border-aqua">
+                              View all industries
+                            </span>
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Dynamic multi-column grid automatically sized to number of columns */}
+                        <div
+                          className="grid gap-8"
+                          style={{
+                            gridTemplateColumns: `repeat(${Math.max(1, columns.length)}, minmax(0, 1fr))`,
+                          }}
+                        >
+                          {columns.map((column) => (
+                            <TreeGroupColumn
+                              key={column.id || column.title}
+                              tabSlug={item.slug || solutionSlug(item.label)}
+                              column={column}
+                            />
+                          ))}
+                        </div>
+                        <div className="mt-9 flex items-center justify-between border-t border-line pt-6">
+                          <p className="max-w-md text-sm text-ink-3">
+                            {item.footerNote ||
+                              (item.label === "Products"
+                                ? "Equipment rental, licensing and operator training available."
+                                : "Every engagement is scoped against a tolerance, not a template.")}
+                          </p>
+                          <a href="#contact" className="group inline-flex items-center gap-2 text-sm text-aqua">
+                            <span className="border-b border-aqua/30 pb-0.5 transition-colors duration-200 group-hover:border-aqua">
+                              {item.catalogueCta || `Request the full ${item.label.toLowerCase()} catalogue`}
+                            </span>
+                          </a>
+                        </div>
+                      </>
+                    )}
+                  </Container>
+                </motion.div>
+              );
+            })()
+          : null}
+      </AnimatePresence>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {drawerOpen ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduced ? 0 : 0.25 }}
+            className="fixed inset-0 z-50 lg:hidden"
+          >
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+              className="absolute inset-0 h-full w-full cursor-default bg-abyss/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: reduced ? 0 : "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: reduced ? 0 : "-100%" }}
+              transition={{ duration: reduced ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-x-0 top-0 max-h-[92dvh] overflow-y-auto border-b border-line bg-abyss pb-8"
+            >
+              <Container className="pt-5">
+                <div className="flex h-[3.5rem] items-center justify-between">
+                  <span className="text-aqua">
+                    <Logo />
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex size-10 items-center justify-center rounded-full border border-line text-ink"
+                    aria-label="Close menu"
+                  >
+                    <X className="size-5" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <nav className="mt-6" aria-label="Mobile">
+                  <ul className="divide-y divide-line">
+                    {dynamicTabs.map((item) => {
+                      const isOpen = expanded === item.label;
+                      const hasColumns = (item.columns && item.columns.length > 0) || item.label === "Industries";
+
+                      if (!hasColumns) {
+                        return (
+                          <li key={item.id || item.label}>
+                            <a
+                              href={item.href || `/${item.slug}`}
+                              onClick={() => setDrawerOpen(false)}
+                              className="flex items-center justify-between py-4 font-display text-xl text-ink"
+                            >
+                              {item.label}
+                            </a>
+                          </li>
+                        );
+                      }
+
+                      return (
+                        <li key={item.id || item.label}>
+                          <button
+                            type="button"
+                            aria-expanded={isOpen}
+                            onClick={() => setExpanded(isOpen ? null : item.label)}
+                            className="flex w-full items-center justify-between py-4 font-display text-xl text-ink"
+                          >
+                            {item.label}
+                            <ChevronDown
+                              className={cn(
+                                "size-5 text-ink-3 transition-transform duration-200",
+                                isOpen && "rotate-180",
+                              )}
+                              aria-hidden="true"
+                            />
+                          </button>
+                          <AnimatePresence initial={false}>
+                            {isOpen ? (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: reduced ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
+                                className="overflow-hidden"
+                              >
+                                {item.label === "Industries" ? (
+                                  <div className="space-y-3 pb-6">
+                                    {(dynData?.industries ?? []).map((industry, index) => (
+                                      <a
+                                        key={industry.title}
+                                        href={`/industries/${solutionSlug(industry.title)}`}
+                                        onClick={() => setDrawerOpen(false)}
+                                        className={cn(
+                                          "block rounded-2xl border p-4",
+                                          INDUSTRY_ACCENTS[index % INDUSTRY_ACCENTS.length].shell,
+                                        )}
+                                      >
+                                        <div className="mb-2 flex items-center justify-between">
+                                          <h3 className="font-display text-lg text-ink">{industry.title}</h3>
+                                          <span className="text-[0.55rem] uppercase tracking-[0.16em] text-ink-3">
+                                            {String(index + 1).padStart(2, "0")}
+                                          </span>
+                                        </div>
+                                        <p className="text-sm text-ink-2">
+                                          {industry.intro || industry.description || ""}
+                                        </p>
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                          {(industry.items ?? []).map((entry) => (
+                                            <span
+                                              key={entry}
+                                              className="rounded-full border border-line bg-white/[0.03] px-2 py-1 text-[0.62rem] text-ink-3"
+                                            >
+                                              {entry}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </a>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="grid grid-cols-2 gap-x-4 gap-y-6 pb-6">
+                                    {(item.columns ?? []).map((column) => (
+                                      <TreeGroupColumn
+                                        key={column.id || column.title}
+                                        tabSlug={item.slug || solutionSlug(item.label)}
+                                        column={column}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              </motion.div>
+                            ) : null}
+                          </AnimatePresence>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+
+                <a
+                  href="#contact"
+                  onClick={() => setDrawerOpen(false)}
+                  className="mt-8 flex h-12 items-center justify-center rounded-full bg-aqua font-medium text-abyss"
+                >
+                  Request assessment
+                </a>
+              </Container>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+export default Navbar;

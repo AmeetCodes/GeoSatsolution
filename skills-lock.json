@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "3d-website-architect": {
+      "source": "deveshpunjabi/3d-website-skill",
+      "sourceType": "github",
+      "skillPath": "skills/3d-website-architect/SKILL.md",
+      "computedHash": "061eca688790764e15022cdc0eed852a4d4797420f3959f49581f977815de9ca"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="Dipesh Kuwar portrait placeholder">
+  <defs>
+    <linearGradient id="bg1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dfe7ee"/>
+      <stop offset="100%" stop-color="#b8c5d1"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg1)"/>
+  <circle cx="300" cy="210" r="120" fill="#d9b38d"/>
+  <path d="M180 618c20-105 78-158 120-158s102 53 120 158" fill="#7e8ea1"/>
+  <path d="M225 200c18-72 80-109 142-81 38 17 60 57 60 97-12-20-28-32-48-41-22-10-42-12-68-7-28 5-51 20-86 32Z" fill="#1d2430"/>
+  <circle cx="268" cy="214" r="9" fill="#1f2937"/>
+  <circle cx="338" cy="214" r="9" fill="#1f2937"/>
+  <path d="M276 268c20 18 32 22 48 22 18 0 29-6 45-20" fill="none" stroke="#8b5e3c" stroke-width="8" stroke-linecap="round"/>
+  <rect x="205" y="145" width="190" height="36" rx="18" fill="#f3efe8" opacity="0.8"/>
+</svg>

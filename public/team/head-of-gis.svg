@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" role="img" aria-label="GIS lead portrait placeholder">
+  <defs>
+    <linearGradient id="bg4" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#edf1f7"/>
+      <stop offset="100%" stop-color="#ced9e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="720" fill="url(#bg4)"/>
+  <circle cx="300" cy="205" r="118" fill="#d8b085"/>
+  <path d="M183 617c18-99 73-150 117-150s101 51 118 150" fill="#434f61"/>
+  <path d="M204 178c19-66 68-104 134-98 60 6 101 43 112 110-13-18-29-31-53-39-31-11-58-13-94-8-27 4-53 18-99 35Z" fill="#1f2d3a"/>
+  <circle cx="268" cy="212" r="9" fill="#1f2937"/>
+  <circle cx="335" cy="212" r="9" fill="#1f2937"/>
+  <path d="M275 269c17 17 31 23 50 23 19 0 37-7 49-22" fill="none" stroke="#8b5e3d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M245 318c28 18 40 23 52 24 14 0 47-9 60-24" fill="none" stroke="#9ca9b4" stroke-width="7" stroke-linecap="round"/>
+</svg>
