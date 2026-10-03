@@ -794,6 +794,12 @@ export function findTreeItem(slugPath: string[] | string): {
   return null;
 }
 
+export function getTreeItem(slugPath: string[] | string) {
+  return findTreeItem(slugPath);
+}
+
+export const findTreeItemBySlug = findTreeItem;
+
 /**
  * Return all leaf items across the entire navigation tree.
  * Used by generateStaticParams in the catch-all route.

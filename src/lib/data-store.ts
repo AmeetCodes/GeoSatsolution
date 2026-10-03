@@ -72,6 +72,14 @@ export interface SiteContentData {
   };
 }
 
+function normalizeContentSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 const DATA_FILE_PATH = path.join(process.cwd(), "src", "data", "site-content.json");
 
 // Default initial dataset
@@ -605,6 +613,147 @@ export const DEFAULT_SITE_CONTENT: SiteContentData = {
     ]
   }
 };
+
+export function getPageContentForTreeItem(match: {
+  tab?: { id?: string; label?: string; slug?: string };
+  column?: { title?: string; slug?: string };
+  item: {
+    title?: string;
+    slug?: string;
+    href?: string;
+    intro?: string;
+    description?: string;
+    outcomes?: string[];
+    images?: { src: string; alt: string; caption: string }[];
+  };
+} | null): any | null {
+  if (!match) {
+    return null;
+  }
+
+  const content = getSiteContent();
+  const tabId = match.tab?.id;
+  const sectionKey =
+    tabId === "solutions"
+      ? "Solutions"
+      : tabId === "products"
+        ? "Products"
+        : tabId === "industries"
+          ? "Industries"
+          : null;
+
+  if (!sectionKey) {
+    return null;
+  }
+
+  const sectionData = (content as any)[sectionKey];
+  if (!Array.isArray(sectionData)) {
+    return null;
+  }
+
+  const title = match.item.title || "";
+  const slug = match.item.slug || "";
+  const href = match.item.href || "";
+
+  const matchedEntry = sectionData.find((entry: any) => {
+    const entryTitle = entry?.title || "";
+    const entrySlug = normalizeContentSlug(entryTitle);
+    const itemSlug = normalizeContentSlug(title || slug || "");
+
+    return (
+      entryTitle === title ||
+      entrySlug === slug ||
+      itemSlug === entrySlug ||
+      (href && entryTitle && href.endsWith(`/${normalizeContentSlug(entryTitle)}`)) ||
+      (itemSlug && entrySlug === itemSlug)
+    );
+  });
+
+  return matchedEntry ?? null;
+}
+
+export function syncTreeItemWithSiteContent(
+  tab: any,
+  column: any,
+  item: any,
+): boolean {
+  const content = getSiteContent();
+  const sectionKey =
+    tab.id === "solutions"
+      ? "Solutions"
+      : tab.id === "products"
+        ? "Products"
+        : tab.id === "industries"
+          ? "Industries"
+          : null;
+
+  if (!sectionKey) {
+    return false;
+  }
+
+  const sectionData = Array.isArray((content as any)[sectionKey]) ? (content as any)[sectionKey] : [];
+  const targetTitle = item.title || "";
+  const targetSlug = item.slug || normalizeContentSlug(targetTitle);
+  const entryIndex = sectionData.findIndex((entry: any) => {
+    const entryTitle = entry?.title || "";
+    return (
+      entryTitle === targetTitle ||
+      normalizeContentSlug(entryTitle) === targetSlug ||
+      (entry?.slug && normalizeContentSlug(entry.slug) === targetSlug)
+    );
+  });
+
+  const nextEntry = {
+    title: targetTitle || tab.label || column.title || "Untitled page",
+    group: column.title || tab.label || "General",
+    intro: item.intro || "",
+    description: item.description || "",
+    outcomes: Array.isArray(item.outcomes) ? item.outcomes : [],
+    images: Array.isArray(item.images) && item.images.length > 0 ? item.images : [],
+  };
+
+  if (entryIndex >= 0) {
+    sectionData[entryIndex] = { ...sectionData[entryIndex], ...nextEntry };
+  } else {
+    sectionData.push(nextEntry);
+  }
+
+  (content as any)[sectionKey] = sectionData;
+  return saveSiteContent(content);
+}
+
+export function removeTreeItemFromSiteContent(
+  tabId: string,
+  item: { title?: string; slug?: string },
+): boolean {
+  const content = getSiteContent();
+  const sectionKey =
+    tabId === "solutions"
+      ? "Solutions"
+      : tabId === "products"
+        ? "Products"
+        : tabId === "industries"
+          ? "Industries"
+          : null;
+
+  if (!sectionKey || !Array.isArray((content as any)[sectionKey])) {
+    return false;
+  }
+
+  const targetTitle = item.title || "";
+  const targetSlug = item.slug || normalizeContentSlug(targetTitle);
+  const filtered = (content as any)[sectionKey].filter((entry: any) => {
+    const entryTitle = entry?.title || "";
+    return !(
+      entryTitle === targetTitle ||
+      normalizeContentSlug(entryTitle) === targetSlug ||
+      (entry?.slug && normalizeContentSlug(entry.slug) === targetSlug)
+    );
+  });
+
+  (content as any)[sectionKey] = filtered;
+  return saveSiteContent(content);
+}
 
 /**
  * Initializes and gets the current site content data

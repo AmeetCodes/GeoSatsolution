@@ -23,6 +23,8 @@ export function generateStaticParams() {
   return getDynamicProducts().map((product) => ({ slug: productSlug(product.title) }));
 }
 
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = getDynamicProductBySlug(slug);
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   const title = `${product.title} | GeoSAT Products`;
   const description = product.intro || product.description;
-  const canonicalUrl = `https://geosatsoln.com/products/${slug}`;
+  const canonicalUrl = `https://geosat.co/products/${slug}`;
 
   return {
     title,
@@ -125,7 +127,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             </header>
 
-            <SolutionGallery images={product.images} />
+            <SolutionGallery images={product.images && product.images.length > 0 ? product.images : []} />
           </article>
 
           <section className="mt-16 border-t border-line pt-9 sm:mt-20 sm:pt-12" aria-labelledby="specs-heading">

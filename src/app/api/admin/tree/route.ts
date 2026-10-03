@@ -11,6 +11,7 @@ import {
   type NavTreeItem,
   slugify,
 } from "@/lib/tree-store";
+import { removeTreeItemFromSiteContent, syncTreeItemWithSiteContent } from "@/lib/data-store";
 
 export const dynamic = "force-dynamic";
 
@@ -205,6 +206,7 @@ export async function POST(request: Request) {
       };
       targetColumn.items.push(newItem);
       saveNavigationTree(currentTree);
+      syncTreeItemWithSiteContent(targetTab, targetColumn, newItem);
       // Revalidate the root layout AND the specific catch-all path so the
       // new item renders immediately on first visit without a server restart.
       revalidatePath("/", "layout");
@@ -228,6 +230,7 @@ export async function POST(request: Request) {
       if (payload.images !== undefined) item.images = payload.images;
       if (payload.metadata !== undefined) item.metadata = payload.metadata;
       saveNavigationTree(currentTree);
+      syncTreeItemWithSiteContent(targetTab, targetColumn, item);
       // Revalidate both the old and new paths to clear stale cached responses.
       revalidatePath("/", "layout");
       if (oldHref) revalidatePath(oldHref);
@@ -237,8 +240,13 @@ export async function POST(request: Request) {
 
     // Action 13: Delete Item
     if (action === "deleteItem" && targetTab && targetColumn && itemId) {
+      const itemToDelete = targetColumn.items.find((i) => i.id === itemId);
       targetColumn.items = targetColumn.items.filter((i) => i.id !== itemId);
       saveNavigationTree(currentTree);
+      if (itemToDelete) {
+        removeTreeItemFromSiteContent(targetTab.id, itemToDelete);
+        if (itemToDelete.href) revalidatePath(itemToDelete.href);
+      }
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: "Deleted item", data: currentTree });
     }

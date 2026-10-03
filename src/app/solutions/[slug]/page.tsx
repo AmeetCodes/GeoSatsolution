@@ -23,6 +23,8 @@ export function generateStaticParams() {
   return getDynamicSolutions().map((solution) => ({ slug: solutionSlug(solution.title) }));
 }
 
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }: SolutionPageProps): Promise<Metadata> {
   const { slug } = await params;
   const solution = getDynamicSolutionBySlug(slug);
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
 
   const title = `${solution.title} | GeoSAT Solutions`;
   const description = solution.intro || solution.description;
-  const canonicalUrl = `https://geosatsoln.com/solutions/${slug}`;
+  const canonicalUrl = `https://geosat.co/solutions/${slug}`;
 
   return {
     title,
@@ -76,7 +78,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
     provider: {
       "@type": "Organization",
       name: "GeoSAT Solutions",
-      url: "https://geosatsoln.com",
+      url: "https://geosat.co",
     },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
@@ -129,7 +131,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
               </p>
             </header>
 
-            <SolutionGallery images={solution.images} />
+            <SolutionGallery images={solution.images && solution.images.length > 0 ? solution.images : []} />
           </article>
 
           <section className="mt-16 border-t border-line pt-9 sm:mt-20 sm:pt-12" aria-labelledby="deliverables-heading">

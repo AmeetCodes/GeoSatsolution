@@ -1,53 +1,65 @@
-### SYSTEM TASK: Implement Dynamic Catch-All Routing & Layout Inheritance Template System
+### SYSTEM TASK: Dynamic Catch-All Routing, Layout Inheritance & SEO Engine Implementation
 
-#### OBJECTIVE
-Fix the 404 "Page Not Found" and blank page errors occurring when newly created admin panel menu items are clicked. Implement a universal Dynamic Catch-All Route and Section Template Inheritance system so that ANY newly added menu item across ALL sections (`Solutions`, `Products`, `Industries`, `Company`, etc.) instantly renders a fully styled page using its parent section's design layout.
-
----
-
-#### 1. THE PROBLEM TO FIX
-1. **404 Errors on Custom Routes:** Newly created items (e.g., custom slugs or newly added sub-items) trigger a 404 page because no dynamic catch-all route handles unpredictable or deeply nested URL paths.
-2. **Missing Page Templates:** Newly added items do not have an existing static page file or pre-configured CMS content layout, resulting in either a 404 or a completely blank screen.
+#### CRITICAL ARCHITECTURAL MANDATES
+* **Scope-Based Colocation:** All section layout templates must live strictly inside `src/app/[...slug]/_templates/`. Do NOT leak template components into global directories.
+* **Server-Side Rendering (SSR):** `src/app/[...slug]/page.tsx` MUST execute as a React Server Component (RSC). Do NOT use top-level `'use client'` directives.
+* **Technical SEO First:** Every dynamic catch-all route must export dynamic metadata (`generateMetadata()`) and inject structured Schema.org JSON-LD scripts directly into the pre-rendered SSR HTML.
+* **Zero UI Regression:** Visual styling, Tailwind tokens, grid structures, and interactive dialogs must remain 100% pixel-identical to existing sections.
 
 ---
 
-#### 2. DYNAMIC CATCH-ALL ROUTING SETUP
-Implement/Refactor Next.js dynamic routing using catch-all route handlers:
+#### 1. DYNAMIC CATCH-ALL ROUTE HANDLER (`src/app/[...slug]/page.tsx`)
+Refactor/Implement the universal catch-all route to resolve any dynamic URL created via the Admin Navigation Tree:
 
-- **Create/Update Route Architecture:**
-  - Standard Catch-All Route: `app/[...slug]/page.tsx` (or `pages/[...slug].tsx`)
-  - Ensures ANY dynamic URL structure (e.g., `/products/survey-equipment/new-item-name` or `/solutions/gis-data/custom-page`) resolves to a dynamic renderer rather than returning a 404 error.
-
----
-
-#### 3. SECTION LAYOUT & TEMPLATE INHERITANCE ENGINE
-When a dynamic route is requested, the dynamic page component must inspect the database/CMS tree node for that item and inherit its layout template:
-
-1. **Parent Section Detection:**
-   - Detect which primary section/category the item belongs to (e.g., `Solutions`, `Products`, `Industries`, or `Company`).
-2. **Template Mapping:**
-   - **`Products` Template:** If created under `Products`, render using the standard Product detail page layout (Product Hero banner, Specs/Features grid, Inquiry CTA button, Sidebar navigation).
-   - **`Solutions` Template:** If created under `Solutions`, render using the Solutions layout (Solution overview, capabilities, case study/workflow grid).
-   - **`Industries` Template:** If created under `Industries`, render using the Industry sector intelligence card/grid layout.
-   - **`Company` Template:** If created under `Company`, render using the standard article/text-and-media layout (matching About/Insights pages).
-3. **Fallback Default Template:**
-   - If an item is added directly at the root level without a specific section, use a clean universal Hero + Content layout using the site's default typography and UI framework.
+* **Path:** `src/app/[...slug]/page.tsx`
+* **Route Resolution Flow:**
+  1. Extract slug array from route params (e.g., `['solutions', 'survey-mapping', 'uav-lidar-survey']`).
+  2. Query `src/lib/tree-store.ts` via `getTreeItem(slugArray)` or `findTreeItemBySlug()` to locate the active node in `navigation-tree.json`.
+  3. If node exists, query `src/lib/data-store.ts` (`getSiteContent()`) to retrieve page copy and media assets.
+  4. If no node exists, invoke `notFound()` to render the standard 404 handler.
 
 ---
 
-#### 4. AUTOMATIC PAGE CONTENT SEEDING (ADMIN & CMS)
-1. **Auto-Generation on Creation:**
-   - When an admin creates a new nav item, automatically initialize default placeholder page content in the database (e.g., Page Title = Item Name, Default Subtitle, Default Hero Banner, and editable Rich-Text content sections).
-2. **Admin Page Editor:**
-   - Allow the admin to edit the page content (Title, Description, Banner, Content Blocks) directly from the admin panel for any dynamic slug.
-3. **Instant Revalidation:**
-   - Ensure dynamic page routes revalidate immediately upon creation/update so the newly rendered page reflects instant changes without needing a build restart.
+#### 2. SECTION LAYOUT TEMPLATE INHERITANCE (`src/app/[...slug]/_templates/`)
+Colocate all layout templates inside `src/app/[...slug]/_templates/`. The catch-all page must inspect the item's primary parent tab (`tab.id`) and delegate rendering to the corresponding template:
+
+* **Template Selection Engine (`src/app/[...slug]/_templates/index.ts`):**
+  - **`Solutions` (`tab.id === 'solutions'`):** Render `SolutionsTemplate.tsx` (Hero banner, deliverables list, case studies, and `@/components/ui/ConsultationDialog.tsx`).
+  - **`Products` (`tab.id === 'products'`):** Render `ProductsTemplate.tsx` (Product hero, specs grid, feature list, and `@/components/ui/ProductBuyDialog.tsx`).
+  - **`Industries` (`tab.id === 'industries'`):** Render `IndustriesTemplate.tsx` (Sector focus card layout, use-case matrix, and capabilities list).
+  - **`Company` (`tab.id === 'company'`):** Render `CompanyTemplate.tsx` (Article media layout, key takeaways, and resource links).
+  - **Fallback (`FallbackTemplate.tsx`):** Universal root-level layout for custom top-level pages.
+
+---
+
+#### 3. TECHNICAL SEO & METADATA GENERATION
+Ensure search engines properly index every dynamically rendered dynamic page:
+
+1. **Dynamic Metadata Export:**
+   - Export `generateMetadata({ params })` in `src/app/[...slug]/page.tsx`.
+   - Resolve page title, description, and OpenGraph images from `site-content.json` via `data-store.ts`.
+   - Generate canonical URL matching the human-readable slug (e.g., `https://geosat.co/solutions/survey-mapping/uav-lidar-survey`).
+
+2. **Schema.org Structured JSON-LD Injection:**
+   - Dynamically inject Schema.org scripts into the SSR HTML based on `tab.id`:
+     - **Solutions:** `@type: "Service"`
+     - **Products:** `@type: "Product"`
+     - **Industries:** `@type: "Service"` or `@type: "Article"`
+     - **Company:** `@type: "Organization"` or `@type: "NewsArticle"`
+
+---
+
+#### 4. DATA SEEDING & INSTANT REVALIDATION
+* **Auto-Content Initialization:**
+  - When a new item is created in `TreeCMSManager.tsx` (`src/app/admin/_components/`), automatically seed default placeholder content (Hero title, subtitle, specs/features array) into `site-content.json` via `PUT /api/admin/content`.
+* **On-Demand Revalidation:**
+  - Ensure `POST/PUT/DELETE` handlers in `/api/admin/tree` and `/api/admin/content` trigger `revalidatePath('/', 'layout')` and `revalidatePath(item.href)` so newly created/edited pages reflect instantly without rebuilds.
 
 ---
 
 #### 5. VERIFICATION CHECKLIST
-- [ ] Clicking any newly created admin menu item opens a rendered page instead of a 404 error.
-- [ ] A new product item created under "Survey Equipment" automatically adopts the exact styling, sidebar, and layout structure of existing product pages.
-- [ ] A new solution item created under "Survey & Mapping" adopts the exact styling and layout of existing solution pages.
-- [ ] Admin panel allows editing page hero title, text body, and section content for any dynamic route.
-- [ ] Existing static/hardcoded pages continue to render normally without route collision.
+- [ ] Clicking any newly created dynamic item renders a styled page matching its parent layout instead of a 404 or blank screen.
+- [ ] `src/app/[...slug]/page.tsx` executes purely as an RSC (verified via page view-source returning full semantic HTML).
+- [ ] View-source confirms pre-rendered `<title>`, `<meta name="description">`, `<link rel="canonical">`, and Schema.org `<script type="application/ld+json">`.
+- [ ] All section templates live strictly in `src/app/[...slug]/_templates/` and import UI primitives exclusively from `@/components/ui/`.
+- [ ] Dynamic paths revalidate instantly upon Admin CMS save operations.

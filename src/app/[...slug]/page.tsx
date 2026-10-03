@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { findTreeItem, getAllTreeItems } from "@/lib/tree-store";
+import { getTreeItem, getAllTreeItems } from "@/lib/tree-store";
+import { getPageContentForTreeItem } from "@/lib/data-store";
 import {
   SolutionsTemplate,
   ProductsTemplate,
@@ -37,7 +38,7 @@ export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const match = findTreeItem(slug);
+  const match = getTreeItem(slug);
 
   if (!match) {
     return {
@@ -51,16 +52,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { item, tab, column } = match;
+  const pageContent = getPageContentForTreeItem(match) || {};
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
-  const canonicalUrl = `https://geosatsoln.com/${pagePath}`;
+  const canonicalUrl = `https://geosat.co/${pagePath}`;
 
   const title =
     item.metadata?.metaTitle ||
+    pageContent?.metaTitle ||
     `${item.title} | ${column?.title || tab?.label || "GeoSAT"} | GeoSAT Solutions`;
 
   const description =
     item.metadata?.metaDescription ||
+    pageContent?.metaDescription ||
+    pageContent?.intro ||
     item.intro ||
+    pageContent?.description ||
     item.description ||
     `Survey-grade solutions and capabilities for ${item.title}.`;
 
@@ -120,29 +126,38 @@ const DEFAULT_IMAGES = [
 
 export default async function DynamicCatchAllPage({ params }: PageProps) {
   const { slug } = await params;
-  const match = findTreeItem(slug);
+  const match = getTreeItem(slug);
 
   if (!match) {
     notFound();
   }
 
   const { tab, column, item } = match;
+  const contentPage = getPageContentForTreeItem(match) || {};
+  const resolvedItem = {
+    ...item,
+    title: item.title || contentPage?.title || "Untitled page",
+    intro: item.intro || contentPage?.intro || "",
+    description: item.description || contentPage?.description || "",
+    outcomes: item.outcomes || contentPage?.outcomes || [],
+    images: item.images || contentPage?.images || [],
+  };
 
   const galleryImages =
-    item.images && item.images.length > 0 ? item.images : DEFAULT_IMAGES;
+    resolvedItem.images && resolvedItem.images.length > 0 ? resolvedItem.images : DEFAULT_IMAGES;
 
   // ── JSON-LD Structured Data ─────────────────────────────────────────────────
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
-  const canonicalUrl = `https://geosatsoln.com/${pagePath}`;
+  const canonicalUrl = `https://geosat.co/${pagePath}`;
 
   let jsonLd: Record<string, any> | null = null;
   if (tab.id === "products") {
     jsonLd = {
       "@context": "https://schema.org",
       "@type": "Product",
-      name: item.title,
+      name: resolvedItem.title,
       category: column?.title || "Geospatial Equipment",
-      description: item.intro || item.description,
+      description: resolvedItem.intro || resolvedItem.description,
       brand: {
         "@type": "Brand",
         name: "GeoSAT",
@@ -157,18 +172,40 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
         },
       },
     };
-  } else if (tab.id === "solutions" || tab.id === "industries") {
+  } else if (tab.id === "solutions") {
     jsonLd = {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: item.title,
+      name: resolvedItem.title,
       serviceType: column?.title || tab.label,
-      description: item.intro || item.description,
+      description: resolvedItem.intro || resolvedItem.description,
       provider: {
         "@type": "Organization",
         name: "GeoSAT Solutions",
-        url: "https://geosatsoln.com",
+        url: "https://geosat.co",
       },
+    };
+  } else if (tab.id === "industries") {
+    jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: resolvedItem.title,
+      serviceType: column?.title || tab.label,
+      description: resolvedItem.intro || resolvedItem.description,
+      provider: {
+        "@type": "Organization",
+        name: "GeoSAT Solutions",
+        url: "https://geosat.co",
+      },
+    };
+  } else if (tab.id === "company") {
+    jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: resolvedItem.title,
+      description: resolvedItem.intro || resolvedItem.description,
+      url: canonicalUrl,
+      sameAs: ["https://geosat.co"],
     };
   }
 
@@ -183,15 +220,15 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       )}
       <Navbar />
       {tab.id === "products" ? (
-        <ProductsTemplate item={item} tab={tab} column={column} galleryImages={galleryImages} />
+        <ProductsTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       ) : tab.id === "industries" ? (
-        <IndustriesTemplate item={item} tab={tab} column={column} />
+        <IndustriesTemplate item={resolvedItem} tab={tab} column={column} />
       ) : tab.id === "company" ? (
-        <CompanyTemplate item={item} tab={tab} column={column} />
+        <CompanyTemplate item={resolvedItem} tab={tab} column={column} />
       ) : tab.id === "solutions" ? (
-        <SolutionsTemplate item={item} tab={tab} column={column} galleryImages={galleryImages} />
+        <SolutionsTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       ) : (
-        <FallbackTemplate item={item} tab={tab} column={column} galleryImages={galleryImages} />
+        <FallbackTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       )}
       <Footer />
     </>

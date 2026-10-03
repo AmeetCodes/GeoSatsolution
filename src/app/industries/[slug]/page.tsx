@@ -20,6 +20,9 @@ export function generateStaticParams() {
   return getDynamicIndustries().map((industry) => ({ slug: industrySlug(industry.title) }));
 }
 
+export const dynamicParams = true;
+
+
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const industry = getDynamicIndustryBySlug(slug);
@@ -33,7 +36,7 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
 
   const title = `${industry.title} | GeoSAT Industries`;
   const description = industry.intro || industry.description;
-  const canonicalUrl = `https://geosatsoln.com/industries/${slug}`;
+  const canonicalUrl = `https://geosat.co/industries/${slug}`;
 
   return {
     title,
@@ -70,7 +73,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
     provider: {
       "@type": "Organization",
       name: "GeoSAT Solutions",
-      url: "https://geosatsoln.com",
+      url: "https://geosat.co",
     },
   };
 

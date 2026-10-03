@@ -9,13 +9,27 @@ export type SolutionImage = {
   caption: string;
 };
 
+const PLACEHOLDER_IMAGES: SolutionImage[] = [
+  {
+    src: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1800&q=85",
+    alt: "Field operations",
+    caption: "High-precision survey execution and sensor deployment",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85",
+    alt: "Aerial capture",
+    caption: "Rigorous quality verification against national datum",
+  },
+];
+
 export function SolutionGallery({ images }: { images: SolutionImage[] }) {
+  const resolvedImages = images && images.length > 0 ? images : PLACEHOLDER_IMAGES;
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
-  const activeImage = images[activeIndex];
+  const activeImage = resolvedImages[activeIndex];
 
   function showImage(index: number) {
-    setActiveIndex((index + images.length) % images.length);
+    setActiveIndex((index + resolvedImages.length) % resolvedImages.length);
   }
 
   return (
@@ -68,7 +82,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
       <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7">
         <span className="text-xs text-ink-3">Project imagery</span>
         <div className="flex items-center gap-2" aria-label="Choose image">
-          {images.map((image, index) => (
+          {resolvedImages.map((image, index) => (
             <button
               key={image.src}
               type="button"
@@ -80,7 +94,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
           ))}
         </div>
         <span className="text-xs tabular text-ink-3">
-          {String(activeIndex + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
+          {String(activeIndex + 1).padStart(2, "0")} / {String(resolvedImages.length).padStart(2, "0")}
         </span>
       </div>
     </div>

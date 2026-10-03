@@ -1,11 +1,31 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
+import { getNavigationTree } from "@/lib/tree-store";
 import {
   getSiteContent,
   saveSiteContent,
   DEFAULT_SITE_CONTENT,
   type SiteContentData,
 } from "@/lib/data-store";
+
+function refreshContentPaths() {
+  revalidatePath("/", "layout");
+
+  const tree = getNavigationTree();
+  for (const tab of tree.tabs) {
+    if (tab.href && tab.href.startsWith("/")) {
+      revalidatePath(tab.href);
+    }
+    for (const column of tab.columns) {
+      for (const item of column.items) {
+        if (item.href) {
+          revalidatePath(item.href);
+        }
+      }
+    }
+  }
+}
 
 export async function GET(req: Request) {
   try {
@@ -48,6 +68,7 @@ export async function POST(req: Request) {
     // Reset action
     if (action === "reset") {
       saveSiteContent(DEFAULT_SITE_CONTENT);
+      refreshContentPaths();
       return NextResponse.json({
         success: true,
         message: "Content successfully restored to default state",
@@ -62,6 +83,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, message: "Missing data" }, { status: 400 });
       }
       saveSiteContent(data as SiteContentData);
+      refreshContentPaths();
       return NextResponse.json({
         success: true,
         message: "Full site content saved successfully",
@@ -72,6 +94,7 @@ export async function POST(req: Request) {
     if (section && section in currentContent) {
       (currentContent as any)[section] = data;
       saveSiteContent(currentContent);
+      refreshContentPaths();
       return NextResponse.json({
         success: true,
         message: `${section} updated successfully`,

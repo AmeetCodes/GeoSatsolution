@@ -283,27 +283,6 @@
               ]
             }
           ]
-        },
-        {
-          "id": "col-ello-8481",
-          "title": "ello",
-          "slug": "ello",
-          "order": 5,
-          "items": [
-            {
-              "id": "item-svf-5009",
-              "title": "svf",
-              "slug": "svf",
-              "href": "svfv",
-              "order": 1,
-              "intro": "svv",
-              "description": "vsdv",
-              "outcomes": [
-                "Deliverable specification 1",
-                "Quality assurance deliverable 2"
-              ]
-            }
-          ]
         }
       ]
     },
