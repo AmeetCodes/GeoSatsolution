@@ -102,7 +102,7 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
             <div className="inline-block px-3 py-1 mb-3 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-semibold tracking-wider uppercase border border-cyan-500/30">
               GeoSAT Portal
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-white mb-2">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-950 mb-2">
               Geospatial Operations & Control Center
             </h2>
             <p className="text-sm text-slate-300 max-w-md">

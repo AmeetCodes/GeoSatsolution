@@ -142,7 +142,7 @@ export function AdminDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-[#080810] text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f1ece5] text-zinc-950 flex flex-col font-sans">
       <AdminHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -154,10 +154,10 @@ export function AdminDashboard({
       />
 
       {/* Page header breadcrumb */}
-      <div className="border-b border-white/[0.04] bg-[#09090f] px-6 lg:px-8 py-3 flex items-center gap-3">
-        <span className="text-[11px] text-zinc-600 uppercase tracking-[0.14em] font-medium">Admin</span>
+      <div className="border-b border-zinc-800 bg-[#f1ece5] px-6 lg:px-8 py-3 flex items-center gap-3">
+        <span className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">Admin</span>
         <span className="text-zinc-700">/</span>
-        <span className="text-[11px] text-zinc-400 font-medium">{tabLabels[activeTab]}</span>
+        <span className="text-[11px] text-[#f1ece5] font-medium">{tabLabels[activeTab]}</span>
         <div className="ml-auto flex items-center gap-2">
           {isSaving && (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-medium animate-pulse">
@@ -175,7 +175,7 @@ export function AdminDashboard({
       </div>
 
       {/* Main workspace */}
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-[#f1ece5]">
         {activeTab === "overview" && (
           <AdminOverview
             content={content}
@@ -229,17 +229,17 @@ export function AdminDashboard({
 
         {activeTab === "transactions" && (
           <div className="space-y-5">
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+            <div className="rounded-xl border border-white/[0.06] bg-[#f1ece5]/60 p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-[15px] font-semibold text-white">Client Orders & Requests</h2>
+                  <h2 className="text-[15px] font-semibold text-zinc-950">Client Orders & Requests</h2>
                   <p className="text-[12px] text-zinc-500 mt-1">
                     Service contracts, equipment rentals, and software subscription records.
                   </p>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 sm:p-6 overflow-x-auto">
+            <div className="rounded-xl border border-white/[0.06] bg-[#f1ece5]/60 p-4 sm:p-6 overflow-x-auto">
               <TableComponent />
             </div>
           </div>
@@ -260,9 +260,9 @@ export function AdminDashboard({
               onClose={() => removeToast(toast.id)}
               duration={3500}
               fuse="bottom"
-              fuseColor="#06b6d4"
-              background="#0f0f1a"
-              color="#f4f4f5"
+              fuseColor="#f1ece5"
+              background="#18181b"
+              color="#f1ece5"
               inline
             />
           </div>

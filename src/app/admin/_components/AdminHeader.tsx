@@ -60,7 +60,7 @@ export function AdminHeader({
   ] as const;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#0a0a0f]/95 backdrop-blur-xl text-white">
+    <header className="sticky top-0 z-40 w-full border-b border-[#f1ece5]/20 bg-[#f1ece5]/95 backdrop-blur-xl text-zinc-950">
       {/* Top bar */}
       <div className="flex h-[60px] items-center justify-between px-6 lg:px-8">
         {/* Logo + badge */}
@@ -77,9 +77,9 @@ export function AdminHeader({
               className="object-contain h-7 w-auto"
               priority
             />
-            <span className="hidden sm:block text-[10px] font-semibold tracking-[0.2em] text-cyan-400/80 uppercase border-l border-white/10 pl-2 ml-1">
-              Admin
-            </span>
+          <span className="hidden sm:block text-[10px] font-semibold tracking-wider text-[#f1ece5]/80 uppercase border-l border-white/10 pl-2 ml-1">
+            Admin
+          </span>
           </div>
         </Link>
 
@@ -105,7 +105,7 @@ export function AdminHeader({
             type="button"
             onClick={onResetDefaults}
             title="Restore factory default content"
-            className="hidden md:inline-flex items-center gap-1.5 h-7 px-2.5 text-[11px] font-medium text-zinc-400 hover:text-zinc-200 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] rounded-lg transition-all"
+            className="hidden md:inline-flex items-center gap-1.5 h-7 px-2.5 text-[11px] font-medium text-zinc-300 hover:text-[#f1ece5] bg-[#f1ece5]/80 hover:bg-[#f1ece5] border border-zinc-800 hover:border-[#f1ece5]/30 rounded-lg transition-all"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset</span>
@@ -116,7 +116,7 @@ export function AdminHeader({
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 h-7 px-2.5 text-[11px] font-medium text-cyan-400 hover:text-cyan-300 bg-cyan-500/[0.08] hover:bg-cyan-500/[0.14] border border-cyan-500/20 rounded-lg transition-all"
+            className="inline-flex items-center gap-1.5 h-7 px-2.5 text-[11px] font-medium text-[#f1ece5] bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 border border-[#f1ece5]/30 rounded-lg transition-all"
           >
             <span>Site</span>
             <ExternalLink className="w-3 h-3" />
@@ -144,7 +144,7 @@ export function AdminHeader({
       </div>
 
       {/* Tab navigation */}
-      <div className="border-t border-white/[0.05] px-4 lg:px-8">
+      <div className="border-t border-zinc-800 px-4 lg:px-8">
         <nav className="flex items-end gap-0.5 overflow-x-auto no-scrollbar -mb-px">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -153,15 +153,12 @@ export function AdminHeader({
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id as AdminTab)}
-                className={`
-                  group relative inline-flex items-center gap-2 whitespace-nowrap px-3.5 py-2.5 text-[12px] font-medium
-                  border-b-2 transition-all duration-200 shrink-0
-                  ${isActive
-                    ? "border-cyan-400 text-white"
-                    : "border-transparent text-zinc-500 hover:text-zinc-300 hover:border-zinc-600"
-                  }
-                `}
+                onClick={() => setActiveTab(tab.id)}
+                className={`group relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 lg:px-4 h-9 sm:h-10 text-[11px] sm:text-xs font-semibold tracking-wider transition-all whitespace-nowrap ${
+                  isActive
+                    ? "text-[#f1ece5] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#f1ece5] after:rounded-full"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
               >
                 <Icon
                   className={`w-3.5 h-3.5 transition-colors duration-200 ${

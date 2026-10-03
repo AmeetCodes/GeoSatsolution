@@ -136,7 +136,7 @@ export function AdminOverview({
                 Live · All systems synchronized
               </span>
             </div>
-            <h1 className="text-2xl sm:text-[1.75rem] font-bold tracking-tight text-white leading-tight">
+            <h1 className="text-2xl sm:text-[1.75rem] font-bold tracking-tight text-[#f1ece5] leading-tight">
               GeoSAT Content Hub
             </h1>
             <p className="mt-2 text-[13px] text-zinc-400 max-w-xl leading-relaxed">
@@ -148,7 +148,7 @@ export function AdminOverview({
             <button
               type="button"
               onClick={() => onNavigateTab("tree")}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-white bg-cyan-600 hover:bg-cyan-500 shadow-lg shadow-cyan-600/20 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-zinc-950 bg-[#f1ece5] hover:bg-[#e2dcce] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
             >
               <Layers className="w-3.5 h-3.5" />
               Mega-Menu &amp; Tree CMS
@@ -156,17 +156,17 @@ export function AdminOverview({
             <button
               type="button"
               onClick={() => onOpenAddModal("solution")}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-zinc-200 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-[#f1ece5] bg-[#f1ece5]/80 hover:bg-[#f1ece5] border border-zinc-800 hover:border-[#f1ece5]/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              <Plus className="w-3.5 h-3.5 text-cyan-400" />
+              <Plus className="w-3.5 h-3.5" />
               Add Solution
             </button>
             <button
               type="button"
               onClick={() => onOpenAddModal("product")}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-zinc-200 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] transition-all hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-[#f1ece5] bg-[#f1ece5]/80 hover:bg-[#f1ece5] border border-zinc-800 hover:border-[#f1ece5]/30 transition-all hover:-translate-y-0.5"
             >
-              <Plus className="w-3.5 h-3.5 text-indigo-400" />
+              <Plus className="w-3.5 h-3.5" />
               Add Product
             </button>
           </div>
@@ -182,13 +182,12 @@ export function AdminOverview({
               key={stat.title}
               type="button"
               onClick={() => onNavigateTab(stat.tab)}
-              className="group relative overflow-hidden rounded-xl border text-left p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 cursor-pointer"
-              style={{ background: stat.bg, borderColor: stat.border }}
+              className="group relative overflow-hidden rounded-xl border text-left p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer border-zinc-800 bg-[#f1ece5]/80 hover:bg-[#f1ece5] hover:border-zinc-700"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-[0.12em] truncate">{stat.title}</p>
-                  <p className="mt-2 text-3xl font-bold text-white tracking-tight">{stat.count}</p>
+                  <p className="mt-2 text-3xl font-bold text-zinc-950 tracking-tight">{stat.count}</p>
                   <p className="mt-1 text-[11px] text-zinc-500 truncate">{stat.sub}</p>
                 </div>
                 <div className="flex-shrink-0 mt-0.5 p-2 rounded-lg" style={{ background: `${stat.accent}15` }}>
@@ -211,10 +210,10 @@ export function AdminOverview({
           const Icon = bd.icon;
           const total = bd.items.reduce((s, i) => s + i.count, 0);
           return (
-            <div key={bd.label} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+            <div key={bd.label} className="rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Icon className="w-4 h-4" style={{ color: bd.color }} />
-                <h3 className="text-[12px] font-semibold text-zinc-300 uppercase tracking-[0.1em]">
+                <h3 className="text-[12px] font-semibold text-[#f1ece5] uppercase tracking-wider">
                   {bd.label} by Group
                 </h3>
               </div>
@@ -228,7 +227,7 @@ export function AdminOverview({
                       <li key={item.name}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-[11px] text-zinc-400 truncate max-w-[70%]">{item.name}</span>
-                          <span className="text-[11px] font-semibold text-white">{item.count}</span>
+                          <span className="text-[11px] font-semibold text-zinc-950">{item.count}</span>
                         </div>
                         <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">
                           <div
@@ -246,7 +245,7 @@ export function AdminOverview({
         })}
 
         {/* Quick actions */}
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <div className="rounded-xl border border-white/[0.06] bg-[#f1ece5]/50 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-amber-400" />
             <h3 className="text-[12px] font-semibold text-zinc-300 uppercase tracking-[0.1em]">Quick Actions</h3>
@@ -259,12 +258,12 @@ export function AdminOverview({
                   <button
                     type="button"
                     onClick={link.action}
-                    className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all hover:bg-white/[0.05]"
+                    className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all hover:bg-[#f1ece5]/80"
                   >
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md shrink-0" style={{ background: `${link.color}18` }}>
-                      <Icon className="w-3 h-3" style={{ color: link.color }} />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md shrink-0 border border-zinc-800 bg-[#f1ece5]/80">
+                      <Icon className="w-3 h-3 text-zinc-950" />
                     </div>
-                    <span className="text-[12px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">{link.label}</span>
+                    <span className="text-[12px] text-zinc-400 group-hover:text-[#f1ece5] transition-colors font-medium">{link.label}</span>
                     <ArrowRight className="ml-auto w-3 h-3 text-zinc-700 group-hover:text-zinc-400 transition-all group-hover:translate-x-0.5" />
                   </button>
                 </li>
@@ -275,13 +274,13 @@ export function AdminOverview({
       </div>
 
       {/* Recent orders table */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.015]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
+      <div className="rounded-xl border border-zinc-800 bg-[#f1ece5]/80">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
           <div className="flex items-center gap-2.5">
-            <Activity className="w-4 h-4 text-cyan-400" />
+            <Activity className="w-4 h-4 text-zinc-950" />
             <div>
-              <h2 className="text-[13px] font-semibold text-white">Recent Orders & Inquiries</h2>
-              <p className="text-[11px] text-zinc-600">Client requests and service orders</p>
+              <h2 className="text-[13px] font-semibold text-zinc-950">Recent Orders & Inquiries</h2>
+              <p className="text-[11px] text-zinc-400">Client requests and service orders</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">

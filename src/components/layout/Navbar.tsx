@@ -1,13 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
 import { cn, solutionSlug } from "@/lib/utils";
-import { Container } from "@/components/ui/Section";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem, NavigationTree } from "@/lib/tree-store";
 
 // ---------- types ----------
@@ -128,6 +126,58 @@ const INDUSTRY_ACCENTS = [
   },
 ] as const;
 
+const NAVBAR_TEXT_STYLE = {
+  fontFamily: '"Times New Roman", serif',
+  fontSize: "16px",
+  backgroundColor: "#FFFFFF",
+  color: "#000000",
+} as const;
+
+const NAV_LINK_TEXT_STYLE = {
+  fontFamily: '"knowledge-medium", sans-serif',
+  fontSize: "14px",
+  fontWeight: 500,
+  lineHeight: "20px",
+  color: "#212223",
+  marginRight: "4px",
+} as const;
+
+const DROPDOWN_ICON_STYLE = {
+  width: "13.33px",
+  height: "13.33px",
+  color: "#212223",
+} as const;
+
+const CTA_BUTTON_STYLE = {
+  fontFamily: '"knowledge-medium", sans-serif',
+  fontSize: "14px",
+  fontWeight: 500,
+  backgroundColor: "#00A884",
+  color: "#FFFFFF",
+  borderRadius: "20px",
+  padding: "10px 20px",
+} as const;
+
+const DROPDOWN_ITEM_STYLE = {
+  fontFamily: '"knowledge-regular", sans-serif',
+  fontSize: "16px",
+  lineHeight: "24px",
+  color: "#666666",
+  padding: "8px 0px",
+} as const;
+
+const DROPDOWN_GROUP_STYLE = {
+  fontFamily: '"knowledge-medium", sans-serif',
+  fontSize: "18px",
+  fontWeight: 500,
+  lineHeight: "1.2",
+  color: "#212223",
+  backgroundColor: "transparent",
+  border: "1px solid #212223",
+  borderRadius: "9999px",
+  padding: "6px 12px",
+} as const;
+
 // ---------- IndustryCardMenu ----------
 function IndustryCardMenu({ industries }: { industries: DynIndustry[] }) {
   const cols = industries.length <= 2 ? industries.length : industries.length <= 3 ? 3 : 4;
@@ -216,7 +266,12 @@ function TreeGroupColumn({
 }) {
   return (
     <div>
-      <p className="label mb-4 text-aqua/70">{column.title}</p>
+      <p
+        className="mb-4 inline-flex items-center"
+        style={DROPDOWN_GROUP_STYLE}
+      >
+        {column.title}
+      </p>
       <ul className="space-y-2.5">
         {column.items.map((item) => {
           // Resolve target URL
@@ -244,11 +299,15 @@ function TreeGroupColumn({
             <li key={item.id || item.title}>
               <a
                 href={href}
-                className="group inline-flex items-start gap-2 text-sm text-ink-2 transition-colors duration-200 hover:text-ink"
+                className="group inline-flex items-start gap-2 text-[#666666] transition-colors duration-200 hover:text-[#000000]"
+                style={{
+                  ...DROPDOWN_ITEM_STYLE,
+                  padding: "8px 0px",
+                }}
               >
                 <span
                   aria-hidden="true"
-                  className="mt-[0.5em] size-1 shrink-0 rounded-full bg-aqua/40 transition-colors duration-200 group-hover:bg-aqua"
+                  className="mt-[0.5em] size-1 shrink-0 rounded-full bg-[#000000]/40 transition-colors duration-200 group-hover:bg-[#000000]"
                 />
                 {item.title}
               </a>
@@ -350,105 +409,106 @@ export function Navbar() {
     (item.columns?.length ?? 0) > 0 ? false : active === item.href?.replace("#", "");
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-50" style={NAVBAR_TEXT_STYLE}>
       <div
         className={cn(
           "transition-[background-color,border-color,backdrop-filter] duration-300",
-          scrolled
-            ? "border-b border-line bg-abyss/72 backdrop-blur-xl backdrop-saturate-150"
-            : "border-b border-transparent",
+          scrolled ? "bg-white" : "bg-white",
         )}
+        style={{ border: "none" }}
       >
-        <Container className="flex h-[var(--nav-h)] items-center justify-between gap-6">
-          <div className="text-aqua transition-opacity duration-200 hover:opacity-90">
-            <Logo />
-          </div>
+        <div className="mx-auto w-full max-w-none px-8 sm:px-8 lg:px-[130.5px]">
+          <div className="flex h-[var(--nav-h)] items-center justify-between gap-6">
+            <div className="text-[#000000] transition-opacity duration-200 hover:opacity-90">
+              <Logo />
+            </div>
 
-          <nav className="hidden items-center lg:flex" aria-label="Primary">
-            {dynamicTabs.map((item, index) => {
-              const hasMenu = (item.columns && item.columns.length > 0) || item.label === "Industries";
-              const expandedState = openMenu === item.label;
+            <nav className="hidden items-center lg:flex" aria-label="Primary">
+              {dynamicTabs.map((item, index) => {
+                const hasMenu = (item.columns && item.columns.length > 0) || item.label === "Industries";
+                const expandedState = openMenu === item.label;
 
-              return (
-                <div
-                  key={item.id || item.label}
-                  className="relative"
-                  onMouseEnter={() => {
-                    cancelClose();
-                    setOpenMenu(hasMenu ? item.label : null);
-                  }}
-                  onMouseLeave={scheduleClose}
-                  onFocus={() => {
-                    cancelClose();
-                    setOpenMenu(hasMenu ? item.label : null);
-                  }}
-                  onBlur={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget)) setOpenMenu(null);
-                  }}
-                >
-                  {hasMenu ? (
-                    <button
-                      ref={(node) => {
-                        triggerRefs.current[index] = node;
-                      }}
-                      type="button"
-                      aria-expanded={expandedState}
-                      aria-controls={panelId}
-                      onClick={() => setOpenMenu(expandedState ? null : item.label)}
-                      className={cn(
-                        "flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm transition-colors duration-200",
-                        expandedState
-                          ? "bg-white/[0.06] text-ink"
-                          : "text-ink-2 hover:bg-white/[0.04] hover:text-ink",
-                      )}
-                    >
-                      {item.label}
-                      <ChevronDown
-                        className={cn("size-3.5 transition-transform duration-200", expandedState && "rotate-180")}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  ) : (
-                    <a
-                      href={item.href || `/${item.slug}`}
-                      className={cn(
-                        "relative flex h-9 items-center rounded-full px-3.5 text-sm transition-colors duration-200",
-                        isActive(item) ? "text-ink" : "text-ink-2 hover:text-ink",
-                      )}
-                    >
-                      {item.label}
-                      {isActive(item) ? (
-                        <motion.span
-                          layoutId="nav-active"
-                          className="absolute inset-x-3 -bottom-0.5 h-px bg-aqua"
-                          transition={reduced ? { duration: 0 } : { duration: 0.35 }}
+                return (
+                  <div
+                    key={item.id || item.label}
+                    className="relative inline-flex px-2"
+                    onMouseEnter={() => {
+                      cancelClose();
+                      setOpenMenu(hasMenu ? item.label : null);
+                    }}
+                    onMouseLeave={scheduleClose}
+                    onFocus={() => {
+                      cancelClose();
+                      setOpenMenu(hasMenu ? item.label : null);
+                    }}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget)) setOpenMenu(null);
+                    }}
+                  >
+                    {hasMenu ? (
+                      <button
+                        ref={(node) => {
+                          triggerRefs.current[index] = node;
+                        }}
+                        type="button"
+                        aria-expanded={expandedState}
+                        aria-controls={panelId}
+                        onClick={() => setOpenMenu(expandedState ? null : item.label)}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full text-[#212223] transition-colors duration-200",
+                          expandedState ? "bg-transparent text-[#000000]" : "hover:text-[#000000]",
+                        )}
+                      >
+                        <span style={NAV_LINK_TEXT_STYLE}>{item.label}</span>
+                        <ChevronDown
+                          className={cn("transition-transform duration-200", expandedState && "rotate-180")}
+                          style={DROPDOWN_ICON_STYLE}
+                          aria-hidden="true"
                         />
-                      ) : null}
-                    </a>
-                  )}
-                </div>
-              );
-            })}
-          </nav>
+                      </button>
+                    ) : (
+                      <a
+                        href={item.href || `/${item.slug}`}
+                        className={cn(
+                          "relative inline-flex items-center rounded-full text-[#212223] transition-colors duration-200 hover:text-[#000000]",
+                          isActive(item) ? "text-[#000000]" : "",
+                        )}
+                      >
+                        <span style={NAV_LINK_TEXT_STYLE}>{item.label}</span>
+                        {isActive(item) ? (
+                          <motion.span
+                            layoutId="nav-active"
+                            className="absolute inset-x-3 -bottom-0.5 h-px bg-[#000000]"
+                            transition={reduced ? { duration: 0 } : { duration: 0.35 }}
+                          />
+                        ) : null}
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
 
-          <div className="flex items-center gap-2">
-            <a
-              href="#contact"
-              className="hidden h-9 items-center rounded-full bg-aqua px-4 text-[0.8125rem] font-medium text-abyss shadow-[0_10px_30px_-14px_rgba(60,227,214,0.9)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-aqua-bright sm:inline-flex"
-            >
-              Request assessment
-            </a>
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="flex size-10 items-center justify-center rounded-full border border-line text-ink transition-colors duration-200 hover:border-line-strong hover:bg-white/[0.05] lg:hidden"
-              aria-label="Open menu"
-              aria-expanded={drawerOpen}
-            >
-              <Menu className="size-5" aria-hidden="true" />
-            </button>
+            <div className="flex items-center gap-2">
+              <a
+                href="#contact"
+                className="hidden items-center justify-center whitespace-nowrap text-center transition-[transform,background-color] duration-200 hover:-translate-y-0.5 sm:inline-flex"
+                style={CTA_BUTTON_STYLE}
+              >
+                Request assessment
+              </a>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="flex size-10 items-center justify-center rounded-full border border-[#E6E6E6] bg-white text-[#000000] lg:hidden"
+                aria-label="Open menu"
+                aria-expanded={drawerOpen}
+              >
+                <Menu className="size-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
-        </Container>
+        </div>
       </div>
 
       {/* Desktop mega menu */}
@@ -471,9 +531,10 @@ export function Navbar() {
                   transition={{ duration: reduced ? 0 : 0.22, ease: [0.16, 1, 0.3, 1] }}
                   onMouseEnter={cancelClose}
                   onMouseLeave={scheduleClose}
-                  className="absolute inset-x-0 top-[var(--nav-h)] hidden border-b border-line bg-abyss/92 backdrop-blur-2xl backdrop-saturate-150 lg:block"
+                  className="absolute inset-x-0 top-[var(--nav-h)] hidden bg-white text-[#000000] shadow-none lg:block"
+                  style={{ border: "none" }}
                 >
-                  <Container className="py-10">
+                  <div className="mx-auto w-full max-w-none px-8 sm:px-8 lg:px-[130.5px] py-10">
                     {isIndustriesCards ? (
                       <>
                         <IndustryCardMenu industries={dynData?.industries ?? []} />
@@ -520,7 +581,7 @@ export function Navbar() {
                         </div>
                       </>
                     )}
-                  </Container>
+                  </div>
                 </motion.div>
               );
             })()
@@ -541,16 +602,17 @@ export function Navbar() {
               type="button"
               aria-label="Close menu"
               onClick={() => setDrawerOpen(false)}
-              className="absolute inset-0 h-full w-full cursor-default bg-abyss/80 backdrop-blur-sm"
+              className="absolute inset-0 h-full w-full cursor-default bg-white/80 backdrop-blur-sm"
             />
             <motion.div
               initial={{ y: reduced ? 0 : "-100%" }}
               animate={{ y: 0 }}
               exit={{ y: reduced ? 0 : "-100%" }}
               transition={{ duration: reduced ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-x-0 top-0 max-h-[92dvh] overflow-y-auto border-b border-line bg-abyss pb-8"
+              className="absolute inset-x-0 top-0 max-h-[92dvh] overflow-y-auto bg-white pb-8"
+              style={{ border: "none" }}
             >
-              <Container className="pt-5">
+              <div className="mx-auto w-full max-w-none px-8 pt-5 sm:px-8">
                 <div className="flex h-[3.5rem] items-center justify-between">
                   <span className="text-aqua">
                     <Logo />
@@ -668,11 +730,12 @@ export function Navbar() {
                 <a
                   href="#contact"
                   onClick={() => setDrawerOpen(false)}
-                  className="mt-8 flex h-12 items-center justify-center rounded-full bg-aqua font-medium text-abyss"
+                  className="mt-8 flex h-12 items-center justify-center rounded-full font-medium"
+                  style={CTA_BUTTON_STYLE}
                 >
                   Request assessment
                 </a>
-              </Container>
+              </div>
             </motion.div>
           </motion.div>
         ) : null}

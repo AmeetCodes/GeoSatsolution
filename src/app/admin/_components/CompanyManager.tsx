@@ -168,7 +168,7 @@ export function CompanyManager({
           onClick={() => setSubTab("leadership")}
           className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${
             subTab === "leadership"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#f1ece5] text-zinc-950"
               : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
           }`}
         >
@@ -181,7 +181,7 @@ export function CompanyManager({
           onClick={() => setSubTab("partners")}
           className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${
             subTab === "partners"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#f1ece5] text-zinc-950"
               : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
           }`}
         >
@@ -194,7 +194,7 @@ export function CompanyManager({
           onClick={() => setSubTab("insights")}
           className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${
             subTab === "insights"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#f1ece5] text-zinc-950"
               : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
           }`}
         >
@@ -207,7 +207,7 @@ export function CompanyManager({
           onClick={() => setSubTab("careers")}
           className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${
             subTab === "careers"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#f1ece5] text-zinc-950"
               : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
           }`}
         >
@@ -229,7 +229,7 @@ export function CompanyManager({
                 setLeaderForm({ name: "", role: "", division: "", bio: "" });
                 setEditingLeader({ name: "", role: "", division: "", bio: "" });
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> Add Leader
             </button>
@@ -239,12 +239,12 @@ export function CompanyManager({
             {(company.Leadership || []).map((leader) => (
               <div
                 key={leader.name}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 flex flex-col justify-between"
+                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h4 className="text-sm font-bold text-white">{leader.name}</h4>
+                      <h4 className="text-sm font-bold text-zinc-950">{leader.name}</h4>
                       <p className="text-xs text-purple-400 font-medium">{leader.role}</p>
                       <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{leader.division}</p>
                     </div>
@@ -255,7 +255,7 @@ export function CompanyManager({
                           setLeaderForm(leader);
                           setEditingLeader(leader);
                         }}
-                        className="p-1 text-zinc-400 hover:text-white"
+                        className="p-1 text-zinc-400 hover:text-zinc-950"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -291,7 +291,7 @@ export function CompanyManager({
                 setPartnerForm({ id: "", name: "", category: "", tier: "", description: "" });
                 setEditingPartner({ id: "", name: "", category: "", tier: "", description: "" });
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> Add Partner
             </button>
@@ -301,12 +301,12 @@ export function CompanyManager({
             {(company.Partners || []).map((partner) => (
               <div
                 key={partner.name}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 flex flex-col justify-between"
+                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h4 className="text-sm font-bold text-white">{partner.name}</h4>
+                      <h4 className="text-sm font-bold text-zinc-950">{partner.name}</h4>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800/40">
                         {partner.tier}
                       </span>
@@ -319,7 +319,7 @@ export function CompanyManager({
                           setPartnerForm(partner);
                           setEditingPartner(partner);
                         }}
-                        className="p-1 text-zinc-400 hover:text-white"
+                        className="p-1 text-zinc-400 hover:text-zinc-950"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -369,7 +369,7 @@ export function CompanyManager({
                   body: [""],
                 });
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> Write Article
             </button>
@@ -379,7 +379,7 @@ export function CompanyManager({
             {(company.Insights || []).map((item) => (
               <div
                 key={item.slug}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 flex items-start justify-between gap-4"
+                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex items-start justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -391,7 +391,7 @@ export function CompanyManager({
                       {item.date}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                  <h4 className="text-sm font-bold text-zinc-950">{item.title}</h4>
                   <p className="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
                     {item.excerpt}
                   </p>
@@ -404,7 +404,7 @@ export function CompanyManager({
                       setNewsForm({ ...item });
                       setEditingNews({ ...item });
                     }}
-                    className="p-1.5 rounded bg-zinc-800 text-zinc-300 hover:text-white"
+                    className="p-1.5 rounded bg-zinc-800 text-zinc-300 hover:text-zinc-950"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
@@ -461,12 +461,12 @@ export function CompanyManager({
             {(company.Careers || []).map((job) => (
               <div
                 key={job.slug}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 flex flex-col justify-between"
+                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h4 className="text-sm font-bold text-white">{job.title}</h4>
+                      <h4 className="text-sm font-bold text-zinc-950">{job.title}</h4>
                       <p className="text-xs text-purple-400 font-medium">{job.category}</p>
                       <p className="text-[11px] text-zinc-500 flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3 h-3" />
@@ -480,7 +480,7 @@ export function CompanyManager({
                           setCareerForm({ ...job });
                           setEditingCareer({ ...job });
                         }}
-                        className="p-1 text-zinc-400 hover:text-white"
+                        className="p-1 text-zinc-400 hover:text-zinc-950"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -506,7 +506,7 @@ export function CompanyManager({
       {/* Leader Edit Modal */}
       {editingLeader && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white">
+          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white">
             <h3 className="text-base font-bold mb-4">Leader Profile</h3>
             <form onSubmit={handleSaveLeader} className="space-y-3">
               <div>
@@ -515,7 +515,7 @@ export function CompanyManager({
                   type="text"
                   value={leaderForm.name}
                   onChange={(e) => setLeaderForm({ ...leaderForm, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -525,7 +525,7 @@ export function CompanyManager({
                   type="text"
                   value={leaderForm.role}
                   onChange={(e) => setLeaderForm({ ...leaderForm, role: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -535,7 +535,7 @@ export function CompanyManager({
                   type="text"
                   value={leaderForm.division}
                   onChange={(e) => setLeaderForm({ ...leaderForm, division: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -545,7 +545,7 @@ export function CompanyManager({
                   rows={3}
                   value={leaderForm.bio}
                   onChange={(e) => setLeaderForm({ ...leaderForm, bio: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -553,13 +553,13 @@ export function CompanyManager({
                 <button
                   type="button"
                   onClick={() => setEditingLeader(null)}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-950"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-white"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-zinc-950"
                 >
                   Save Profile
                 </button>
@@ -572,7 +572,7 @@ export function CompanyManager({
       {/* Partner Edit Modal */}
       {editingPartner && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white">
+          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white">
             <h3 className="text-base font-bold mb-4">Partner Details</h3>
             <form onSubmit={handleSavePartner} className="space-y-3">
               <div>
@@ -581,7 +581,7 @@ export function CompanyManager({
                   type="text"
                   value={partnerForm.name}
                   onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -592,7 +592,7 @@ export function CompanyManager({
                   value={partnerForm.tier}
                   onChange={(e) => setPartnerForm({ ...partnerForm, tier: e.target.value })}
                   placeholder="e.g. Global Technology Partner"
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -603,7 +603,7 @@ export function CompanyManager({
                   value={partnerForm.category}
                   onChange={(e) => setPartnerForm({ ...partnerForm, category: e.target.value })}
                   placeholder="e.g. Satellite Imagery, Hardware"
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -613,7 +613,7 @@ export function CompanyManager({
                   rows={3}
                   value={partnerForm.description}
                   onChange={(e) => setPartnerForm({ ...partnerForm, description: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -621,13 +621,13 @@ export function CompanyManager({
                 <button
                   type="button"
                   onClick={() => setEditingPartner(null)}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-950"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-white"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950"
                 >
                   Save Partner
                 </button>
@@ -640,7 +640,7 @@ export function CompanyManager({
       {/* News Edit Modal */}
       {editingNews && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white">
+          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white">
             <h3 className="text-base font-bold mb-4">Article Editor</h3>
             <form onSubmit={handleSaveNews} className="space-y-3">
               <div>
@@ -649,7 +649,7 @@ export function CompanyManager({
                   type="text"
                   value={newsForm.title}
                   onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -660,7 +660,7 @@ export function CompanyManager({
                     type="text"
                     value={newsForm.category}
                     onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     required
                   />
                 </div>
@@ -670,7 +670,7 @@ export function CompanyManager({
                     type="date"
                     value={newsForm.date}
                     onChange={(e) => setNewsForm({ ...newsForm, date: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     required
                   />
                 </div>
@@ -681,7 +681,7 @@ export function CompanyManager({
                   rows={2}
                   value={newsForm.excerpt}
                   onChange={(e) => setNewsForm({ ...newsForm, excerpt: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -689,13 +689,13 @@ export function CompanyManager({
                 <button
                   type="button"
                   onClick={() => setEditingNews(null)}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-950"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-white"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-zinc-950"
                 >
                   Publish Article
                 </button>
@@ -708,7 +708,7 @@ export function CompanyManager({
       {/* Career Edit Modal */}
       {editingCareer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white">
+          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white">
             <h3 className="text-base font-bold mb-4">Job Role Posting</h3>
             <form onSubmit={handleSaveCareer} className="space-y-3">
               <div>
@@ -717,7 +717,7 @@ export function CompanyManager({
                   type="text"
                   value={careerForm.title}
                   onChange={(e) => setCareerForm({ ...careerForm, title: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -728,7 +728,7 @@ export function CompanyManager({
                     type="text"
                     value={careerForm.category}
                     onChange={(e) => setCareerForm({ ...careerForm, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     required
                   />
                 </div>
@@ -738,7 +738,7 @@ export function CompanyManager({
                     type="text"
                     value={careerForm.location}
                     onChange={(e) => setCareerForm({ ...careerForm, location: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     required
                   />
                 </div>
@@ -749,7 +749,7 @@ export function CompanyManager({
                   rows={2}
                   value={careerForm.summary}
                   onChange={(e) => setCareerForm({ ...careerForm, summary: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-zinc-950 border border-zinc-800 text-white"
+                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                   required
                 />
               </div>
@@ -757,13 +757,13 @@ export function CompanyManager({
                 <button
                   type="button"
                   onClick={() => setEditingCareer(null)}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-950"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-white"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-zinc-950"
                 >
                   Post Role
                 </button>

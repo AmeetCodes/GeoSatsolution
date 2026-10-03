@@ -162,7 +162,7 @@ export function SolutionsManager({
   return (
     <div className="space-y-6">
       {/* Controls & Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
@@ -171,7 +171,7 @@ export function SolutionsManager({
             placeholder="Search solutions by title, intro, or discipline..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
           />
         </div>
 
@@ -198,7 +198,7 @@ export function SolutionsManager({
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shrink-0 transition-colors shadow-md shadow-cyan-600/20"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold shrink-0 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Solution</span>
@@ -208,7 +208,7 @@ export function SolutionsManager({
       {/* Solutions List with SwipeRow & Detailed Cards */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="text-center py-16 rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30">
+          <div className="text-center py-16 rounded-xl border border-dashed border-zinc-800 bg-[#f1ece5]/30">
             <Layers className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
             <p className="text-sm text-zinc-400 font-medium">No solutions match your filter</p>
             <p className="text-xs text-zinc-500 mt-1">Try another search keyword or add a new solution.</p>
@@ -217,7 +217,7 @@ export function SolutionsManager({
           filtered.map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 hover:border-zinc-700 transition-all p-4"
+              className="rounded-xl border border-zinc-800/80 bg-[#f1ece5]/50 hover:border-zinc-700 transition-all p-4"
             >
               {/* SwipeRow wrapper enabling gesture actions */}
               <SwipeRow
@@ -258,7 +258,7 @@ export function SolutionsManager({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-white tracking-tight">
+                        <span className="text-sm font-semibold text-zinc-950 tracking-tight">
                           {item.title}
                         </span>
                         <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/50">
@@ -327,8 +327,8 @@ export function SolutionsManager({
       {/* Edit / Add Modal */}
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-white mb-1">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-zinc-950 mb-1">
               {isNew ? "Add New Solution" : `Edit "${editingItem.title}"`}
             </h3>
             <p className="text-xs text-zinc-400 mb-6">
@@ -345,7 +345,7 @@ export function SolutionsManager({
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="e.g. UAV LiDAR Survey"
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   required
                 />
               </div>
@@ -357,7 +357,7 @@ export function SolutionsManager({
                 <select
                   value={formGroup}
                   onChange={(e) => setFormGroup(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 >
                   <option value="Survey & Mapping">Survey & Mapping</option>
                   <option value="GIS & Data">GIS & Data</option>
@@ -375,7 +375,7 @@ export function SolutionsManager({
                   value={formIntro}
                   onChange={(e) => setFormIntro(e.target.value)}
                   placeholder="High-level introductory pitch rendered at the top of the solution page..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   required
                 />
               </div>
@@ -389,7 +389,7 @@ export function SolutionsManager({
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="Detailed explanation of methodology, sensors, and capabilities..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   required
                 />
               </div>
@@ -420,7 +420,7 @@ export function SolutionsManager({
                           setFormOutcomes(updated);
                         }}
                         placeholder={`Deliverable ${idx + 1}`}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       />
                       <button
                         type="button"
@@ -443,7 +443,7 @@ export function SolutionsManager({
                   Image Assets & Gallery (URL, Caption)
                 </label>
                 {formImages.map((img, idx) => (
-                  <div key={idx} className="p-3 mb-2 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
+                  <div key={idx} className="p-3 mb-2 rounded-lg bg-[#f1ece5] border border-zinc-800 space-y-2">
                     <input
                       type="text"
                       value={img.src}
@@ -453,7 +453,7 @@ export function SolutionsManager({
                         setFormImages(updated);
                       }}
                       placeholder="Image URL (e.g. Unsplash or hosted URL)"
-                      className="w-full px-3 py-1.5 text-xs rounded bg-zinc-900 border border-zinc-800 text-white"
+                      className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     />
                     <input
                       type="text"
@@ -464,7 +464,7 @@ export function SolutionsManager({
                         setFormImages(updated);
                       }}
                       placeholder="Image Caption"
-                      className="w-full px-3 py-1.5 text-xs rounded bg-zinc-900 border border-zinc-800 text-white"
+                      className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     />
                   </div>
                 ))}
@@ -474,13 +474,13 @@ export function SolutionsManager({
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-[#f1ece5] hover:bg-zinc-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-600/30 transition-all"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 transition-all"
                 >
                   Save Changes
                 </button>

@@ -158,7 +158,7 @@ export function ProductsManager({
   return (
     <div className="space-y-6">
       {/* Controls Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
@@ -167,7 +167,7 @@ export function ProductsManager({
             placeholder="Search products, equipment, software..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
@@ -194,7 +194,7 @@ export function ProductsManager({
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shrink-0 transition-colors shadow-md shadow-blue-600/20"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold shrink-0 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
@@ -204,7 +204,7 @@ export function ProductsManager({
       {/* Products list with SwipeRow */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="text-center py-16 rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30">
+          <div className="text-center py-16 rounded-xl border border-dashed border-zinc-800 bg-[#f1ece5]/30">
             <Box className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
             <p className="text-sm text-zinc-400 font-medium">No products found in this category</p>
             <p className="text-xs text-zinc-500 mt-1">Adjust your search or add a new equipment item.</p>
@@ -213,7 +213,7 @@ export function ProductsManager({
           filtered.map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 hover:border-zinc-700 transition-all p-4"
+              className="rounded-xl border border-zinc-800/80 bg-[#f1ece5]/50 hover:border-zinc-700 transition-all p-4"
             >
               <SwipeRow
                 actions={[
@@ -253,7 +253,7 @@ export function ProductsManager({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-white tracking-tight">
+                        <span className="text-sm font-semibold text-zinc-950 tracking-tight">
                           {item.title}
                         </span>
                         <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-800/50">
@@ -321,8 +321,8 @@ export function ProductsManager({
       {/* Edit / Add Modal */}
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-white mb-1">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-zinc-950 mb-1">
               {isNew ? "Add New Product" : `Edit "${editingItem.title}"`}
             </h3>
             <p className="text-xs text-zinc-400 mb-6">
@@ -339,7 +339,7 @@ export function ProductsManager({
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="e.g. GNSS Receivers or LiDAR Payloads"
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -351,7 +351,7 @@ export function ProductsManager({
                 <select
                   value={formGroup}
                   onChange={(e) => setFormGroup(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="UAV & Payloads">UAV & Payloads</option>
                   <option value="Survey Equipment">Survey Equipment</option>
@@ -369,7 +369,7 @@ export function ProductsManager({
                   value={formIntro}
                   onChange={(e) => setFormIntro(e.target.value)}
                   placeholder="Short introductory summary for equipment catalogue..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -383,7 +383,7 @@ export function ProductsManager({
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="Detailed engineering capabilities, sensor parameters, tolerances..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -414,7 +414,7 @@ export function ProductsManager({
                           setFormOutcomes(updated);
                         }}
                         placeholder={`Feature / Spec ${idx + 1}`}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -435,13 +435,13 @@ export function ProductsManager({
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-[#f1ece5] hover:bg-zinc-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition-all"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 transition-all"
                 >
                   Save Product
                 </button>

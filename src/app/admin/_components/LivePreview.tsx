@@ -30,10 +30,10 @@ export function LivePreview({ content }: LivePreviewProps) {
   return (
     <div className="space-y-6">
       {/* Top Banner & View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4">
         <div>
-          <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
+          <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-[#f1ece5] animate-ping" />
             Live Component & Page Simulator
           </h2>
           <p className="text-xs text-zinc-400 mt-0.5">
@@ -46,7 +46,7 @@ export function LivePreview({ content }: LivePreviewProps) {
             type="button"
             onClick={() => setView("solutions")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "solutions" ? "bg-cyan-500 text-zinc-950 font-bold" : "bg-zinc-800 text-zinc-300"
+              view === "solutions" ? "bg-[#f1ece5] text-zinc-950 font-semibold" : "bg-[#f1ece5]/80 text-zinc-300 border border-zinc-800"
             }`}
           >
             Solutions View
@@ -55,7 +55,7 @@ export function LivePreview({ content }: LivePreviewProps) {
             type="button"
             onClick={() => setView("products")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "products" ? "bg-blue-600 text-white font-bold" : "bg-zinc-800 text-zinc-300"
+              view === "products" ? "bg-[#f1ece5] text-zinc-950 font-semibold" : "bg-[#f1ece5]/80 text-zinc-300 border border-zinc-800"
             }`}
           >
             Products View
@@ -64,7 +64,7 @@ export function LivePreview({ content }: LivePreviewProps) {
             type="button"
             onClick={() => setView("industries")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "industries" ? "bg-emerald-600 text-white font-bold" : "bg-zinc-800 text-zinc-300"
+              view === "industries" ? "bg-[#f1ece5] text-zinc-950 font-semibold" : "bg-[#f1ece5]/80 text-zinc-300 border border-zinc-800"
             }`}
           >
             Industries View
@@ -73,7 +73,7 @@ export function LivePreview({ content }: LivePreviewProps) {
             type="button"
             onClick={() => setView("company")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "company" ? "bg-purple-600 text-white font-bold" : "bg-zinc-800 text-zinc-300"
+              view === "company" ? "bg-[#f1ece5] text-zinc-950 font-semibold" : "bg-[#f1ece5]/80 text-zinc-300 border border-zinc-800"
             }`}
           >
             Company View
@@ -114,7 +114,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                   className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap border transition-all ${
                     activeSolution.title === sol.title
                       ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"
-                      : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                      : "bg-[#f1ece5] text-zinc-400 border-zinc-800 hover:border-zinc-700"
                   }`}
                 >
                   {sol.title}
@@ -129,7 +129,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                   {activeSolution.group || "Survey & Mapping"} · GeoSAT Capability
                 </span>
 
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#f1ece5] leading-tight">
                   {activeSolution.title}
                 </h1>
 
@@ -150,7 +150,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                     {activeSolution.outcomes?.map((out, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-2.5 p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/80 text-xs text-zinc-200"
+                        className="flex items-center gap-2.5 p-3 rounded-lg bg-[#f1ece5]/80 border border-zinc-800/80 text-xs text-zinc-200"
                       >
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-400">
                           <Check className="w-3 h-3" />
@@ -164,7 +164,7 @@ export function LivePreview({ content }: LivePreviewProps) {
 
               {/* Gallery Image */}
               <div className="lg:col-span-5 space-y-3">
-                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 aspect-video relative group">
+                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-[#f1ece5] aspect-video relative group">
                   <img
                     src={
                       activeSolution.images?.[0]?.src ||
@@ -194,7 +194,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                   className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap border transition-all ${
                     activeProduct.title === prod.title
                       ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                      : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                      : "bg-[#f1ece5] text-zinc-400 border-zinc-800 hover:border-zinc-700"
                   }`}
                 >
                   {prod.title}
@@ -208,7 +208,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                   {activeProduct.group} · Hardware & Software
                 </span>
 
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#f1ece5] leading-tight">
                   {activeProduct.title}
                 </h1>
 
@@ -228,7 +228,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                     {activeProduct.outcomes?.map((out, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-2.5 p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/80 text-xs text-zinc-200"
+                        className="flex items-center gap-2.5 p-3 rounded-lg bg-[#f1ece5]/80 border border-zinc-800/80 text-xs text-zinc-200"
                       >
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
                           <Check className="w-3 h-3" />
@@ -241,7 +241,7 @@ export function LivePreview({ content }: LivePreviewProps) {
               </div>
 
               <div className="lg:col-span-5 space-y-3">
-                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 aspect-video relative group">
+                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-[#f1ece5] aspect-video relative group">
                   <img
                     src={
                       activeProduct.images?.[0]?.src ||
@@ -266,13 +266,13 @@ export function LivePreview({ content }: LivePreviewProps) {
             {content.Industries.map((ind) => (
               <div
                 key={ind.title}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 flex flex-col justify-between"
+                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/40 p-6 flex flex-col justify-between"
               >
                 <div>
                   <span className="text-xs uppercase font-bold tracking-wider text-emerald-400">
                     Industry Sector
                   </span>
-                  <h3 className="text-2xl font-bold text-white mt-1 mb-2">
+                  <h3 className="text-2xl font-bold text-zinc-950 mt-1 mb-2">
                     {ind.title}
                   </h3>
                   <p className="text-sm text-zinc-300 mb-3 font-medium">
@@ -304,16 +304,16 @@ export function LivePreview({ content }: LivePreviewProps) {
         {view === "company" && (
           <div className="space-y-8">
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="text-xl font-bold text-zinc-950 mb-4">
                 Executive Leadership
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(content.Company?.Leadership || []).map((leader) => (
                   <div
                     key={leader.name}
-                    className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50"
+                    className="p-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/50"
                   >
-                    <h4 className="text-base font-bold text-white">{leader.name}</h4>
+                    <h4 className="text-base font-bold text-zinc-950">{leader.name}</h4>
                     <p className="text-xs text-purple-400 font-medium mb-1">{leader.role}</p>
                     <p className="text-xs text-zinc-400 leading-relaxed">{leader.bio}</p>
                   </div>
@@ -322,16 +322,16 @@ export function LivePreview({ content }: LivePreviewProps) {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="text-xl font-bold text-zinc-950 mb-4">
                 Technology Partners
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(content.Company?.Partners || []).map((partner) => (
                   <div
                     key={partner.name}
-                    className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50"
+                    className="p-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/50"
                   >
-                    <h4 className="text-base font-bold text-white">{partner.name}</h4>
+                    <h4 className="text-base font-bold text-zinc-950">{partner.name}</h4>
                     <span className="text-xs text-purple-400 font-medium">{partner.tier}</span>
                     <p className="text-xs text-zinc-400 mt-1">{partner.description}</p>
                   </div>

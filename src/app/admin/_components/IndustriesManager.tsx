@@ -103,9 +103,9 @@ export function IndustriesManager({
   return (
     <div className="space-y-6">
       {/* Top action header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4">
         <div>
-          <h2 className="text-sm font-semibold text-white">Target Industry Sectors</h2>
+          <h2 className="text-sm font-semibold text-zinc-950">Target Industry Sectors</h2>
           <p className="text-xs text-zinc-400 mt-0.5">
             Manage industry-specific offerings, domain applications, and focus areas.
           </p>
@@ -114,7 +114,7 @@ export function IndustriesManager({
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shrink-0 transition-colors shadow-md shadow-emerald-600/20"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#f1ece5] px-3 py-2 text-sm font-medium text-zinc-950 transition-all hover:bg-[#e2dcce]"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Sector</span>
@@ -126,7 +126,7 @@ export function IndustriesManager({
         {industries.map((ind) => (
           <div
             key={ind.title}
-            className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 hover:border-zinc-700 transition-all"
+            className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-5 hover:border-zinc-700 transition-all"
           >
             <div>
               <div className="flex items-start justify-between gap-3 mb-3">
@@ -135,7 +135,7 @@ export function IndustriesManager({
                     <Building2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white tracking-tight">
+                    <h3 className="text-sm font-bold text-zinc-950 tracking-tight">
                       {ind.title}
                     </h3>
                     <span className="text-[10px] text-zinc-500">
@@ -195,8 +195,8 @@ export function IndustriesManager({
       {/* Edit / Add Modal */}
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-white mb-1">
+          <div className="relative w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-[#f1ece5] my-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-zinc-950 mb-1">
               {isNew ? "Add Industry Sector" : `Edit "${editingItem.title}"`}
             </h3>
             <p className="text-xs text-zinc-400 mb-6">
@@ -213,7 +213,7 @@ export function IndustriesManager({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Infrastructure, Natural Resources"
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   required
                 />
               </div>
@@ -227,7 +227,7 @@ export function IndustriesManager({
                   value={intro}
                   onChange={(e) => setIntro(e.target.value)}
                   placeholder="Key value proposition for this industry..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   required
                 />
               </div>
@@ -241,7 +241,7 @@ export function IndustriesManager({
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
                   placeholder="Detailed narrative describing our impact and case studies..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   required
                 />
               </div>
@@ -272,7 +272,7 @@ export function IndustriesManager({
                           setItems(updated);
                         }}
                         placeholder={`Application ${idx + 1}`}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-emerald-500"
                       />
                       <button
                         type="button"
@@ -293,13 +293,13 @@ export function IndustriesManager({
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-[#f1ece5] hover:bg-zinc-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition-all"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-[#f1ece5] shadow-md shadow-emerald-600/30 transition-all"
                 >
                   Save Sector
                 </button>

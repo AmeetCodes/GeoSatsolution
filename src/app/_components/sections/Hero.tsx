@@ -1,38 +1,9 @@
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Section";
-import { Reveal, RevealItem } from "@/components/ui/Reveal";
-import { HeroGlobe } from "../three/HeroGlobe";
+import { Reveal } from "@/components/ui/Reveal";
 import { CREDENTIALS, HERO } from "@/lib/content";
-import { cn } from "@/lib/utils";
-
-/** Reference configuration for the instrument panel beside the globe. */
-const SENSOR_PROFILE = [
-  { key: "Platform", value: "UAV LiDAR" },
-  { key: "Datum", value: "WGS 84 · UTM" },
-  { key: "Density", value: "18 pts/m²" },
-  { key: "Vertical RMSE", value: "±2 cm" },
-  { key: "Output", value: "LAS · LAZ · DTM" },
-];
-
-function SensorProfile() {
-  return (
-    <div className="glass w-[15.5rem] rounded-[var(--radius-card)] p-4">
-      <div className="flex items-center justify-between">
-        <p className="label">Reference config</p>
-        <span className="size-1.5 rounded-full bg-aqua shadow-[0_0_8px_rgba(60,227,214,0.9)]" />
-      </div>
-      <dl className="mt-4 space-y-2.5">
-        {SENSOR_PROFILE.map((row) => (
-          <div key={row.key} className="flex items-baseline justify-between gap-4">
-            <dt className="text-[0.6875rem] text-ink-3">{row.key}</dt>
-            <dd className="font-mono text-[0.6875rem] text-ink tabular">{row.value}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  );
-}
+import { Globe3DDemo } from "@/components/3d-globe-demo";
 
 export function Hero() {
   return (
@@ -45,20 +16,11 @@ export function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 blueprint [mask-image:linear-gradient(to_bottom,black,transparent_78%)]"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[38rem] bg-[radial-gradient(ellipse_60%_100%_at_78%_22%,rgba(60,227,214,0.09),transparent_70%)]"
-      />
 
-      {/*
-        One globe, repositioned at the lg breakpoint. Rendering two instances
-        would spin up a second WebGL context and leave a zero-sized canvas
-        burning a render loop.
-      */}
-      <HeroGlobe className="left-1/2 top-[2%] h-[62svh] w-[155vw] max-w-none -translate-x-1/2 opacity-60 [mask-image:radial-gradient(ellipse_46%_50%_at_50%_46%,black,transparent_72%)] lg:left-auto lg:right-[-13%] lg:top-1/2 lg:h-[min(92svh,52rem)] lg:w-[min(58vw,52rem)] lg:-translate-x-0 lg:-translate-y-1/2 lg:opacity-100 lg:[mask-image:none] xl:right-[-9%]" />
-
-      <div className="pointer-events-none absolute bottom-[19%] right-[6%] z-10 hidden xl:block">
-        <SensorProfile />
+      <div className="pointer-events-none absolute inset-y-0 right-[-4%] z-0 hidden w-[58vw] items-center justify-center lg:flex">
+        <div className="w-full max-w-5xl [&_canvas]:!pointer-events-auto">
+          <Globe3DDemo />
+        </div>
       </div>
 
       <Container className="relative flex min-h-[calc(100svh-var(--nav-h)-6rem)] flex-col justify-center">
