@@ -70,7 +70,10 @@ export function AdminDashboard({
         body: JSON.stringify({ section, data }),
       });
 
-      if (!res.ok) throw new Error("Failed to save changes");
+      if (!res.ok) {
+        const resData = await res.json().catch(() => null);
+        throw new Error(resData?.message || "Failed to save changes");
+      }
       setContent((prev) => ({ ...prev, [section]: data }));
       setSavedRecently(true);
       if (savedTimer.current) clearTimeout(savedTimer.current);

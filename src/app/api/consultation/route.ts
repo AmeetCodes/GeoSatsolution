@@ -1,19 +1,12 @@
 import nodemailer from "nodemailer";
 import { getSiteContent } from "@/lib/data-store";
+import { createConsultationSchema } from "@/lib/validations/consultation.schema";
 
 export const runtime = "nodejs";
 
 const MAX_REQUEST_BYTES = 12_000;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type ConsultationPayload = {
-  name?: unknown;
-  organisation?: unknown;
-  email?: unknown;
-  phone?: unknown;
-  interest?: unknown;
-  otherInterest?: unknown;
-  details?: unknown;
   website?: unknown;
 };
 
@@ -66,21 +59,15 @@ export async function POST(request: Request) {
     return Response.json({ ok: true });
   }
 
-  const name = asText(payload.name, 120);
-  const organisation = asText(payload.organisation, 160);
-  const email = asText(payload.email, 254);
-  const phone = asText(payload.phone, 60);
-  const interest = asText(payload.interest, 120);
-  const otherInterest = asText(payload.otherInterest, 160);
-  const details = asText(payload.details, 3000);
-  const interestLabel = interest === "Other" ? otherInterest : interest;
+  const validSolutionNames = getSiteContent().Solutions.map((s: { title: string }) => s.title);
+  const parsed = createConsultationSchema(validSolutionNames).safeParse(parsedBody);
 
-  if (name.length < 2) return invalidRequest("Enter your full name.");
-  if (!EMAIL_PATTERN.test(email) || /[\r\n]/.test(email)) return invalidRequest("Enter a valid email address.");
-  const validSolutionNames = new Set(getSiteContent().Solutions.map((s: { title: string }) => s.title));
-  if (!validSolutionNames.has(interest) && interest !== "Other") return invalidRequest("Choose a valid area of interest.");
-  if (interest === "Other" && otherInterest.length < 2) return invalidRequest("Tell us what service you need.");
-  if (details.length < 12) return invalidRequest("Add a few details so our team can prepare.");
+  if (!parsed.success) {
+    return invalidRequest(parsed.error.issues[0]?.message ?? "Please check the form and try again.");
+  }
+
+  const { name, organisation, email, phone, interest, otherInterest, details } = parsed.data;
+  const interestLabel = interest === "Other" ? otherInterest : interest;
 
   const recipient = process.env.GMAIL_CONSULT_USER;
   const password = process.env.GMAIL_CONSULT_APP_PASSWORD?.replace(/\s/g, "");

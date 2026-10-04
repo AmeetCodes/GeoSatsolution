@@ -5,17 +5,27 @@ import {
   createSessionToken,
   verifySessionToken,
 } from "@/app/admin/_lib/admin-auth";
+import { adminLoginSchema } from "@/lib/validations/auth.schema";
+import { validationErrorResponse } from "@/lib/validations/utils";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, rememberMe } = await req.json();
-
-    if (!email || !password) {
+    let rawBody: unknown;
+    try {
+      rawBody = await req.json();
+    } catch {
       return NextResponse.json(
         { success: false, message: "Email and password are required" },
         { status: 400 }
       );
     }
+
+    const parsed = adminLoginSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return validationErrorResponse(parsed.error, "Email and password are required");
+    }
+
+    const { email, password, rememberMe } = parsed.data;
 
     const isValid = validateAdminCredentials(email, password);
 

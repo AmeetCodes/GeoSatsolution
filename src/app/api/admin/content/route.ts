@@ -6,8 +6,13 @@ import {
   getSiteContent,
   saveSiteContent,
   DEFAULT_SITE_CONTENT,
-  type SiteContentData,
 } from "@/lib/data-store";
+import {
+  adminContentRequestSchema,
+  siteContentSchema,
+  siteContentSectionPayloadSchemas,
+} from "@/lib/validations/content.schema";
+import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
 
 function refreshContentPaths() {
   revalidatePath("/", "layout");
@@ -62,10 +67,23 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { action, section, data } = body;
+    let rawBody: unknown;
+    try {
+      rawBody = await req.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Invalid JSON payload" },
+        { status: 400 }
+      );
+    }
 
-    // Reset action
+    const parsed = adminContentRequestSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return validationErrorResponse(parsed.error, "Content payload is invalid");
+    }
+
+    const { action, section, data } = parsed.data;
+
     if (action === "reset") {
       saveSiteContent(DEFAULT_SITE_CONTENT);
       refreshContentPaths();
@@ -76,36 +94,43 @@ export async function POST(req: Request) {
       });
     }
 
-    const currentContent = getSiteContent();
-
     if (action === "update-all") {
-      if (!data) {
-        return NextResponse.json({ success: false, message: "Missing data" }, { status: 400 });
-      }
-      saveSiteContent(data as SiteContentData);
+      const parsedData = parsePayload(siteContentSchema, data, "Content payload is invalid");
+      if (!parsedData.ok) return parsedData.response;
+
+      saveSiteContent(parsedData.data);
       refreshContentPaths();
       return NextResponse.json({
         success: true,
         message: "Full site content saved successfully",
-        data,
+        data: parsedData.data,
       });
     }
 
-    if (section && section in currentContent) {
-      (currentContent as any)[section] = data;
-      saveSiteContent(currentContent);
-      refreshContentPaths();
-      return NextResponse.json({
-        success: true,
-        message: `${section} updated successfully`,
-        data: (currentContent as any)[section],
-      });
+    if (!section) {
+      return NextResponse.json(
+        { success: false, message: "Content payload is invalid" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(
-      { success: false, message: "Invalid section or action" },
-      { status: 400 }
+    const parsedData = parsePayload(
+      siteContentSectionPayloadSchemas[section],
+      data,
+      "Content payload is invalid",
     );
+    if (!parsedData.ok) return parsedData.response;
+
+    const currentContent = getSiteContent();
+    (currentContent as unknown as Record<string, unknown>)[section] = parsedData.data;
+    saveSiteContent(currentContent);
+    refreshContentPaths();
+
+    return NextResponse.json({
+      success: true,
+      message: `${section} updated successfully`,
+      data: parsedData.data,
+    });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error?.message || "Failed to update content" },

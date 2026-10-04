@@ -12,6 +12,17 @@ import {
   slugify,
 } from "@/lib/tree-store";
 import { removeTreeItemFromSiteContent, syncTreeItemWithSiteContent } from "@/lib/data-store";
+import {
+  columnPayloadSchema,
+  itemPayloadSchema,
+  navigationTreeSchema,
+  reorderColumnsPayloadSchema,
+  reorderItemsPayloadSchema,
+  reorderTabsPayloadSchema,
+  tabPayloadSchema,
+  treeRequestSchema,
+} from "@/lib/validations/navigation.schema";
+import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -31,8 +42,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { action, tree, tabId, columnId, itemId, payload } = body;
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      return NextResponse.json({ success: false, message: "Invalid JSON payload" }, { status: 400 });
+    }
+
+    const parsedRequest = treeRequestSchema.safeParse(rawBody);
+    if (!parsedRequest.success) {
+      return validationErrorResponse(parsedRequest.error, "Navigation payload is invalid");
+    }
+
+    const { action, tree, tabId, columnId, itemId, payload } = parsedRequest.data;
 
     // Action 1: Reset to factory default
     if (action === "reset") {
@@ -46,13 +68,16 @@ export async function POST(request: Request) {
     }
 
     // Action 2: Save entire tree directly
-    if (action === "saveTree" && tree) {
-      saveNavigationTree(tree);
+    if (action === "saveTree") {
+      const parsedTree = parsePayload(navigationTreeSchema, tree, "Navigation tree is invalid");
+      if (!parsedTree.ok) return parsedTree.response;
+
+      saveNavigationTree(parsedTree.data);
       revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
         message: "Navigation tree saved successfully",
-        data: tree,
+        data: parsedTree.data,
       });
     }
 
@@ -60,8 +85,17 @@ export async function POST(request: Request) {
 
     // Action 3: Add new Level 1 Tab
     if (action === "addTab") {
-      const { label, href, footerNote, catalogueCta } = payload;
+      const parsedPayload = parsePayload(tabPayloadSchema, payload, "Tab payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      const { label, href, footerNote, catalogueCta } = parsedPayload.data;
       const id = slugify(label);
+      if (currentTree.tabs.some((existing) => existing.id === id)) {
+        return NextResponse.json(
+          { success: false, message: `A tab named "${label}" already exists` },
+          { status: 409 }
+        );
+      }
       const newTab: NavTreeTab = {
         id,
         label,
@@ -80,20 +114,26 @@ export async function POST(request: Request) {
     }
 
     // Action 4: Edit Level 1 Tab
-    if (action === "editTab" && tabId) {
+    if (action === "editTab") {
+      if (!tabId) return NextResponse.json({ success: false, message: "Tab id is required" }, { status: 400 });
       const tab = currentTree.tabs.find((t) => t.id === tabId);
       if (!tab) return NextResponse.json({ success: false, message: "Tab not found" }, { status: 404 });
-      if (payload.label) tab.label = payload.label;
-      if (payload.href !== undefined) tab.href = payload.href;
-      if (payload.footerNote !== undefined) tab.footerNote = payload.footerNote;
-      if (payload.catalogueCta !== undefined) tab.catalogueCta = payload.catalogueCta;
+      const parsedPayload = parsePayload(tabPayloadSchema, payload, "Tab payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      const { label, href, footerNote, catalogueCta } = parsedPayload.data;
+      tab.label = label;
+      tab.href = href;
+      tab.footerNote = footerNote;
+      tab.catalogueCta = catalogueCta;
       saveNavigationTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Updated tab "${tab.label}"`, data: currentTree });
     }
 
     // Action 5: Delete Level 1 Tab
-    if (action === "deleteTab" && tabId) {
+    if (action === "deleteTab") {
+      if (!tabId) return NextResponse.json({ success: false, message: "Tab id is required" }, { status: 400 });
       currentTree.tabs = currentTree.tabs.filter((t) => t.id !== tabId);
       saveNavigationTree(currentTree);
       revalidatePath("/", "layout");
@@ -101,10 +141,13 @@ export async function POST(request: Request) {
     }
 
     // Action 6: Reorder Tabs
-    if (action === "reorderTabs" && Array.isArray(payload.tabIds)) {
+    if (action === "reorderTabs") {
+      const parsedPayload = parsePayload(reorderTabsPayloadSchema, payload, "Tab order payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
       const tabMap = new Map(currentTree.tabs.map((t) => [t.id, t]));
       const reordered: NavTreeTab[] = [];
-      payload.tabIds.forEach((id: string, index: number) => {
+      parsedPayload.data.tabIds.forEach((id: string, index: number) => {
         const tab = tabMap.get(id);
         if (tab) {
           tab.order = index + 1;
@@ -128,8 +171,17 @@ export async function POST(request: Request) {
 
     // Action 7: Add Column to Tab
     if (action === "addColumn" && targetTab) {
-      const { title } = payload;
+      const parsedPayload = parsePayload(columnPayloadSchema, payload, "Column payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      const { title } = parsedPayload.data;
       const slug = slugify(title);
+      if (targetTab.columns.some((existing) => existing.slug === slug)) {
+        return NextResponse.json(
+          { success: false, message: `A column named "${title}" already exists in this tab` },
+          { status: 409 }
+        );
+      }
       const newCol: NavTreeColumn = {
         id: `col-${slug}-${Date.now().toString().slice(-4)}`,
         title,
@@ -147,10 +199,11 @@ export async function POST(request: Request) {
     if (action === "editColumn" && targetTab && columnId) {
       const col = targetTab.columns.find((c) => c.id === columnId);
       if (!col) return NextResponse.json({ success: false, message: "Column not found" }, { status: 404 });
-      if (payload.title) {
-        col.title = payload.title;
-        col.slug = slugify(payload.title);
-      }
+      const parsedPayload = parsePayload(columnPayloadSchema, payload, "Column payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      col.title = parsedPayload.data.title;
+      col.slug = slugify(parsedPayload.data.title);
       saveNavigationTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Updated column "${col.title}"`, data: currentTree });
@@ -165,10 +218,17 @@ export async function POST(request: Request) {
     }
 
     // Action 10: Reorder Columns within Tab
-    if (action === "reorderColumns" && targetTab && Array.isArray(payload.columnIds)) {
+    if (action === "reorderColumns" && targetTab) {
+      const parsedPayload = parsePayload(
+        reorderColumnsPayloadSchema,
+        payload,
+        "Column order payload is invalid"
+      );
+      if (!parsedPayload.ok) return parsedPayload.response;
+
       const colMap = new Map(targetTab.columns.map((c) => [c.id, c]));
       const reordered: NavTreeColumn[] = [];
-      payload.columnIds.forEach((id: string, index: number) => {
+      parsedPayload.data.columnIds.forEach((id: string, index: number) => {
         const col = colMap.get(id);
         if (col) {
           col.order = index + 1;
@@ -191,8 +251,17 @@ export async function POST(request: Request) {
 
     // Action 11: Add Item to Column
     if (action === "addItem" && targetTab && targetColumn) {
-      const { title, intro, description, outcomes, href } = payload;
+      const parsedPayload = parsePayload(itemPayloadSchema, payload, "Item payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      const { title, intro, description, outcomes, href } = parsedPayload.data;
       const slug = slugify(title);
+      if (targetColumn.items.some((existing) => existing.slug === slug)) {
+        return NextResponse.json(
+          { success: false, message: `An item named "${title}" already exists in this column` },
+          { status: 409 }
+        );
+      }
       const generatedHref = href || `/${targetTab.slug}/${slug}`;
       const newItem: NavTreeItem = {
         id: `item-${slug}-${Date.now().toString().slice(-4)}`,
@@ -200,9 +269,9 @@ export async function POST(request: Request) {
         slug,
         href: generatedHref,
         order: targetColumn.items.length + 1,
-        intro: intro || "",
-        description: description || "",
-        outcomes: outcomes || [],
+        intro,
+        description,
+        outcomes,
       };
       targetColumn.items.push(newItem);
       saveNavigationTree(currentTree);
@@ -218,17 +287,19 @@ export async function POST(request: Request) {
     if (action === "editItem" && targetTab && targetColumn && itemId) {
       const item = targetColumn.items.find((i) => i.id === itemId);
       if (!item) return NextResponse.json({ success: false, message: "Item not found" }, { status: 404 });
+      const parsedPayload = parsePayload(itemPayloadSchema, payload, "Item payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
+      const { title, href, intro, description, outcomes, images, metadata } = parsedPayload.data;
       const oldHref = item.href;
-      if (payload.title) {
-        item.title = payload.title;
-        item.slug = slugify(payload.title);
-      }
-      if (payload.href !== undefined) item.href = payload.href;
-      if (payload.intro !== undefined) item.intro = payload.intro;
-      if (payload.description !== undefined) item.description = payload.description;
-      if (payload.outcomes !== undefined) item.outcomes = payload.outcomes;
-      if (payload.images !== undefined) item.images = payload.images;
-      if (payload.metadata !== undefined) item.metadata = payload.metadata;
+      item.title = title;
+      item.slug = slugify(title);
+      if (href !== undefined) item.href = href;
+      item.intro = intro;
+      item.description = description;
+      item.outcomes = outcomes;
+      if (images !== undefined) item.images = images;
+      if (metadata !== undefined) item.metadata = metadata;
       saveNavigationTree(currentTree);
       syncTreeItemWithSiteContent(targetTab, targetColumn, item);
       // Revalidate both the old and new paths to clear stale cached responses.
@@ -252,10 +323,13 @@ export async function POST(request: Request) {
     }
 
     // Action 14: Reorder Items within Column
-    if (action === "reorderItems" && targetTab && targetColumn && Array.isArray(payload.itemIds)) {
+    if (action === "reorderItems" && targetTab && targetColumn) {
+      const parsedPayload = parsePayload(reorderItemsPayloadSchema, payload, "Item order payload is invalid");
+      if (!parsedPayload.ok) return parsedPayload.response;
+
       const itemMap = new Map(targetColumn.items.map((i) => [i.id, i]));
       const reordered: NavTreeItem[] = [];
-      payload.itemIds.forEach((id: string, index: number) => {
+      parsedPayload.data.itemIds.forEach((id: string, index: number) => {
         const item = itemMap.get(id);
         if (item) {
           item.order = index + 1;
