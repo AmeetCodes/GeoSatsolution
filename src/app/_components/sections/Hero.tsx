@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { CREDENTIALS, HERO } from "@/lib/content";
 import { Globe3DDemo } from "@/components/3d-globe-demo";
+import { Highlighter } from "@/components/ui/highlighter"
 
 import Text3DFlip from "@/components/ui/text-3d-flip";
 
@@ -76,7 +77,21 @@ export function Hero() {
   </h1>
 </Reveal>
 
-      {/* CTA Buttons */}
+<p className="font-['Roboto',sans-serif] text-slate-900 text-lg sm:text-xl font-normal leading-relaxed mt-6 max-w-xl">
+  We equip surveying professionals with{" "}
+  <span className="underline decoration-[#FF9800] decoration-2 underline-offset-4 font-medium">
+    enterprise-grade positioning hardware
+  </span>
+  ,{" "}
+  <span className="underline decoration-[#FF9800] decoration-2 underline-offset-4 font-medium">
+    real-time GIS monitoring
+  </span>
+  , and ISO-certified instruments to{" "}
+  <span className="bg-[#E0F2FE] text-[#0369A1] px-2 py-0.5 rounded-md font-medium inline-block my-0.5">
+    guarantee millimeter precision
+  </span>{" "}
+  on every job site.
+</p>      {/* CTA Buttons */}
       <Reveal delay={0.18}>
         <div className="mt-9 flex flex-wrap items-center gap-3">
           <Button href="#contact" size="lg" trailingIcon>

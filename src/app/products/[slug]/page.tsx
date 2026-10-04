@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton";
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
@@ -121,6 +122,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p className="max-w-60 text-xs leading-relaxed text-ink-3">
                   Talk directly with our equipment team to request quote and specs.
                 </p>
+              </div>
+              <div className="mt-6">
+                <DownloadResourcesButton />
               </div>
               <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">
                 {product.description}
