@@ -142,7 +142,7 @@ export function AdminDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-[#f1ece5] text-zinc-950 flex flex-col font-sans">
+    <div className="admin-dashboard min-h-screen bg-[#f1ece5] text-zinc-950 flex flex-col font-sans">
       <AdminHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}

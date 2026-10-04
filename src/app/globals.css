@@ -256,6 +256,24 @@
   }
 }
 
+.admin-dashboard {
+  --admin-background: #f4f4f4;
+  --admin-foreground: #212223;
+  --admin-border: #212223;
+  background-color: var(--admin-background) !important;
+  color: var(--admin-foreground) !important;
+  font-family: "knowledge-medium", "Knowledge Medium", sans-serif !important;
+}
+
+.admin-dashboard,
+.admin-dashboard * {
+  background-color: var(--admin-background) !important;
+  background-image: none !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-foreground) !important;
+  font-family: inherit !important;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
