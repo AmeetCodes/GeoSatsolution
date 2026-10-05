@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { PRODUCTS, productSlug, getDynamicProducts } from "./_lib/products";
+import { productSlug, getDynamicProducts } from "./_lib/products";
 
 export const metadata: Metadata = {
   title: "Products | GeoSAT Solutions",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProductsPage() {
-  const products = getDynamicProducts();
+export default async function ProductsPage() {
+  const products = await getDynamicProducts();
 
   return (
     <>

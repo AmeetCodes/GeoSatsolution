@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSessionServer } from "./_lib/admin-auth";
-import { getSiteContent } from "@/lib/data-store";
-import { getNavigationTree } from "@/lib/tree-store";
+import { siteContentService } from "@/lib/db/services/site-content.service";
+import { navigationService } from "@/lib/db/services/navigation.service";
+import { contentService } from "@/lib/db/services/content.service";
 import { AdminDashboard } from "./_components/AdminDashboard";
 
 export const metadata: Metadata = {
@@ -22,9 +23,19 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  // When logged in, provide full access to admin dashboard
-  const content = getSiteContent();
-  const tree = getNavigationTree();
+  // When logged in, provide full access to admin dashboard backed by MongoDB
+  const [content, tree, projects] = await Promise.all([
+    siteContentService.getFullSiteContent(),
+    navigationService.getTree(),
+    contentService.getProjects(),
+  ]);
 
-  return <AdminDashboard initialContent={content} initialTree={tree} userEmail={session.email} />;
+  return (
+    <AdminDashboard
+      initialContent={content}
+      initialTree={tree}
+      initialProjects={projects.map(({ code, title, sector, body, tags }) => ({ code, title, sector, body, tags }))}
+      userEmail={session.email}
+    />
+  );
 }

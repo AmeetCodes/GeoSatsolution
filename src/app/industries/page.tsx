@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { INDUSTRIES, industrySlug, getDynamicIndustries } from "./_lib/industries";
+import { industrySlug, getDynamicIndustries } from "./_lib/industries";
 
 export const metadata: Metadata = {
   title: "Industries | GeoSAT Solutions",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function IndustriesPage() {
-  const industries = getDynamicIndustries();
+export default async function IndustriesPage() {
+  const industries = await getDynamicIndustries();
 
   return (
     <>

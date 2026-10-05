@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
-import { getSiteContent } from "@/lib/data-store";
+import { solutionService } from "@/lib/db/services/solution.service";
+import connectDB from "@/lib/db/connection";
+import { Consultation } from "@/lib/models/Consultation";
 import { createConsultationSchema } from "@/lib/validations/consultation.schema";
 
 export const runtime = "nodejs";
@@ -59,7 +61,8 @@ export async function POST(request: Request) {
     return Response.json({ ok: true });
   }
 
-  const validSolutionNames = getSiteContent().Solutions.map((s: { title: string }) => s.title);
+  const solutions = await solutionService.getAllPublished();
+  const validSolutionNames = solutions.map((s) => s.title);
   const parsed = createConsultationSchema(validSolutionNames).safeParse(parsedBody);
 
   if (!parsed.success) {
@@ -68,6 +71,22 @@ export async function POST(request: Request) {
 
   const { name, organisation, email, phone, interest, otherInterest, details } = parsed.data;
   const interestLabel = interest === "Other" ? otherInterest : interest;
+
+  try {
+    await connectDB();
+    await Consultation.create({
+      name,
+      organisation,
+      email,
+      phone,
+      interest: interestLabel,
+      otherInterest: interest === "Other" ? otherInterest : undefined,
+      details,
+      status: "pending",
+    });
+  } catch (dbErr) {
+    console.error("Error saving consultation to MongoDB:", dbErr);
+  }
 
   const recipient = process.env.GMAIL_CONSULT_USER;
   const password = process.env.GMAIL_CONSULT_APP_PASSWORD?.replace(/\s/g, "");

@@ -9,6 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "tsx --env-file-if-exists=.env --test \"src/**/*.test.ts\"",
+    "db:setup": "tsx scripts/setup-database.ts",
+    "auth:setup": "tsx scripts/setup-admin-session-secret.ts",
+    "admin:create": "tsx --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/create-admin.ts",
     "gen:land": "node scripts/generate-coastlines.mjs 50m 0.06 180 90"
   },
   "dependencies": {
@@ -18,6 +21,7 @@
     "@radix-ui/react-avatar": "^1.2.6",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
+    "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

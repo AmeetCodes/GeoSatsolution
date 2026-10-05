@@ -1,21 +1,24 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import AccordionGallery from "@/components/ui/AccordionGallery";
 import { Container } from "@/components/ui/Section";
-import { EXECUTIVE_LEADS } from "@/lib/content";
+import { getDynamicLeaders } from "@/app/company/_lib/company-content";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Leadership — GeoSAT Solutions",
   description:
     "Leadership overview for GeoSAT Solutions and the executive and technical leads driving the company across survey, GIS and LiDAR operations.",
 };
 
-export default function LeadershipPage() {
-  const items = EXECUTIVE_LEADS.map((lead) => ({
-    image: lead.image,
+export default async function LeadershipPage() {
+  const leaders = await getDynamicLeaders();
+
+  const items = leaders.map((lead) => ({
+    image: lead.image?.src || `/team/${lead.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.svg`,
     label: lead.name,
     title: lead.role,
-    description: lead.description,
+    description: lead.bio || "",
     link: "#",
   }));
 

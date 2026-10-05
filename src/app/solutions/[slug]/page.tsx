@@ -8,8 +8,6 @@ import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import {
-  SOLUTIONS_BY_SLUG,
-  SOLUTIONS,
   solutionSlug,
   getDynamicSolutionBySlug,
   getDynamicSolutions,
@@ -19,15 +17,16 @@ type SolutionPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getDynamicSolutions().map((solution) => ({ slug: solutionSlug(solution.title) }));
+export async function generateStaticParams() {
+  const list = await getDynamicSolutions();
+  return list.map((solution) => ({ slug: solutionSlug(solution.title) }));
 }
 
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: SolutionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const solution = getDynamicSolutionBySlug(slug);
+  const solution = await getDynamicSolutionBySlug(slug);
 
   if (!solution) {
     return {
@@ -65,7 +64,7 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
 
 export default async function SolutionPage({ params }: SolutionPageProps) {
   const { slug } = await params;
-  const solution = getDynamicSolutionBySlug(slug);
+  const solution = await getDynamicSolutionBySlug(slug);
 
   if (!solution) notFound();
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, MapPin } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { CAREER_ROLES } from "@/app/company/_lib/company-content";
+import { getDynamicCareerRoles } from "@/app/company/_lib/company-content";
 
 export const metadata: Metadata = {
   title: "Careers | GeoSAT Solutions",
@@ -21,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const roles = await getDynamicCareerRoles();
+
   return (
     <>
       <Navbar />
@@ -38,7 +40,7 @@ export default function CareersPage() {
           </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {CAREER_ROLES.map((role) => (
+            {roles.map((role) => (
               <Link
                 key={role.slug}
                 href={`/company/careers/${role.slug}`}

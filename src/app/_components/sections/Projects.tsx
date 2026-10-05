@@ -1,20 +1,16 @@
 import { ArrowUpRight } from "lucide-react";
-import { PROJECTS, SECTION_HEADERS } from "@/lib/content";
+import { SECTION_HEADERS } from "@/lib/content";
+import { DEFAULT_PROJECTS, type ProjectItem } from "@/lib/data/project-content";
+import { contentService } from "@/lib/db/services/content.service";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
-
-/**
- * One featured engagement at full width, the rest at half — the asymmetry
- * keeps a four-card catalogue from reading as a template grid.
- */
-const [featured, ...rest] = PROJECTS;
 
 function Card({
   project,
   className,
 }: {
-  project: (typeof PROJECTS)[number];
+  project: ProjectItem;
   className?: string;
 }) {
   return (
@@ -58,7 +54,23 @@ function Card({
   );
 }
 
-export function Projects() {
+export async function Projects() {
+  let projectList = DEFAULT_PROJECTS;
+  try {
+    const dbProjects = await contentService.getProjects();
+    projectList = dbProjects.map((p) => ({
+      code: p.code,
+      title: p.title,
+      sector: p.sector,
+      body: p.body,
+      tags: p.tags || [],
+    }));
+  } catch (error) {
+    console.error("Failed to fetch projects from DB:", error);
+  }
+
+  const [featured, ...rest] = projectList;
+
   return (
     <Section id="projects" className="bg-abyss-2/30">
       <Container>
@@ -71,17 +83,19 @@ export function Projects() {
           />
         </Reveal>
 
-        <Reveal stagger className="mt-14 grid gap-4 sm:mt-16 lg:grid-cols-3">
-          <RevealItem className="lg:col-span-3">
-            <Card project={featured} className="lg:p-12" />
-          </RevealItem>
-
-          {rest.map((project) => (
-            <RevealItem key={project.code}>
-              <Card project={project} className="h-full" />
+        {featured && (
+          <Reveal stagger className="mt-14 grid gap-4 sm:mt-16 lg:grid-cols-3">
+            <RevealItem className="lg:col-span-3">
+              <Card project={featured} className="lg:p-12" />
             </RevealItem>
-          ))}
-        </Reveal>
+
+            {rest.map((project) => (
+              <RevealItem key={project.code}>
+                <Card project={project} className="h-full" />
+              </RevealItem>
+            ))}
+          </Reveal>
+        )}
       </Container>
     </Section>
   );

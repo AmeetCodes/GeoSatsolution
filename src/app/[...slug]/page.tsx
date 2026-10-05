@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { getTreeItem, getAllTreeItems } from "@/lib/tree-store";
-import { getPageContentForTreeItem } from "@/lib/data-store";
+import { navigationService } from "@/lib/db/services/navigation.service";
+import { solutionService } from "@/lib/db/services/solution.service";
+import { productService } from "@/lib/db/services/product.service";
+import { industryService } from "@/lib/db/services/industry.service";
+import type { NavTreeTab, NavTreeColumn, NavTreeItem } from "@/lib/tree-store";
 import {
   SolutionsTemplate,
   ProductsTemplate,
@@ -18,18 +21,64 @@ type PageProps = {
   params: Promise<{ slug: string[] }>;
 };
 
+// ─── DB-backed content enrichment ────────────────────────────────────────────
+
+async function getDbContentForTreeItem(match: {
+  tab: NavTreeTab;
+  column?: NavTreeColumn;
+  item: NavTreeItem;
+} | null): Promise<any | null> {
+  if (!match) return null;
+  const { tab, item } = match;
+
+  const title = item.title || "";
+  if (!title) return null;
+
+  try {
+    if (tab.id === "solutions") {
+      const slugified = title
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      return await solutionService.getBySlug(slugified);
+    }
+    if (tab.id === "products") {
+      const slugified = title
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      return await productService.getBySlug(slugified);
+    }
+    if (tab.id === "industries") {
+      const slugified = title
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      return await industryService.getBySlug(slugified);
+    }
+  } catch (err) {
+    console.error("Error fetching DB content for tree item:", err);
+  }
+  return null;
+}
+
 // ─── Static Params & Dynamic Config ──────────────────────────────────────────
 
-export function generateStaticParams() {
-  const allItems = getAllTreeItems();
-  return allItems.map(({ tab, column, item }) => {
-    const slugParts = item.href
-      ? item.href.split("/").filter(Boolean)
-      : [tab.slug, column.slug, item.slug].filter(Boolean);
-    return {
-      slug: slugParts,
-    };
-  });
+export async function generateStaticParams() {
+  try {
+    const allItems = await navigationService.getAllTreeItems();
+    return allItems.map(({ tab, column, item }) => {
+      const slugParts = item.href
+        ? item.href.split("/").filter(Boolean)
+        : [tab.slug, column.slug, item.slug].filter(Boolean);
+      return { slug: slugParts };
+    });
+  } catch {
+    return [];
+  }
 }
 
 export const dynamicParams = true;
@@ -38,7 +87,7 @@ export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const match = getTreeItem(slug);
+  const match = await navigationService.findTreeItem(slug);
 
   if (!match) {
     return {
@@ -52,22 +101,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { item, tab, column } = match;
-  const pageContent = getPageContentForTreeItem(match) || {};
+  const dbContent = await getDbContentForTreeItem(match);
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
   const canonicalUrl = `https://geosat.co/${pagePath}`;
 
   const title =
     item.metadata?.metaTitle ||
-    pageContent?.metaTitle ||
+    dbContent?.metaTitle ||
     `${item.title} | ${column?.title || tab?.label || "GeoSAT"} | GeoSAT Solutions`;
 
   const description =
     item.metadata?.metaDescription ||
-    pageContent?.metaDescription ||
-    pageContent?.intro ||
+    dbContent?.metaDescription ||
     item.intro ||
-    pageContent?.description ||
+    dbContent?.intro ||
     item.description ||
+    dbContent?.description ||
     `Survey-grade solutions and capabilities for ${item.title}.`;
 
   const keywords = [
@@ -80,6 +129,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     "Nepal geospatial",
     "GeoSAT",
   ].filter(Boolean) as string[];
+
+  const heroImages = item.images && item.images.length > 0
+    ? item.images
+    : (dbContent?.images || []);
 
   return {
     title,
@@ -95,8 +148,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "website",
       siteName: "GeoSAT Solutions",
       images:
-        item.images && item.images.length > 0
-          ? [{ url: item.images[0].src, alt: item.images[0].alt || item.title }]
+        heroImages.length > 0
+          ? [{ url: heroImages[0].src, alt: heroImages[0].alt || item.title }]
           : undefined,
     },
     twitter: {
@@ -126,21 +179,22 @@ const DEFAULT_IMAGES = [
 
 export default async function DynamicCatchAllPage({ params }: PageProps) {
   const { slug } = await params;
-  const match = getTreeItem(slug);
+  const match = await navigationService.findTreeItem(slug);
 
   if (!match) {
     notFound();
   }
 
   const { tab, column, item } = match;
-  const contentPage = getPageContentForTreeItem(match) || {};
+  const dbContent = await getDbContentForTreeItem(match);
+
   const resolvedItem = {
     ...item,
-    title: item.title || contentPage?.title || "Untitled page",
-    intro: item.intro || contentPage?.intro || "",
-    description: item.description || contentPage?.description || "",
-    outcomes: item.outcomes || contentPage?.outcomes || [],
-    images: item.images || contentPage?.images || [],
+    title: item.title || dbContent?.title || "Untitled page",
+    intro: item.intro || dbContent?.intro || "",
+    description: item.description || dbContent?.description || "",
+    outcomes: item.outcomes || dbContent?.outcomes || [],
+    images: (item.images && item.images.length > 0) ? item.images : (dbContent?.images || []),
   };
 
   const galleryImages =

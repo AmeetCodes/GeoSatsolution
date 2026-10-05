@@ -23,8 +23,8 @@ const IndustrySchema = new Schema<IIndustry>(
   {
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true, index: true },
-    intro: { type: String, required: true },
-    description: { type: String, required: true },
+    intro: { type: String, default: "" },
+    description: { type: String, default: "" },
     items: { type: [String], required: true },
     images: [
       {

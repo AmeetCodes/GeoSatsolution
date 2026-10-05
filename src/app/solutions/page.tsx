@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SolutionsPage() {
-  const solutions = getDynamicSolutions();
+export default async function SolutionsPage() {
+  const solutions = await getDynamicSolutions();
 
   // Group solutions by group
   const groupedSolutions = solutions.reduce((acc, solution) => {

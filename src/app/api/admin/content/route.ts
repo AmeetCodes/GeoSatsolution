@@ -1,12 +1,6 @@
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
-import { getNavigationTree } from "@/lib/tree-store";
-import {
-  getSiteContent,
-  saveSiteContent,
-  DEFAULT_SITE_CONTENT,
-} from "@/lib/data-store";
+import { siteContentService } from "@/lib/db/services/site-content.service";
 import {
   adminContentRequestSchema,
   siteContentSchema,
@@ -14,29 +8,13 @@ import {
 } from "@/lib/validations/content.schema";
 import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
 
-function refreshContentPaths() {
-  revalidatePath("/", "layout");
-
-  const tree = getNavigationTree();
-  for (const tab of tree.tabs) {
-    if (tab.href && tab.href.startsWith("/")) {
-      revalidatePath(tab.href);
-    }
-    for (const column of tab.columns) {
-      for (const item of column.items) {
-        if (item.href) {
-          revalidatePath(item.href);
-        }
-      }
-    }
-  }
-}
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const section = searchParams.get("section");
-    const content = getSiteContent();
+    const content = await siteContentService.getFullSiteContent();
 
     if (section && section in content) {
       return NextResponse.json({
@@ -85,12 +63,11 @@ export async function POST(req: Request) {
     const { action, section, data } = parsed.data;
 
     if (action === "reset") {
-      saveSiteContent(DEFAULT_SITE_CONTENT);
-      refreshContentPaths();
+      const resetData = await siteContentService.resetAll();
       return NextResponse.json({
         success: true,
-        message: "Content successfully restored to default state",
-        data: DEFAULT_SITE_CONTENT,
+        message: "Content successfully restored to default state in database",
+        data: resetData,
       });
     }
 
@@ -98,12 +75,16 @@ export async function POST(req: Request) {
       const parsedData = parsePayload(siteContentSchema, data, "Content payload is invalid");
       if (!parsedData.ok) return parsedData.response;
 
-      saveSiteContent(parsedData.data);
-      refreshContentPaths();
+      await siteContentService.updateSection("Solutions", parsedData.data.Solutions);
+      await siteContentService.updateSection("Products", parsedData.data.Products);
+      await siteContentService.updateSection("Industries", parsedData.data.Industries);
+      await siteContentService.updateSection("Company", parsedData.data.Company);
+
+      const refreshed = await siteContentService.getFullSiteContent();
       return NextResponse.json({
         success: true,
-        message: "Full site content saved successfully",
-        data: parsedData.data,
+        message: "Full site content saved successfully to database",
+        data: refreshed,
       });
     }
 
@@ -121,14 +102,11 @@ export async function POST(req: Request) {
     );
     if (!parsedData.ok) return parsedData.response;
 
-    const currentContent = getSiteContent();
-    (currentContent as unknown as Record<string, unknown>)[section] = parsedData.data;
-    saveSiteContent(currentContent);
-    refreshContentPaths();
+    await siteContentService.updateSection(section, parsedData.data);
 
     return NextResponse.json({
       success: true,
-      message: `${section} updated successfully`,
+      message: `${section} updated successfully in database`,
       data: parsedData.data,
     });
   } catch (error: any) {

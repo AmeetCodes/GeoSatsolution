@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export type SolutionImage = {
   src: string;
   alt: string;
-  caption: string;
+  caption?: string;
 };
 
 const PLACEHOLDER_IMAGES: SolutionImage[] = [

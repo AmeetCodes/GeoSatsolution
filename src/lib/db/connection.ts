@@ -40,18 +40,15 @@ export function getMongoUri(): string {
 export async function connectDB(
   uri: string = getMongoUri(),
 ): Promise<MongooseInstance> {
-  const readyState = cache.conn?.connection.readyState;
-
-  if (cache.conn && cache.uri === uri && readyState === MONGO_STATES.connected) {
+  if (
+    cache.conn &&
+    cache.uri === uri &&
+    cache.conn.connection.readyState === MONGO_STATES.connected
+  ) {
     return cache.conn;
   }
 
-  if (
-    cache.promise &&
-    cache.uri === uri &&
-    (readyState === MONGO_STATES.connecting ||
-      readyState === MONGO_STATES.disconnecting)
-  ) {
+  if (cache.promise && cache.uri === uri) {
     return cache.promise;
   }
 
@@ -62,7 +59,7 @@ export async function connectDB(
   cache.uri = uri;
   cache.promise = mongoose
     .connect(uri, {
-      bufferCommands: false,
+      bufferCommands: true,
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 10000,
     })

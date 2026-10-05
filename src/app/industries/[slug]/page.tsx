@@ -5,8 +5,6 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import {
-  INDUSTRIES,
-  INDUSTRIES_BY_SLUG,
   industrySlug,
   getDynamicIndustryBySlug,
   getDynamicIndustries,
@@ -16,8 +14,9 @@ type IndustryPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getDynamicIndustries().map((industry) => ({ slug: industrySlug(industry.title) }));
+export async function generateStaticParams() {
+  const list = await getDynamicIndustries();
+  return list.map((industry) => ({ slug: industrySlug(industry.title) }));
 }
 
 export const dynamicParams = true;
@@ -25,7 +24,7 @@ export const dynamicParams = true;
 
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const industry = getDynamicIndustryBySlug(slug);
+  const industry = await getDynamicIndustryBySlug(slug);
 
   if (!industry) {
     return {
@@ -60,7 +59,7 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
 
 export default async function IndustryPage({ params }: IndustryPageProps) {
   const { slug } = await params;
-  const industry = getDynamicIndustryBySlug(slug);
+  const industry = await getDynamicIndustryBySlug(slug);
 
   if (!industry) notFound();
 

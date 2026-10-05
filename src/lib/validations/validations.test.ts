@@ -17,6 +17,7 @@ import { careerSchema } from "./career.schema";
 import { industryItemSchema } from "./industry.schema";
 import { productItemSchema } from "./product.schema";
 import { solutionItemSchema } from "./solution.schema";
+import { projectListSchema } from "./project.schema";
 import {
   columnPayloadSchema,
   itemPayloadSchema,
@@ -147,6 +148,23 @@ describe("entity schemas reject incomplete or invalid records", () => {
     );
   });
 
+  it("validates project fields and requires unique project codes", () => {
+    const project = {
+      code: "HYD-04",
+      title: "Hydropower corridor",
+      sector: "Energy",
+      body: "Survey-grade corridor capture.",
+      tags: ["LiDAR"],
+    };
+
+    assert.equal(projectListSchema.safeParse([project]).success, true);
+    assert.equal(
+      projectListSchema.safeParse([project, { ...project, code: "hyd-04" }]).success,
+      false,
+    );
+    assert.equal(projectListSchema.safeParse([{ ...project, body: "" }]).success, false);
+  });
+
   it("rejects duplicate titles and slugs in saved collections", () => {
     const duplicatedSolutions = [validSolution, { ...validSolution }];
     const result = siteContentSchema.safeParse({
@@ -163,18 +181,18 @@ describe("entity schemas reject incomplete or invalid records", () => {
   it("requires complete admin credentials", () => {
     assert.equal(
       adminLoginSchema.safeParse({
-        email: "admin@geosatsoln.com",
-        password: "GeoSatAdmin2026!Secure",
+        email: "admin@example.test",
+        password: "test-only-password-value",
         rememberMe: true,
       }).success,
       true,
     );
     assert.equal(adminLoginSchema.safeParse({ email: "nope", password: "12345678" }).success, false);
     assert.equal(
-      adminLoginSchema.safeParse({ email: "admin@geosatsoln.com", password: "short" }).success,
+      adminLoginSchema.safeParse({ email: "admin@example.test", password: "short" }).success,
       false,
     );
-    assert.equal(adminLoginSchema.safeParse({ password: "GeoSatAdmin2026!Secure" }).success, false);
+    assert.equal(adminLoginSchema.safeParse({ password: "test-only-password-value" }).success, false);
   });
 });
 

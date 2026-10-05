@@ -372,6 +372,16 @@
         "Quality assurancegtgtge deliverable 2"
       ],
       "images": []
+    },
+    {
+      "title": "Test Solution",
+      "group": "Test Column",
+      "intro": "Intro",
+      "description": "Description",
+      "outcomes": [
+        "Outcome"
+      ],
+      "images": []
     }
   ],
   "Products": [

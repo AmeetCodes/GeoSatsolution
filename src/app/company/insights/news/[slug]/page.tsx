@@ -4,19 +4,23 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { NEWS_ITEMS, type NewsItem } from "@/app/company/_lib/company-content";
+import {
+  getDynamicNewsItems,
+  getDynamicNewsItemBySlug,
+} from "@/app/company/_lib/company-content";
 
 type NewsDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return NEWS_ITEMS.map((item: NewsItem) => ({ slug: item.slug }));
+export async function generateStaticParams() {
+  const items = await getDynamicNewsItems();
+  return items.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: NewsDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = NEWS_ITEMS.find((entry: NewsItem) => entry.slug === slug);
+  const item = await getDynamicNewsItemBySlug(slug);
 
   if (!item) {
     return {
@@ -52,7 +56,7 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
 
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   const { slug } = await params;
-  const item = NEWS_ITEMS.find((entry: NewsItem) => entry.slug === slug);
+  const item = await getDynamicNewsItemBySlug(slug);
 
   if (!item) notFound();
 

@@ -9,8 +9,6 @@ import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import {
-  PRODUCTS,
-  PRODUCTS_BY_SLUG,
   productSlug,
   getDynamicProductBySlug,
   getDynamicProducts,
@@ -20,15 +18,16 @@ type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getDynamicProducts().map((product) => ({ slug: productSlug(product.title) }));
+export async function generateStaticParams() {
+  const list = await getDynamicProducts();
+  return list.map((product) => ({ slug: productSlug(product.title) }));
 }
 
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getDynamicProductBySlug(slug);
+  const product = await getDynamicProductBySlug(slug);
 
   if (!product) {
     return {
@@ -66,7 +65,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getDynamicProductBySlug(slug);
+  const product = await getDynamicProductBySlug(slug);
 
   if (!product) notFound();
 

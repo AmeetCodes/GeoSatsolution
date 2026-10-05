@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Download, Folder } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { RESOURCE_DOCUMENTS } from "@/app/company/_lib/company-content";
+import { RESOURCE_DOCUMENTS, type ResourceDocument } from "@/app/company/_lib/company-content";
 
 export const metadata: Metadata = {
   title: "Downloads & Technical Resources | GeoSAT Solutions",
@@ -38,7 +38,7 @@ export default function DownloadsTechnicalResourcesPage() {
           </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-2">
-            {RESOURCE_DOCUMENTS.map((document) => (
+            {RESOURCE_DOCUMENTS.map((document: ResourceDocument) => (
               <div
                 key={document.slug}
                 className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 transition-colors duration-300 hover:border-line-strong hover:bg-panel/55"

@@ -7,6 +7,7 @@ import { AdminOverview } from "./AdminOverview";
 import { TreeCMSManager } from "./TreeCMSManager";
 import { SolutionsManager } from "./SolutionsManager";
 import { ProductsManager } from "./ProductsManager";
+import { ProjectsManager } from "./ProjectsManager";
 import { IndustriesManager } from "./IndustriesManager";
 import { CompanyManager } from "./CompanyManager";
 import { LivePreview } from "./LivePreview";
@@ -14,6 +15,7 @@ import TableComponent from "./AdminPaymentsTable";
 import SwipeToast from "@/components/ui/SwipeToast";
 import type { SiteContentData } from "@/lib/data-store";
 import type { NavigationTree } from "@/lib/tree-store";
+import type { ProjectItem } from "@/lib/data/project-content";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 interface ToastState {
@@ -27,19 +29,22 @@ interface ToastState {
 interface AdminDashboardProps {
   initialContent: SiteContentData;
   initialTree?: NavigationTree;
+  initialProjects: ProjectItem[];
   userEmail?: string;
 }
 
 export function AdminDashboard({
   initialContent,
   initialTree,
-  userEmail = "admin@geosatsoln.com",
+  initialProjects,
+  userEmail = "",
 }: AdminDashboardProps) {
   const router = useRouter();
   const [content, setContent] = useState<SiteContentData>(initialContent);
   const [tree, setTree] = useState<NavigationTree>(
     initialTree || { tabs: [] },
   );
+  const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [isSaving, setIsSaving] = useState(false);
   const [savedRecently, setSavedRecently] = useState(false);
@@ -85,6 +90,31 @@ export function AdminDashboard({
     }
   };
 
+  const handleSaveProjects = async (updated: ProjectItem[]) => {
+    setIsSaving(true);
+    setSavedRecently(false);
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save", data: updated }),
+      });
+      const result = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(result?.message || "Failed to save projects");
+
+      setProjects(result.data);
+      setSavedRecently(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not save projects";
+      addToast("Save Failed", message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleResetDefaults = async () => {
     if (!confirm("Reset ALL site content to factory defaults? This cannot be undone.")) return;
     setIsSaving(true);
@@ -110,6 +140,15 @@ export function AdminDashboard({
       if (treeRes.ok && treeData.data) {
         setTree(treeData.data);
       }
+
+      const projectsRes = await fetch("/api/admin/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+      const projectsData = await projectsRes.json();
+      if (!projectsRes.ok) throw new Error(projectsData?.message || "Could not reset projects");
+      setProjects(projectsData.data);
 
       setSavedRecently(true);
       if (savedTimer.current) clearTimeout(savedTimer.current);
@@ -138,6 +177,7 @@ export function AdminDashboard({
     tree: "Mega-Menu & Hierarchy CMS",
     solutions: "Solutions Manager",
     products: "Products Manager",
+    projects: "Projects Manager",
     industries: "Industries Manager",
     company: "Company Manager",
     transactions: "Orders & Requests",
@@ -210,6 +250,14 @@ export function AdminDashboard({
           <ProductsManager
             products={content.Products || []}
             onSaveProducts={(updated) => handleSaveSection("Products", updated)}
+            onTriggerToast={addToast}
+          />
+        )}
+
+        {activeTab === "projects" && (
+          <ProjectsManager
+            projects={projects}
+            onSaveProjects={handleSaveProjects}
             onTriggerToast={addToast}
           />
         )}

@@ -4,19 +4,26 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BriefcaseBusiness, Check, MapPin } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { CAREER_ROLES, type CareerRole } from "@/app/company/_lib/company-content";
+import {
+  getDynamicCareerRoles,
+  getDynamicCareerRoleBySlug,
+  type CareerRole,
+} from "@/app/company/_lib/company-content";
 
 type CareerDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return CAREER_ROLES.map((role: CareerRole) => ({ slug: role.slug }));
+export async function generateStaticParams() {
+  const roles = await getDynamicCareerRoles();
+  return roles.map((role: CareerRole) => ({ slug: role.slug }));
 }
+
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: CareerDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const role = CAREER_ROLES.find((entry: CareerRole) => entry.slug === slug);
+  const role = await getDynamicCareerRoleBySlug(slug);
 
   if (!role) {
     return {
@@ -51,7 +58,7 @@ export async function generateMetadata({ params }: CareerDetailPageProps): Promi
 
 export default async function CareerDetailPage({ params }: CareerDetailPageProps) {
   const { slug } = await params;
-  const role = CAREER_ROLES.find((entry: CareerRole) => entry.slug === slug);
+  const role = await getDynamicCareerRoleBySlug(slug);
 
   if (!role) notFound();
 

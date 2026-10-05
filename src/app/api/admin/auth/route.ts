@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import {
-  validateAdminCredentials,
   createSessionToken,
   verifySessionToken,
 } from "@/app/admin/_lib/admin-auth";
+import { authenticateAdmin } from "@/lib/db/services/admin-auth.service";
 import { adminLoginSchema } from "@/lib/validations/auth.schema";
 import { validationErrorResponse } from "@/lib/validations/utils";
 
@@ -27,17 +27,16 @@ export async function POST(req: Request) {
 
     const { email, password, rememberMe } = parsed.data;
 
-    const isValid = validateAdminCredentials(email, password);
-
-    if (!isValid) {
+    const admin = await authenticateAdmin(email, password);
+    if (!admin) {
       return NextResponse.json(
-        { success: false, message: "Invalid email or administrative password" },
+        { success: false, message: "Invalid email or password" },
         { status: 401 }
       );
     }
 
     const durationDays = rememberMe ? 30 : 1;
-    const token = createSessionToken(email, durationDays);
+    const token = createSessionToken(admin.email, admin.role, durationDays);
 
     const cookieStore = await cookies();
     cookieStore.set("geosat_admin_session", token, {
@@ -51,11 +50,15 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Admin authentication successful",
-      user: { email, role: "admin" },
+      user: {
+        email: admin.email,
+        name: admin.name,
+        role: admin.role,
+      },
     });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
-      { success: false, message: error?.message || "Internal server error" },
+      { success: false, message: "Authentication service is temporarily unavailable" },
       { status: 500 }
     );
   }

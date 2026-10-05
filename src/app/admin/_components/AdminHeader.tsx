@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Layers,
   Box,
+  Briefcase,
   Building2,
   Users,
   ClipboardList,
@@ -24,6 +25,7 @@ export type AdminTab =
   | "tree"
   | "solutions"
   | "products"
+  | "projects"
   | "industries"
   | "company"
   | "transactions"
@@ -44,7 +46,7 @@ export function AdminHeader({
   setActiveTab,
   onLogout,
   onResetDefaults,
-  userEmail = "admin@geosatsoln.com",
+  userEmail = "",
   isSaving = false,
   savedRecently = false,
 }: AdminHeaderProps) {
@@ -53,6 +55,7 @@ export function AdminHeader({
     { id: "tree",          label: "Mega-Menu CMS",    icon: Layers,           description: "N-Level Tree & Columns" },
     { id: "solutions",     label: "Solutions",         icon: Layers,           description: "Manage services" },
     { id: "products",      label: "Products",          icon: Box,              description: "Manage catalog" },
+    { id: "projects",      label: "Projects",          icon: Briefcase,        description: "Featured work" },
     { id: "industries",    label: "Industries",        icon: Building2,        description: "Sector pages" },
     { id: "company",       label: "Company",           icon: Users,            description: "Team & partners" },
     { id: "transactions",  label: "Orders",            icon: ClipboardList,    description: "Client requests" },

@@ -85,6 +85,7 @@ export function AdminOverview({
   const quickLinks = [
     { label: "Add Solution", icon: Layers, color: "#22d3ee", action: () => onOpenAddModal("solution") },
     { label: "Add Product", icon: Box, color: "#818cf8", action: () => onOpenAddModal("product") },
+    { label: "Manage Projects", icon: Briefcase, color: "#fb923c", action: () => onNavigateTab("projects") },
     { label: "Manage Industries", icon: Building2, color: "#34d399", action: () => onNavigateTab("industries") },
     { label: "Company Info", icon: Users, color: "#f472b6", action: () => onNavigateTab("company") },
     { label: "Orders", icon: Briefcase, color: "#fb923c", action: () => onNavigateTab("transactions") },
@@ -140,7 +141,7 @@ export function AdminOverview({
               GeoSAT Content Hub
             </h1>
             <p className="mt-2 text-[13px] text-zinc-400 max-w-xl leading-relaxed">
-              Every change you make here updates the public site instantly — Solutions, Products, Industries, and Company content are all live on save.
+              Every change you make here updates the public site instantly — Projects, Solutions, Products, Industries, and Company content are live on save.
             </p>
           </div>
 

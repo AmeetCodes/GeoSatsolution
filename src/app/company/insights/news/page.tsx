@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Calendar, Tag } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { NEWS_ITEMS } from "@/app/company/_lib/company-content";
+import { getDynamicNewsItems } from "@/app/company/_lib/company-content";
 
 export const metadata: Metadata = {
   title: "News & Field Notes | GeoSAT Solutions",
@@ -21,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const newsItems = await getDynamicNewsItems();
+
   return (
     <>
       <Navbar />
@@ -38,7 +40,7 @@ export default function NewsPage() {
           </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {NEWS_ITEMS.map((item) => (
+            {newsItems.map((item) => (
               <Link
                 key={item.slug}
                 href={`/company/insights/news/${item.slug}`}

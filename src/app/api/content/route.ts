@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSiteContent } from "@/lib/data-store";
+import { siteContentService } from "@/lib/db/services/site-content.service";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const content = getSiteContent();
+    const content = await siteContentService.getFullSiteContent();
     return NextResponse.json({
       success: true,
       data: {

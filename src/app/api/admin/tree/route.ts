@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
+import { navigationService } from "@/lib/db/services/navigation.service";
+import { solutionRepository } from "@/lib/db/repositories/solution.repository";
+import { productRepository } from "@/lib/db/repositories/product.repository";
+import { industryRepository } from "@/lib/db/repositories/industry.repository";
 import {
-  getNavigationTree,
-  saveNavigationTree,
-  DEFAULT_NAVIGATION_TREE,
   type NavigationTree,
   type NavTreeTab,
   type NavTreeColumn,
   type NavTreeItem,
   slugify,
 } from "@/lib/tree-store";
-import { removeTreeItemFromSiteContent, syncTreeItemWithSiteContent } from "@/lib/data-store";
 import {
   columnPayloadSchema,
   itemPayloadSchema,
@@ -26,9 +26,100 @@ import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
 
 export const dynamic = "force-dynamic";
 
+async function syncTreeItemWithDatabase(targetTab: NavTreeTab, targetColumn: NavTreeColumn, item: NavTreeItem) {
+  try {
+    const tabKey = targetTab.id.toLowerCase();
+    const slug = item.slug || slugify(item.title);
+    if (tabKey === "solutions") {
+      const existing = await solutionRepository.findBySlug(slug);
+      if (existing) {
+        await solutionRepository.updateBySlug(slug, {
+          title: item.title,
+          group: targetColumn.title,
+          intro: item.intro,
+          description: item.description,
+          outcomes: item.outcomes,
+          images: item.images,
+        });
+      } else {
+        await solutionRepository.create({
+          title: item.title,
+          slug,
+          group: targetColumn.title,
+          intro: item.intro || "",
+          description: item.description || "",
+          outcomes: item.outcomes || [],
+          images: item.images || [],
+          isPublished: true,
+        });
+      }
+    } else if (tabKey === "products") {
+      const existing = await productRepository.findBySlug(slug);
+      if (existing) {
+        await productRepository.updateBySlug(slug, {
+          title: item.title,
+          group: targetColumn.title,
+          intro: item.intro,
+          description: item.description,
+          outcomes: item.outcomes,
+          images: item.images,
+        });
+      } else {
+        await productRepository.create({
+          title: item.title,
+          slug,
+          group: targetColumn.title,
+          intro: item.intro || "",
+          description: item.description || "",
+          outcomes: item.outcomes || [],
+          images: item.images || [],
+          isPublished: true,
+        });
+      }
+    } else if (tabKey === "industries") {
+      const existing = await industryRepository.findBySlug(slug);
+      if (existing) {
+        await industryRepository.updateBySlug(slug, {
+          title: item.title,
+          intro: item.intro,
+          description: item.description,
+          items: item.outcomes || [],
+        });
+      } else {
+        await industryRepository.create({
+          title: item.title,
+          slug,
+          intro: item.intro || "",
+          description: item.description || "",
+          items: item.outcomes || [],
+          isPublished: true,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Failed to sync tree item to database:", err);
+  }
+}
+
+async function removeTreeItemFromDatabase(tabId: string, item: NavTreeItem) {
+  try {
+    const tabKey = tabId.toLowerCase();
+    const slug = item.slug || slugify(item.title);
+    if (tabKey === "solutions") {
+      await solutionRepository.deleteBySlug(slug);
+    } else if (tabKey === "products") {
+      await productRepository.deleteBySlug(slug);
+    } else if (tabKey === "industries") {
+      await industryRepository.deleteBySlug(slug);
+    }
+  } catch (err) {
+    console.error("Failed to remove tree item from database:", err);
+  }
+}
+
 export async function GET() {
   try {
-    const tree = getNavigationTree();
+    const tree = await navigationService.getTree();
     return NextResponse.json({ success: true, data: tree });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
@@ -58,12 +149,12 @@ export async function POST(request: Request) {
 
     // Action 1: Reset to factory default
     if (action === "reset") {
-      saveNavigationTree(DEFAULT_NAVIGATION_TREE);
+      const resetTree = await navigationService.resetTree();
       revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
-        message: "Navigation tree reset to factory defaults",
-        data: DEFAULT_NAVIGATION_TREE,
+        message: "Navigation tree reset to factory defaults in database",
+        data: resetTree,
       });
     }
 
@@ -72,16 +163,16 @@ export async function POST(request: Request) {
       const parsedTree = parsePayload(navigationTreeSchema, tree, "Navigation tree is invalid");
       if (!parsedTree.ok) return parsedTree.response;
 
-      saveNavigationTree(parsedTree.data);
+      const saved = await navigationService.saveTree(parsedTree.data);
       revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
-        message: "Navigation tree saved successfully",
-        data: parsedTree.data,
+        message: "Navigation tree saved successfully in database",
+        data: saved,
       });
     }
 
-    const currentTree: NavigationTree = getNavigationTree();
+    const currentTree: NavigationTree = await navigationService.getTree();
 
     // Action 3: Add new Level 1 Tab
     if (action === "addTab") {
@@ -108,7 +199,7 @@ export async function POST(request: Request) {
         columns: [],
       };
       currentTree.tabs.push(newTab);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Added tab "${label}"`, data: currentTree });
     }
@@ -126,7 +217,7 @@ export async function POST(request: Request) {
       tab.href = href;
       tab.footerNote = footerNote;
       tab.catalogueCta = catalogueCta;
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Updated tab "${tab.label}"`, data: currentTree });
     }
@@ -135,12 +226,12 @@ export async function POST(request: Request) {
     if (action === "deleteTab") {
       if (!tabId) return NextResponse.json({ success: false, message: "Tab id is required" }, { status: 400 });
       currentTree.tabs = currentTree.tabs.filter((t) => t.id !== tabId);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Deleted tab`, data: currentTree });
     }
 
-    // Action 6: Reorder Tabs
+    // Action 6: Reorder Level 1 Tabs
     if (action === "reorderTabs") {
       const parsedPayload = parsePayload(reorderTabsPayloadSchema, payload, "Tab order payload is invalid");
       if (!parsedPayload.ok) return parsedPayload.response;
@@ -158,7 +249,7 @@ export async function POST(request: Request) {
       // Append any remaining
       tabMap.forEach((tab) => reordered.push(tab));
       currentTree.tabs = reordered;
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: "Tabs reordered", data: currentTree });
     }
@@ -190,7 +281,7 @@ export async function POST(request: Request) {
         items: [],
       };
       targetTab.columns.push(newCol);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Added column "${title}"`, data: currentTree });
     }
@@ -204,7 +295,7 @@ export async function POST(request: Request) {
 
       col.title = parsedPayload.data.title;
       col.slug = slugify(parsedPayload.data.title);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: `Updated column "${col.title}"`, data: currentTree });
     }
@@ -212,7 +303,7 @@ export async function POST(request: Request) {
     // Action 9: Delete Column
     if (action === "deleteColumn" && targetTab && columnId) {
       targetTab.columns = targetTab.columns.filter((c) => c.id !== columnId);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: "Deleted column", data: currentTree });
     }
@@ -238,7 +329,7 @@ export async function POST(request: Request) {
       });
       colMap.forEach((col) => reordered.push(col));
       targetTab.columns = reordered;
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: "Columns reordered", data: currentTree });
     }
@@ -274,10 +365,8 @@ export async function POST(request: Request) {
         outcomes,
       };
       targetColumn.items.push(newItem);
-      saveNavigationTree(currentTree);
-      syncTreeItemWithSiteContent(targetTab, targetColumn, newItem);
-      // Revalidate the root layout AND the specific catch-all path so the
-      // new item renders immediately on first visit without a server restart.
+      await navigationService.saveTree(currentTree);
+      await syncTreeItemWithDatabase(targetTab, targetColumn, newItem);
       revalidatePath("/", "layout");
       revalidatePath(generatedHref);
       return NextResponse.json({ success: true, message: `Added item "${title}"`, data: currentTree });
@@ -300,9 +389,8 @@ export async function POST(request: Request) {
       item.outcomes = outcomes;
       if (images !== undefined) item.images = images;
       if (metadata !== undefined) item.metadata = metadata;
-      saveNavigationTree(currentTree);
-      syncTreeItemWithSiteContent(targetTab, targetColumn, item);
-      // Revalidate both the old and new paths to clear stale cached responses.
+      await navigationService.saveTree(currentTree);
+      await syncTreeItemWithDatabase(targetTab, targetColumn, item);
       revalidatePath("/", "layout");
       if (oldHref) revalidatePath(oldHref);
       if (item.href && item.href !== oldHref) revalidatePath(item.href);
@@ -313,9 +401,9 @@ export async function POST(request: Request) {
     if (action === "deleteItem" && targetTab && targetColumn && itemId) {
       const itemToDelete = targetColumn.items.find((i) => i.id === itemId);
       targetColumn.items = targetColumn.items.filter((i) => i.id !== itemId);
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       if (itemToDelete) {
-        removeTreeItemFromSiteContent(targetTab.id, itemToDelete);
+        await removeTreeItemFromDatabase(targetTab.id, itemToDelete);
         if (itemToDelete.href) revalidatePath(itemToDelete.href);
       }
       revalidatePath("/", "layout");
@@ -339,7 +427,7 @@ export async function POST(request: Request) {
       });
       itemMap.forEach((item) => reordered.push(item));
       targetColumn.items = reordered;
-      saveNavigationTree(currentTree);
+      await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
       return NextResponse.json({ success: true, message: "Items reordered", data: currentTree });
     }

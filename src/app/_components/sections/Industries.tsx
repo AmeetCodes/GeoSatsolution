@@ -2,12 +2,35 @@
 
 import { Activity, ArrowRight, ChevronDown, Compass, Layers, MapPin, type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { INDUSTRIES as STATIC_INDUSTRIES, SECTION_HEADERS } from "@/lib/content";
+import { SECTION_HEADERS } from "@/lib/content";
 import { solutionSlug } from "@/lib/utils";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
 
 type IndustryItem = { title: string; body?: string; intro?: string; description?: string; items: string[] };
+
+const DEFAULT_INDUSTRIES: IndustryItem[] = [
+  {
+    title: "Infrastructure",
+    body: "Corridors, structures and energy assets surveyed to the tolerance engineering sign-off demands.",
+    items: ["Hydropower & Energy", "Roads, Highways & Bridges", "Transmission Lines", "Telecom Networks"],
+  },
+  {
+    title: "Government & Urban",
+    body: "National coverage, municipal base maps and digital twins that outlive any single project team.",
+    items: ["Smart Cities & Digital Twins", "Municipalities", "National Mapping Agencies"],
+  },
+  {
+    title: "Natural Resources",
+    body: "Forestry, agriculture and mining measured in the units each discipline actually uses.",
+    items: ["Forestry & Biomass", "Agriculture & Irrigation", "Mining & Quarrying"],
+  },
+  {
+    title: "Safety & Research",
+    body: "Hazard baselines, site control and the spatial rigor research programmes depend on.",
+    items: ["Disaster & Flood Management", "Construction & Site Layout", "Universities & R&D"],
+  },
+];
 
 const ICONS: LucideIcon[] = [Layers, MapPin, Compass, Activity];
 
@@ -38,7 +61,7 @@ function useDynamicIndustries(): IndustryItem[] | null {
 
 export function Industries() {
   const dynIndustries = useDynamicIndustries();
-  const industries: IndustryItem[] = dynIndustries ?? STATIC_INDUSTRIES;
+  const industries: IndustryItem[] = dynIndustries ?? DEFAULT_INDUSTRIES;
   const [expanded, setExpanded] = useState<string | null>(industries[0]?.title ?? null);
 
   // Keep expansion in sync with industry list updates

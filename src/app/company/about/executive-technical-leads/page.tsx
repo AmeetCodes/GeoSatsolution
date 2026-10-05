@@ -3,7 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import AccordionGallery from "@/components/ui/AccordionGallery";
 import { LayoutGrid } from "@/components/ui/layout-grid";
-import { EXECUTIVE_LEADS } from "@/lib/content";
+import { getDynamicLeaders } from "@/app/company/_lib/company-content";
 
 export const metadata: Metadata = {
   title: "Executive & Technical Leads | GeoSAT Solutions",
@@ -19,30 +19,32 @@ export const metadata: Metadata = {
   },
 };
 
-const galleryItems = EXECUTIVE_LEADS.map((lead) => ({
-  image: lead.image,
-  label: lead.name,
-  title: lead.role,
-  description: lead.description,
-  link: "#",
-}));
+export default async function ExecutiveTechnicalLeadsPage() {
+  const leaders = await getDynamicLeaders();
 
-const gridCards = EXECUTIVE_LEADS.map((lead, index) => ({
-  id: index + 1,
-  className: index % 2 === 0 ? "md:col-span-2" : "col-span-1",
-  content: (
-    <div>
-      <p className="text-2xl font-bold text-white md:text-4xl">{lead.name}</p>
-      <p className="mt-3 text-base font-medium text-[#44f0d3] md:text-xl">{lead.role}</p>
-      <p className="mt-4 max-w-lg text-base leading-relaxed text-neutral-200 md:text-lg">
-        {lead.description}
-      </p>
-    </div>
-  ),
-  thumbnail: lead.image,
-}));
+  const galleryItems = leaders.map((lead) => ({
+    image: lead.image?.src || `/team/${lead.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.svg`,
+    label: lead.name,
+    title: lead.role,
+    description: lead.bio || "",
+    link: "#",
+  }));
 
-export default function ExecutiveTechnicalLeadsPage() {
+  const gridCards = leaders.map((lead, index) => ({
+    id: index + 1,
+    className: index % 2 === 0 ? "md:col-span-2" : "col-span-1",
+    content: (
+      <div>
+        <p className="text-2xl font-bold text-white md:text-4xl">{lead.name}</p>
+        <p className="mt-3 text-base font-medium text-[#44f0d3] md:text-xl">{lead.role}</p>
+        <p className="mt-4 max-w-lg text-base leading-relaxed text-neutral-200 md:text-lg">
+          {lead.bio}
+        </p>
+      </div>
+    ),
+    thumbnail: lead.image?.src || `/team/${lead.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.svg`,
+  }));
+
   return (
     <>
       <Navbar />
@@ -86,3 +88,5 @@ export default function ExecutiveTechnicalLeadsPage() {
     </>
   );
 }
+
+

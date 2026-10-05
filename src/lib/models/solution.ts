@@ -25,8 +25,8 @@ const SolutionSchema = new Schema<ISolution>(
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true, index: true },
     group: { type: String, required: true, trim: true, index: true },
-    intro: { type: String, required: true },
-    description: { type: String, required: true },
+    intro: { type: String, default: "" },
+    description: { type: String, default: "" },
     outcomes: { type: [String], default: [] },
     images: [
       {

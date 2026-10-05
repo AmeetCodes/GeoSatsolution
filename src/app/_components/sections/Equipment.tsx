@@ -1,7 +1,22 @@
 import { Check } from "lucide-react";
-import { EQUIPMENT, SECTION_HEADERS } from "@/lib/content";
+import { SECTION_HEADERS } from "@/lib/content";
+import { contentService } from "@/lib/db/services/content.service";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
+
+export interface EquipmentItemData {
+  label: string;
+  value: string;
+}
+
+const DEFAULT_EQUIPMENT: EquipmentItemData[] = [
+  { label: "UAV platforms", value: "Fixed-wing & multirotor" },
+  { label: "LiDAR payloads", value: "UAV, terrestrial & SLAM" },
+  { label: "Positioning", value: "RTK / PPK GNSS receivers" },
+  { label: "Angle measurement", value: "Total stations & laser scanners" },
+  { label: "Processing", value: "Trimble, LiDAR360, DJI Terra, Pix4D" },
+  { label: "Analysis", value: "PLS-CADD, eCognition, GIS platforms" },
+];
 
 const CALIBRATION = [
   "Pre- and post-mobilisation check on every instrument",
@@ -9,7 +24,20 @@ const CALIBRATION = [
   "Independent control used to verify, never to assume",
 ];
 
-export function Equipment() {
+export async function Equipment() {
+  let equipmentList: EquipmentItemData[] = DEFAULT_EQUIPMENT;
+  try {
+    const dbEquipment = await contentService.getEquipment();
+    if (dbEquipment && dbEquipment.length > 0) {
+      equipmentList = dbEquipment.map((eq) => ({
+        label: eq.label,
+        value: eq.value,
+      }));
+    }
+  } catch (error) {
+    console.error("Failed to fetch equipment from DB:", error);
+  }
+
   return (
     <Section id="equipment">
       <Container>
@@ -45,7 +73,7 @@ export function Equipment() {
                 <p className="label">Configuration</p>
               </div>
 
-              {EQUIPMENT.map((item) => (
+              {equipmentList.map((item) => (
                 <RevealItem
                   key={item.label}
                   className="group grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] items-baseline gap-6 border-b border-line py-6 transition-colors duration-300 hover:bg-white/[0.02]"

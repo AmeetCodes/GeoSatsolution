@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
-import { getNavigationTree } from "@/lib/tree-store";
-import { getSiteContent } from "@/lib/data-store";
+import { navigationService } from "@/lib/db/services/navigation.service";
+import { siteContentService } from "@/lib/db/services/site-content.service";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const tree = getNavigationTree();
-    const content = getSiteContent();
+    const [tree, content] = await Promise.all([
+      navigationService.getTree(),
+      siteContentService.getFullSiteContent(),
+    ]);
 
     // Extract solution groups directly from the dynamic tree
     const solutionsTab = tree.tabs.find((t) => t.id === "solutions");
