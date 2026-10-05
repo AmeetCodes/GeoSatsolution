@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Download, Folder } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { RESOURCE_DOCUMENTS, type ResourceDocument } from "@/app/company/_lib/company-content";
+import { getDynamicResources } from "@/app/company/_lib/company-content";
 
 export const metadata: Metadata = {
   title: "Downloads & Technical Resources | GeoSAT Solutions",
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DownloadsTechnicalResourcesPage() {
+export default async function DownloadsTechnicalResourcesPage() {
+  const resources = await getDynamicResources();
   return (
     <>
       <Navbar />
@@ -38,7 +39,7 @@ export default function DownloadsTechnicalResourcesPage() {
           </header>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-2">
-            {RESOURCE_DOCUMENTS.map((document: ResourceDocument) => (
+            {resources.map((document) => (
               <div
                 key={document.slug}
                 className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 transition-colors duration-300 hover:border-line-strong hover:bg-panel/55"
@@ -55,7 +56,9 @@ export default function DownloadsTechnicalResourcesPage() {
                 <p className="mt-4 text-sm leading-relaxed text-ink-2">{document.summary}</p>
 
                 <Link
-                  href="#contact"
+                  href={document.fileUrl || "#contact"}
+                  target={document.fileUrl ? "_blank" : undefined}
+                  rel={document.fileUrl ? "noreferrer" : undefined}
                   className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-aqua transition-colors hover:text-aqua-bright"
                 >
                   <Download className="size-4" aria-hidden="true" />

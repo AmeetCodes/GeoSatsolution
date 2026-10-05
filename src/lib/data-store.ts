@@ -2,40 +2,57 @@ import fs from "fs";
 import path from "path";
 
 export interface SolutionItem {
+  id?: string;
+  slug?: string;
   title: string;
   group: string;
   intro: string;
   description: string;
   outcomes: string[];
   images: { src: string; alt: string; caption: string }[];
+  faqs?: { question: string; answer: string }[];
+  isPublished?: boolean;
 }
 
 export interface ProductItem {
+  id?: string;
+  slug?: string;
   title: string;
   group: string;
   intro: string;
   description: string;
   outcomes: string[];
   images: { src: string; alt: string; caption: string }[];
+  specifications?: Record<string, string>;
+  faqs?: { question: string; answer: string }[];
+  isPublished?: boolean;
 }
 
 export interface IndustryItem {
+  id?: string;
+  slug?: string;
   title: string;
   intro: string;
   description: string;
   items: string[];
+  isPublished?: boolean;
 }
 
 export interface NewsItem {
+  id?: string;
   slug: string;
   title: string;
   date: string;
   category: string;
   excerpt: string;
   body: string[];
+  image?: { src: string; alt: string };
+  author?: string;
+  isPublished?: boolean;
 }
 
 export interface CareerRole {
+  id?: string;
   slug: string;
   title: string;
   category: string;
@@ -43,6 +60,23 @@ export interface CareerRole {
   summary: string;
   responsibilities: string[];
   requirements: string[];
+  description?: string;
+  employmentType?: string;
+  applicationInfo?: string;
+  status?: "open" | "closed";
+  isPublished?: boolean;
+}
+
+export interface ResourceItem {
+  id?: string;
+  slug: string;
+  title: string;
+  category: string;
+  description: string;
+  fileUrl: string;
+  thumbnail?: { src: string; alt: string };
+  updated: string;
+  isPublished: boolean;
 }
 
 export interface PartnerItem {
@@ -51,13 +85,18 @@ export interface PartnerItem {
   category: string;
   tier: string;
   description: string;
+  logo?: { src: string; alt: string };
+  order?: number;
 }
 
 export interface LeaderItem {
+  id?: string;
   name: string;
   role: string;
   division: string;
   bio: string;
+  image?: { src: string; alt: string };
+  order?: number;
 }
 
 export interface SiteContentData {
@@ -69,8 +108,16 @@ export interface SiteContentData {
     Partners: PartnerItem[];
     Insights: NewsItem[];
     Careers: CareerRole[];
+    Resources: ResourceItem[];
   };
 }
+
+export const DEFAULT_RESOURCES: ResourceItem[] = [
+  { slug: "uav-lidar-workflow", title: "UAV LiDAR Survey Workflow Guide", category: "Operations", description: "Step-by-step field procedures for planning, executing, and processing UAV LiDAR survey missions including pre-flight checks, GCP placement, and trajectory post-processing.", fileUrl: "", updated: "2026-08-15", isPublished: true },
+  { slug: "gnss-network-adjustment", title: "GNSS Network Adjustment Reference", category: "Geodetic Control", description: "Technical reference for designing, observing, and adjusting static GNSS baselines including loop closure tolerances and datum transformation parameters.", fileUrl: "", updated: "2026-07-22", isPublished: true },
+  { slug: "point-cloud-classification", title: "Point Cloud Classification Standards", category: "Data Processing", description: "Classification schema and quality assurance criteria for airborne LiDAR point clouds following ASPRS LAS 1.4 standards.", fileUrl: "", updated: "2026-06-10", isPublished: true },
+  { slug: "gis-data-delivery-spec", title: "GIS Data Delivery Specification", category: "GIS & Spatial Data", description: "File format requirements, coordinate reference system standards, and metadata documentation for spatial data deliverables.", fileUrl: "", updated: "2026-05-28", isPublished: true },
+];
 
 function normalizeContentSlug(value: string): string {
   return value
@@ -610,7 +657,8 @@ export const DEFAULT_SITE_CONTENT: SiteContentData = {
           "Knowledge of cloud infrastructure (Docker, AWS/GCP)"
         ]
       }
-    ]
+    ],
+    Resources: DEFAULT_RESOURCES,
   }
 };
 

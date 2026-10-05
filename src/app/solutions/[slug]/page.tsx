@@ -8,7 +8,7 @@ import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import {
-  solutionSlug,
+  solutionPathSlug,
   getDynamicSolutionBySlug,
   getDynamicSolutions,
 } from "../_lib/solutions";
@@ -19,7 +19,7 @@ type SolutionPageProps = {
 
 export async function generateStaticParams() {
   const list = await getDynamicSolutions();
-  return list.map((solution) => ({ slug: solutionSlug(solution.title) }));
+  return list.map((solution) => ({ slug: solutionPathSlug(solution) }));
 }
 
 export const dynamicParams = true;
@@ -154,7 +154,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
             </div>
           </section>
 
-          <SolutionFaq solutionTitle={solution.title} deliverables={solution.outcomes} />
+          <SolutionFaq solutionTitle={solution.title} deliverables={solution.outcomes} items={solution.faqs} />
         </div>
       </main>
       <Footer />

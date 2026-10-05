@@ -13,6 +13,7 @@ export interface ISolution extends Document {
   intro: string;              // Short summary
   description: string;        // Full details
   outcomes: string[];         // Key deliverables/outcomes list
+  faqs: { question: string; answer: string }[];
   images: ISolutionImage[];   // Gallery/Header images
   isPublished: boolean;
   order: number;
@@ -28,6 +29,7 @@ const SolutionSchema = new Schema<ISolution>(
     intro: { type: String, default: "" },
     description: { type: String, default: "" },
     outcomes: { type: [String], default: [] },
+    faqs: [{ question: { type: String, required: true }, answer: { type: String, required: true } }],
     images: [
       {
         src: { type: String, required: true },

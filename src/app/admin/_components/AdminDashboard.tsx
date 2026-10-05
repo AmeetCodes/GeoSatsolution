@@ -75,16 +75,15 @@ export function AdminDashboard({
         body: JSON.stringify({ section, data }),
       });
 
-      if (!res.ok) {
-        const resData = await res.json().catch(() => null);
-        throw new Error(resData?.message || "Failed to save changes");
-      }
-      setContent((prev) => ({ ...prev, [section]: data }));
+      const resData = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(resData?.message || "Failed to save changes");
+      setContent((prev) => ({ ...prev, [section]: resData?.data ?? data }));
       setSavedRecently(true);
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
     } catch (err: any) {
       addToast("Save Failed", err.message || "Could not persist to server");
+      throw err;
     } finally {
       setIsSaving(false);
     }

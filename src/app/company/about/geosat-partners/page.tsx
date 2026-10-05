@@ -48,7 +48,7 @@ export default async function GeoSatPartnersPage() {
         )}
       </div>
     ),
-    thumbnail: referenceImages[index % referenceImages.length],
+    thumbnail: partner.logo?.src || referenceImages[index % referenceImages.length],
   }));
 
   const clientCards = clients.map((client, index) => ({

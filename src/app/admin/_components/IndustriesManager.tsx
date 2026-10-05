@@ -27,6 +27,8 @@ export function IndustriesManager({
 
   // Modal form states
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [isPublished, setIsPublished] = useState(true);
   const [intro, setIntro] = useState("");
   const [desc, setDesc] = useState("");
   const [items, setItems] = useState<string[]>([""]);
@@ -34,6 +36,8 @@ export function IndustriesManager({
   const openAddModal = () => {
     setIsNew(true);
     setTitle("");
+    setSlug("");
+    setIsPublished(true);
     setIntro("");
     setDesc("");
     setItems(["Sector Sub-field 1", "Sector Sub-field 2"]);
@@ -49,6 +53,8 @@ export function IndustriesManager({
     setIsNew(false);
     setEditingItem(item);
     setTitle(item.title);
+    setSlug(item.slug || "");
+    setIsPublished(item.isPublished !== false);
     setIntro(item.intro);
     setDesc(item.description);
     setItems([...item.items]);
@@ -61,7 +67,10 @@ export function IndustriesManager({
     const cleanedItems = items.filter((i) => i.trim() !== "");
 
     const newIndustry: IndustryItem = {
+      id: isNew ? undefined : editingItem?.id,
       title: title.trim(),
+      slug: slug.trim() || title.trim().toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      isPublished,
       intro: intro.trim(),
       description: desc.trim(),
       items: cleanedItems.length > 0 ? cleanedItems : ["General Sector Solutions"],
@@ -70,13 +79,12 @@ export function IndustriesManager({
     let updatedList: IndustryItem[];
     if (isNew) {
       updatedList = [...industries, newIndustry];
-      onTriggerToast("Industry Sector Added", `"${newIndustry.title}" sector has been added`);
     } else {
       updatedList = industries.map((ind) => (ind.title === editingItem?.title ? newIndustry : ind));
-      onTriggerToast("Sector Updated", `Saved updates to "${newIndustry.title}"`);
     }
 
     await onSaveIndustries(updatedList);
+    onTriggerToast(isNew ? "Industry Sector Added" : "Sector Updated", isNew ? `"${newIndustry.title}" sector has been added` : `Saved updates to "${newIndustry.title}"`);
     setEditingItem(null);
   };
 
@@ -203,7 +211,9 @@ export function IndustriesManager({
               Configure sector overview, lead paragraph, and associated disciplines.
             </p>
 
-            <form onSubmit={handleSaveModal} className="space-y-4">
+          <form onSubmit={handleSaveModal} className="space-y-4">
+            <div><label className="block text-xs font-medium text-zinc-300 mb-1">Industry slug</label><input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="infrastructure" className="w-full rounded-lg border border-zinc-800 bg-[#f1ece5] px-3 py-2 text-xs text-white" /></div>
+            <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />Published</label>
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
                   Sector Title

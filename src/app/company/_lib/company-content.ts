@@ -7,6 +7,8 @@ export type NewsItem = {
   category: string;
   excerpt: string;
   body: string[];
+  image?: { src: string; alt: string };
+  author?: string;
 };
 
 export type CareerRole = {
@@ -17,6 +19,10 @@ export type CareerRole = {
   summary: string;
   responsibilities: string[];
   requirements: string[];
+  description?: string;
+  employmentType?: string;
+  applicationInfo?: string;
+  status?: "open" | "closed";
 };
 
 export type ResourceDocument = {
@@ -25,38 +31,22 @@ export type ResourceDocument = {
   category: string;
   summary: string;
   updated: string;
+  fileUrl?: string;
+  isPublished?: boolean;
 };
 
-export const RESOURCE_DOCUMENTS: ResourceDocument[] = [
-  {
-    slug: "uav-lidar-workflow",
-    title: "UAV LiDAR Survey Workflow Guide",
-    category: "Operations",
-    summary: "Step-by-step field procedures for planning, executing, and processing UAV LiDAR survey missions including pre-flight checks, GCP placement, and trajectory post-processing.",
-    updated: "2026-08-15",
-  },
-  {
-    slug: "gnss-network-adjustment",
-    title: "GNSS Network Adjustment Reference",
-    category: "Geodetic Control",
-    summary: "Technical reference for designing, observing, and adjusting static GNSS baselines including loop closure tolerances and datum transformation parameters.",
-    updated: "2026-07-22",
-  },
-  {
-    slug: "point-cloud-classification",
-    title: "Point Cloud Classification Standards",
-    category: "Data Processing",
-    summary: "Classification schema and quality assurance criteria for airborne LiDAR point clouds following ASPRS LAS 1.4 standards.",
-    updated: "2026-06-10",
-  },
-  {
-    slug: "gis-data-delivery-spec",
-    title: "GIS Data Delivery Specification",
-    category: "GIS & Spatial Data",
-    summary: "File format requirements, coordinate reference system standards, and metadata documentation for spatial data deliverables.",
-    updated: "2026-05-28",
-  },
-];
+export async function getDynamicResources(): Promise<ResourceDocument[]> {
+  const resources = await companyService.getResources(true);
+  return resources.map((resource) => ({
+    slug: resource.slug,
+    title: resource.title,
+    category: resource.category,
+    summary: resource.description || "",
+    updated: resource.updated ? new Date(resource.updated).toISOString().slice(0, 10) : "",
+    fileUrl: resource.fileUrl || "",
+    isPublished: resource.isPublished,
+  }));
+}
 
 export type LeaderItem = {
   name: string;
@@ -64,6 +54,7 @@ export type LeaderItem = {
   division?: string;
   bio?: string;
   image?: { src: string; alt: string };
+  order?: number;
 };
 
 export type PartnerItem = {
@@ -72,6 +63,8 @@ export type PartnerItem = {
   category?: string;
   tier?: string;
   description?: string;
+  logo?: { src: string; alt: string };
+  order?: number;
 };
 
 export type ClientItem = {
@@ -107,6 +100,8 @@ export async function getDynamicNewsItems(): Promise<NewsItem[]> {
         category: a.category || "General",
         excerpt: a.excerpt || "",
         body: a.body || [],
+        image: a.image,
+        author: a.author,
       }));
     }
   } catch (err) {
@@ -126,6 +121,8 @@ export async function getDynamicNewsItemBySlug(slug: string): Promise<NewsItem |
         category: a.category || "General",
         excerpt: a.excerpt || "",
         body: a.body || [],
+        image: a.image,
+        author: a.author,
       };
     }
   } catch (err) {
@@ -144,6 +141,10 @@ export async function getDynamicCareerRoles(): Promise<CareerRole[]> {
         category: c.category || "General",
         location: c.location || "Kathmandu and field projects",
         summary: c.summary || "",
+        description: c.description || "",
+        employmentType: c.employmentType || "Full-time",
+        applicationInfo: c.applicationInfo || "",
+        status: c.status || "open",
         responsibilities: c.responsibilities || [],
         requirements: c.requirements || [],
       }));
@@ -164,6 +165,10 @@ export async function getDynamicCareerRoleBySlug(slug: string): Promise<CareerRo
         category: c.category || "General",
         location: c.location || "Kathmandu and field projects",
         summary: c.summary || "",
+        description: c.description || "",
+        employmentType: c.employmentType || "Full-time",
+        applicationInfo: c.applicationInfo || "",
+        status: c.status || "open",
         responsibilities: c.responsibilities || [],
         requirements: c.requirements || [],
       };
@@ -183,6 +188,7 @@ export async function getDynamicLeaders(): Promise<LeaderItem[]> {
       division: l.division,
       bio: l.bio,
       image: l.image,
+      order: l.order,
     }));
   } catch (err) {
     console.error("Error fetching dynamic leaders:", err);
@@ -199,6 +205,8 @@ export async function getDynamicPartners(): Promise<PartnerItem[]> {
       category: p.category,
       tier: p.tier,
       description: p.description,
+      logo: p.logo,
+      order: p.order,
     }));
   } catch (err) {
     console.error("Error fetching dynamic partners:", err);

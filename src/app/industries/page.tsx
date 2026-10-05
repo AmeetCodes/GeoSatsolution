@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { industrySlug, getDynamicIndustries } from "./_lib/industries";
+import { industryPathSlug, getDynamicIndustries } from "./_lib/industries";
 
 export const metadata: Metadata = {
   title: "Industries | GeoSAT Solutions",
@@ -44,7 +44,7 @@ export default async function IndustriesPage() {
             {industries.map((industry, index) => (
               <Link
                 key={industry.title}
-                href={`/industries/${industrySlug(industry.title)}`}
+                href={`/industries/${industryPathSlug(industry)}`}
                 className="group relative overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 transition-[border-color,transform,background-color] duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:bg-panel/55"
               >
                 <span

@@ -44,6 +44,7 @@ export class ProductService {
       intro: data.intro || "",
       description: data.description || "",
       outcomes: data.outcomes || [],
+      faqs: data.faqs || [],
       images: data.images || [],
       isPublished: data.isPublished !== undefined ? data.isPublished : true,
     });
@@ -109,6 +110,7 @@ export class ProductService {
       order: item.order !== undefined ? item.order : index + 1,
       isPublished: item.isPublished !== undefined ? item.isPublished : true,
       outcomes: item.outcomes || [],
+      faqs: item.faqs || [],
       images: item.images || [],
     }));
 

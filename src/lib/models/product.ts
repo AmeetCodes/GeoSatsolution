@@ -15,6 +15,7 @@ export interface IProduct extends Document {
   outcomes: string[];         // Specifications/Features list
   images: IProductImage[];
   specifications?: Record<string, string>;
+  faqs: { question: string; answer: string }[];
   isPublished: boolean;
   order: number;
   createdAt: Date;
@@ -37,6 +38,7 @@ const ProductSchema = new Schema<IProduct>(
       },
     ],
     specifications: { type: Schema.Types.Mixed, default: {} },
+    faqs: [{ question: { type: String, required: true }, answer: { type: String, required: true } }],
     isPublished: { type: Boolean, default: true },
     order: { type: Number, default: 0 },
   },

@@ -17,7 +17,7 @@ export interface IPartner extends Document {
 
 const PartnerSchema = new Schema<IPartner>(
   {
-    customId: { type: String, trim: true },
+    customId: { type: String, unique: true, sparse: true, trim: true },
     name: { type: String, required: true, trim: true },
     category: { type: String, required: true, trim: true },
     tier: { type: String, required: true, trim: true },

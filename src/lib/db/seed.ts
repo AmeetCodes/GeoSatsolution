@@ -38,8 +38,10 @@ import {
   Equipment,
   Client,
   Navigation,
+  Resource,
+  ContentMigration,
 } from "../models";
-import { DEFAULT_SITE_CONTENT, getSiteContent } from "../data-store";
+import { DEFAULT_SITE_CONTENT, DEFAULT_RESOURCES, getSiteContent } from "../data-store";
 import { DEFAULT_PROJECTS } from "../data/project-content";
 import { DEFAULT_NAVIGATION_TREE, getNavigationTree } from "../tree-store";
 export function slugify(text: string): string {
@@ -87,6 +89,7 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
       equipment: await Equipment.countDocuments(),
       clients: await Client.countDocuments(),
       navigation: await Navigation.countDocuments(),
+      resources: await Resource.countDocuments(),
     };
     return { seeded: false, counts };
   }
@@ -107,6 +110,7 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     await Equipment.deleteMany({});
     await Client.deleteMany({});
     await Navigation.deleteMany({});
+    await Resource.deleteMany({});
   }
 
   // 1. Seed Solutions
@@ -216,6 +220,11 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     await Career.insertMany(careerDocs);
   }
 
+  if (DEFAULT_RESOURCES.length) {
+    await Resource.insertMany(DEFAULT_RESOURCES.map((item, index) => ({ ...item, order: index + 1, updated: new Date(item.updated) })));
+    await ContentMigration.updateOne({ _id: "legacy-downloads-v1" }, { $setOnInsert: { appliedAt: new Date() } }, { upsert: true });
+  }
+
   // 8. Seed Projects
   const projectDocs = DEFAULT_PROJECTS.map((proj, idx) => ({
     code: proj.code,
@@ -268,6 +277,7 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     equipment: await Equipment.countDocuments(),
     clients: await Client.countDocuments(),
     navigation: await Navigation.countDocuments(),
+    resources: await Resource.countDocuments(),
   };
 
   return { seeded: true, counts };

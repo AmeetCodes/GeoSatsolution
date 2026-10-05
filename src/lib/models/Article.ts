@@ -6,6 +6,7 @@ export interface IArticle extends Document {
   date: Date;
   category: string;
   excerpt: string;
+  image?: { src: string; alt: string };
   body: string[];
   author?: string;
   isPublished: boolean;
@@ -20,6 +21,7 @@ const ArticleSchema = new Schema<IArticle>(
     date: { type: Date, default: Date.now },
     category: { type: String, required: true, trim: true },
     excerpt: { type: String, required: true },
+    image: { src: { type: String }, alt: { type: String } },
     body: { type: [String], required: true },
     author: { type: String, default: "GeoSAT Team" },
     isPublished: { type: Boolean, default: true },

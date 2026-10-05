@@ -1,13 +1,16 @@
 import connectDB from "../connection";
+import { Types } from "mongoose";
 import { Solution, ISolution, ISolutionImage } from "../../models/solution";
 
 export interface CreateSolutionDTO {
+  id?: string;
   title: string;
   slug?: string;
   group: string;
   intro?: string;
   description?: string;
   outcomes?: string[];
+  faqs?: { question: string; answer: string }[];
   images?: ISolutionImage[];
   isPublished?: boolean;
   order?: number;
@@ -20,6 +23,7 @@ export interface UpdateSolutionDTO {
   intro?: string;
   description?: string;
   outcomes?: string[];
+  faqs?: { question: string; answer: string }[];
   images?: ISolutionImage[];
   isPublished?: boolean;
   order?: number;
@@ -103,9 +107,14 @@ export class SolutionRepository {
 
   async replaceAll(solutions: CreateSolutionDTO[]): Promise<ISolution[]> {
     await connectDB();
-    await Solution.deleteMany({});
-    if (solutions.length === 0) return [];
-    return Solution.insertMany(solutions) as unknown as Promise<ISolution[]>;
+    const slugs = solutions.map((item) => item.slug).filter((slug): slug is string => Boolean(slug));
+    const ids = solutions.flatMap((item) => item.id ? [new Types.ObjectId(item.id)] : []);
+    if (solutions.length) await Solution.bulkWrite(solutions.map((item) => {
+      const { id, ...data } = item;
+      return { updateOne: { filter: id ? { _id: new Types.ObjectId(id) } : { slug: item.slug }, update: { $set: data }, upsert: true } };
+    }));
+    await Solution.deleteMany({ $and: [{ _id: { $nin: ids } }, { slug: { $nin: slugs } }] });
+    return Solution.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<ISolution[]>;
   }
 
   async count(): Promise<number> {

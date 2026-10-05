@@ -9,7 +9,7 @@ import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import {
-  productSlug,
+  productPathSlug,
   getDynamicProductBySlug,
   getDynamicProducts,
 } from "../_lib/products";
@@ -20,7 +20,7 @@ type ProductPageProps = {
 
 export async function generateStaticParams() {
   const list = await getDynamicProducts();
-  return list.map((product) => ({ slug: productSlug(product.title) }));
+  return list.map((product) => ({ slug: productPathSlug(product) }));
 }
 
 export const dynamicParams = true;
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </section>
 
-          <SolutionFaq solutionTitle={product.title} deliverables={product.outcomes} />
+          <SolutionFaq solutionTitle={product.title} deliverables={product.outcomes} items={product.faqs} />
         </div>
       </main>
       <Footer />

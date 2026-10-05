@@ -41,6 +41,9 @@ export function ProductsManager({
 
   // Form states
   const [formTitle, setFormTitle] = useState("");
+  const [formSlug, setFormSlug] = useState("");
+  const [formPublished, setFormPublished] = useState(true);
+  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string }[]>([]);
   const [formGroup, setFormGroup] = useState<string>("UAV & Payloads");
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
@@ -63,17 +66,15 @@ export function ProductsManager({
   const openAddModal = () => {
     setIsNew(true);
     setFormTitle("");
+    setFormSlug("");
+    setFormPublished(true);
+    setFormFaqs([]);
+    setFormImages([{ src: "", alt: "", caption: "" }]);
     setFormGroup(selectedGroup !== "All" ? selectedGroup : "UAV & Payloads");
     setFormIntro("");
     setFormDesc("");
     setFormOutcomes(["Survey-grade accuracy", "IP55 weather resistance", "High payload capacity"]);
-    setFormImages([
-      {
-        src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85",
-        alt: "Geospatial Hardware",
-        caption: "Industrial grade field instrument",
-      },
-    ]);
+    setFormImages([{ src: "", alt: "", caption: "" }]);
     setEditingItem({
       title: "",
       group: "UAV & Payloads",
@@ -88,6 +89,10 @@ export function ProductsManager({
     setIsNew(false);
     setEditingItem(item);
     setFormTitle(item.title);
+    setFormSlug(item.slug || "");
+    setFormPublished(item.isPublished !== false);
+    setFormFaqs(item.faqs || []);
+    setFormImages(item.images?.length ? item.images.map((image) => ({ ...image, caption: image.caption || "" })) : [{ src: "", alt: "", caption: "" }]);
     setFormGroup(item.group);
     setFormIntro(item.intro);
     setFormDesc(item.description);
@@ -107,30 +112,27 @@ export function ProductsManager({
     const cleanedImages = formImages.filter((img) => img.src.trim() !== "");
 
     const newProduct: ProductItem = {
+      id: isNew ? undefined : editingItem?.id,
       title: formTitle.trim(),
+      slug: formSlug.trim() || formTitle.trim().toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      isPublished: formPublished,
+      faqs: formFaqs.filter((faq) => faq.question.trim() && faq.answer.trim()),
       group: formGroup,
       intro: formIntro.trim(),
       description: formDesc.trim(),
       outcomes: cleanedOutcomes.length > 0 ? cleanedOutcomes : ["Standard calibration certified"],
-      images: cleanedImages.length > 0 ? cleanedImages : [
-        {
-          src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85",
-          alt: formTitle,
-          caption: "Precision instrumentation",
-        },
-      ],
+      images: cleanedImages.slice(0, 4).map((image) => ({ ...image, alt: image.alt.trim() || formTitle.trim() })),
     };
 
     let updatedList: ProductItem[];
     if (isNew) {
       updatedList = [newProduct, ...products];
-      onTriggerToast("Product Added", `"${newProduct.title}" added to ${newProduct.group}`);
     } else {
       updatedList = products.map((p) => (p.title === editingItem?.title ? newProduct : p));
-      onTriggerToast("Product Updated", `Saved "${newProduct.title}"`);
     }
 
     await onSaveProducts(updatedList);
+    onTriggerToast(isNew ? "Product Added" : "Product Updated", isNew ? `"${newProduct.title}" added to ${newProduct.group}` : `Saved "${newProduct.title}"`);
     setEditingItem(null);
   };
 
@@ -343,6 +345,21 @@ export function ProductsManager({
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">Page slug</label>
+                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="gnss-receivers" className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white" />
+              </div>
+              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={formPublished} onChange={(e) => setFormPublished(e.target.checked)} /> Published</label>
+              <section className="space-y-2">
+                <div className="flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Frequently asked questions</label><button type="button" onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])} className="text-xs text-blue-400">Add FAQ</button></div>
+                {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove FAQ</button></div>)}
+              </section>
+
+              <section className="space-y-2">
+                <div className="flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Product carousel: main image and up to 3 additional images</label><button type="button" disabled={formImages.length >= 4} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "" }])} className="text-xs text-blue-400 disabled:opacity-50">Add image</button></div>
+                {formImages.map((image, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={image.src} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, src: e.target.value } : item))} placeholder="Image URL or site path" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><input value={image.alt} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, alt: e.target.value } : item))} placeholder="Accessible image description" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><input value={image.caption} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, caption: e.target.value } : item))} placeholder="Caption (optional)" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormImages(formImages.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove image</button></div>)}
+              </section>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">

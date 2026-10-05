@@ -19,20 +19,17 @@ import type {
   PartnerItem,
   NewsItem,
   CareerRole,
+  SiteContentData,
 } from "@/lib/data-store";
+import { ResourcesManager } from "./ResourcesManager";
 
 interface CompanyManagerProps {
-  company: {
-    Leadership: LeaderItem[];
-    Partners: PartnerItem[];
-    Insights: NewsItem[];
-    Careers: CareerRole[];
-  };
-  onSaveCompany: (updatedCompany: any) => Promise<void>;
+  company: SiteContentData["Company"];
+  onSaveCompany: (updatedCompany: SiteContentData["Company"]) => Promise<void>;
   onTriggerToast: (title: string, desc?: string, actionLabel?: string, onAction?: () => void) => void;
 }
 
-type SubTab = "leadership" | "partners" | "insights" | "careers";
+type SubTab = "leadership" | "partners" | "insights" | "careers" | "resources";
 
 export function CompanyManager({
   company,
@@ -51,18 +48,23 @@ export function CompanyManager({
 
   // News editing state
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
-  const [newsForm, setNewsForm] = useState<NewsItem>({ slug: "", title: "", date: "", category: "", excerpt: "", body: [""] });
+  const [newsForm, setNewsForm] = useState<NewsItem>({ slug: "", title: "", date: "", category: "", excerpt: "", body: [""], author: "GeoSAT Editorial", isPublished: true });
 
   // Career editing state
   const [editingCareer, setEditingCareer] = useState<CareerRole | null>(null);
   const [careerForm, setCareerForm] = useState<CareerRole>({
     slug: "",
     title: "",
-    category: "",
+    category: "Survey & GIS Engineering Roles",
     location: "",
     summary: "",
     responsibilities: [""],
     requirements: [""],
+    description: "",
+    employmentType: "Full-time",
+    applicationInfo: "",
+    status: "open",
+    isPublished: true,
   });
 
   // Handler for Leadership
@@ -92,7 +94,7 @@ export function CompanyManager({
     const exists = current.some((p) => p.name === editingPartner?.name);
     const updated = exists
       ? current.map((p) => (p.name === editingPartner?.name ? partnerForm : p))
-      : [...current, { ...partnerForm, id: partnerForm.id || `PART-${Date.now().toString().slice(-4)}` }];
+      : [...current, { ...partnerForm, id: partnerForm.id || `PART-${Date.now()}` }];
 
     await onSaveCompany({ ...company, Partners: updated });
     onTriggerToast("Partner Saved", `Updated partner ${partnerForm.name}`);
@@ -214,6 +216,9 @@ export function CompanyManager({
           <Briefcase className="w-3.5 h-3.5" />
           <span>Careers & Roles ({company?.Careers?.length || 0})</span>
         </button>
+        <button type="button" onClick={() => setSubTab("resources")} className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${subTab === "resources" ? "bg-[#f1ece5] text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}>
+          <BookOpen className="w-3.5 h-3.5" /><span>Downloads ({company.Resources?.length || 0})</span>
+        </button>
       </div>
 
       {/* LEADERSHIP SECTION */}
@@ -236,7 +241,7 @@ export function CompanyManager({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(company.Leadership || []).map((leader) => (
+            {[...(company.Leadership || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((leader) => (
               <div
                 key={leader.name}
                 className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
@@ -298,7 +303,7 @@ export function CompanyManager({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(company.Partners || []).map((partner) => (
+            {[...(company.Partners || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((partner) => (
               <div
                 key={partner.name}
                 className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
@@ -359,6 +364,8 @@ export function CompanyManager({
                   category: "Operations",
                   excerpt: "",
                   body: [""],
+                  author: "GeoSAT Editorial",
+                  isPublished: true,
                 });
                 setEditingNews({
                   slug: "",
@@ -367,6 +374,8 @@ export function CompanyManager({
                   category: "Operations",
                   excerpt: "",
                   body: [""],
+                  author: "GeoSAT Editorial",
+                  isPublished: true,
                 });
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold transition-colors"
@@ -435,20 +444,30 @@ export function CompanyManager({
                 setCareerForm({
                   slug: "",
                   title: "",
-                  category: "Engineering",
+                  category: "Survey & GIS Engineering Roles",
                   location: "Kathmandu / Field",
                   summary: "",
                   responsibilities: [""],
                   requirements: [""],
+                  description: "",
+                  employmentType: "Full-time",
+                  applicationInfo: "",
+                  status: "open",
+                  isPublished: true,
                 });
                 setEditingCareer({
                   slug: "",
                   title: "",
-                  category: "Engineering",
+                  category: "Survey & GIS Engineering Roles",
                   location: "Kathmandu / Field",
                   summary: "",
                   responsibilities: [""],
                   requirements: [""],
+                  description: "",
+                  employmentType: "Full-time",
+                  applicationInfo: "",
+                  status: "open",
+                  isPublished: true,
                 });
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
@@ -503,6 +522,8 @@ export function CompanyManager({
         </div>
       )}
 
+      {subTab === "resources" && <ResourcesManager resources={company.Resources || []} onSave={(resources) => onSaveCompany({ ...company, Resources: resources })} />}
+
       {/* Leader Edit Modal */}
       {editingLeader && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
@@ -549,6 +570,8 @@ export function CompanyManager({
                   required
                 />
               </div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Profile image URL</label><input value={leaderForm.image?.src || ""} onChange={(e) => setLeaderForm({ ...leaderForm, image: e.target.value ? { src: e.target.value, alt: leaderForm.image?.alt || leaderForm.name } : undefined })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" placeholder="/team/name.jpg" /></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Display order</label><input type="number" min={0} value={leaderForm.order ?? 0} onChange={(e) => setLeaderForm({ ...leaderForm, order: Number(e.target.value) })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
               <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
                 <button
                   type="button"
@@ -617,6 +640,8 @@ export function CompanyManager({
                   required
                 />
               </div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Partner logo URL</label><input value={partnerForm.logo?.src || ""} onChange={(e) => setPartnerForm({ ...partnerForm, logo: e.target.value ? { src: e.target.value, alt: partnerForm.logo?.alt || partnerForm.name } : undefined })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" placeholder="/partners/logo.svg" /></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Display order</label><input type="number" min={0} value={partnerForm.order ?? 0} onChange={(e) => setPartnerForm({ ...partnerForm, order: Number(e.target.value) })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
               <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
                 <button
                   type="button"
@@ -653,6 +678,7 @@ export function CompanyManager({
                   required
                 />
               </div>
+              <div className="grid grid-cols-2 gap-3"><div><label className="block text-xs font-medium text-zinc-300 mb-1">Slug</label><input value={newsForm.slug} onChange={(e) => setNewsForm({ ...newsForm, slug: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" placeholder="generated-from-title" /></div><div><label className="block text-xs font-medium text-zinc-300 mb-1">Author</label><input value={newsForm.author || ""} onChange={(e) => setNewsForm({ ...newsForm, author: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div></div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-300 mb-1">Category</label>
@@ -685,6 +711,9 @@ export function CompanyManager({
                   required
                 />
               </div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Main image URL (optional)</label><input value={newsForm.image?.src || ""} onChange={(e) => setNewsForm({ ...newsForm, image: e.target.value ? { src: e.target.value, alt: newsForm.image?.alt || newsForm.title } : undefined })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" placeholder="https://… or /images/article.jpg" /></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Article content (one paragraph per line)</label><textarea rows={6} value={newsForm.body.join("\n")} onChange={(e) => setNewsForm({ ...newsForm, body: e.target.value.split("\n") })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" required /></div>
+              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={newsForm.isPublished !== false} onChange={(e) => setNewsForm({ ...newsForm, isPublished: e.target.checked })} /> Published</label>
               <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
                 <button
                   type="button"
@@ -724,13 +753,9 @@ export function CompanyManager({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-300 mb-1">Category</label>
-                  <input
-                    type="text"
-                    value={careerForm.category}
-                    onChange={(e) => setCareerForm({ ...careerForm, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                    required
-                  />
+                  <select value={careerForm.category} onChange={(e) => setCareerForm({ ...careerForm, category: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" required>
+                    {[...new Set([careerForm.category, "Survey & GIS Engineering Roles", "UAV & LiDAR Operations Roles", "Software Development Roles"])].filter(Boolean).map((category) => <option key={category} value={category}>{category}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-300 mb-1">Location</label>
@@ -753,6 +778,12 @@ export function CompanyManager({
                   required
                 />
               </div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Full description</label><textarea rows={3} value={careerForm.description || ""} onChange={(e) => setCareerForm({ ...careerForm, description: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
+              <div className="grid grid-cols-2 gap-3"><div><label className="block text-xs font-medium text-zinc-300 mb-1">Employment type</label><input value={careerForm.employmentType || ""} onChange={(e) => setCareerForm({ ...careerForm, employmentType: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div><div><label className="block text-xs font-medium text-zinc-300 mb-1">Posting status</label><select value={careerForm.status || "open"} onChange={(e) => setCareerForm({ ...careerForm, status: e.target.value as "open" | "closed" })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"><option value="open">Open</option><option value="closed">Closed</option></select></div></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Responsibilities (one per line)</label><textarea rows={4} value={careerForm.responsibilities.join("\n")} onChange={(e) => setCareerForm({ ...careerForm, responsibilities: e.target.value.split("\n") })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Requirements (one per line)</label><textarea rows={4} value={careerForm.requirements.join("\n")} onChange={(e) => setCareerForm({ ...careerForm, requirements: e.target.value.split("\n") })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
+              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Application information</label><textarea rows={2} value={careerForm.applicationInfo || ""} onChange={(e) => setCareerForm({ ...careerForm, applicationInfo: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
+              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={careerForm.isPublished !== false} onChange={(e) => setCareerForm({ ...careerForm, isPublished: e.target.checked })} /> Published</label>
               <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
                 <button
                   type="button"

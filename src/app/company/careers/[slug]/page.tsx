@@ -67,7 +67,7 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
     "@type": "JobPosting",
     title: role.title,
     description: role.summary,
-    employmentType: "FULL_TIME",
+    employmentType: role.employmentType || "FULL_TIME",
     hiringOrganization: {
       "@type": "Organization",
       name: "GeoSAT Solutions",
@@ -110,12 +110,14 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
                   <MapPin className="size-3.5" aria-hidden="true" />
                   {role.location}
                 </span>
+                <span>{role.status === "closed" ? "Closed" : role.employmentType || "Full-time"}</span>
               </div>
 
               <h1 className="mt-6 font-display text-4xl leading-tight text-ink sm:text-5xl">
                 {role.title}
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-ink-2">{role.summary}</p>
+              {role.description && <p className="mt-4 max-w-3xl text-sm leading-7 text-ink-3">{role.description}</p>}
             </header>
 
             <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2">
@@ -147,6 +149,7 @@ export default async function CareerDetailPage({ params }: CareerDetailPageProps
                 </ul>
               </section>
             </div>
+            {role.applicationInfo && <p className="border-t border-line px-6 py-5 text-sm leading-relaxed text-ink-3 sm:px-8">{role.applicationInfo}</p>}
           </article>
         </div>
       </main>

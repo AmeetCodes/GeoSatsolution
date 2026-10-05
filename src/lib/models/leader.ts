@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ILeader extends Document {
+  customId?: string;
   name: string;
   role: string;
   division: string;
@@ -16,6 +17,7 @@ export interface ILeader extends Document {
 
 const LeaderSchema = new Schema<ILeader>(
   {
+    customId: { type: String, unique: true, sparse: true, trim: true },
     name: { type: String, required: true, trim: true },
     role: { type: String, required: true, trim: true },
     division: { type: String, required: true, trim: true },

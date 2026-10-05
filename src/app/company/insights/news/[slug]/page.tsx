@@ -68,7 +68,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     datePublished: item.date,
     author: {
       "@type": "Organization",
-      name: "GeoSAT Solutions",
+      name: item.author || "GeoSAT Solutions",
       url: "https://geosatsoln.com",
     },
     publisher: {

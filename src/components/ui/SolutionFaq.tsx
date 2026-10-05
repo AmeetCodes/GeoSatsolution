@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 
-export function SolutionFaq({ solutionTitle, deliverables }: { solutionTitle: string; deliverables: string[] }) {
-  const faqs = [
+export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTitle: string; deliverables: string[]; items?: { question: string; answer: string }[] }) {
+  const generatedFaqs = [
     {
       question: `What is included with ${solutionTitle}?`,
       answer: `A ${solutionTitle} engagement is scoped to your site and decisions. Typical handover items include ${deliverables.join(", ")}, along with the supporting checks and metadata agreed during planning.`,
@@ -15,6 +15,7 @@ export function SolutionFaq({ solutionTitle, deliverables }: { solutionTitle: st
       answer: `We plan ${solutionTitle} around the terrain, project tolerance, and how the results will be used. The proposed capture and verification steps are agreed before fieldwork, then checked against the project control and acceptance criteria.`,
     },
   ];
+  const faqs = items?.length ? items : generatedFaqs;
 
   return (
     <section className="mt-14 border-t border-line pt-10 sm:mt-16 sm:pt-12" aria-labelledby="solution-faq-heading">

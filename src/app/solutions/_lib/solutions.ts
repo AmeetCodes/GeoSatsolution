@@ -7,11 +7,13 @@ export type SolutionImage = {
 };
 
 export type Solution = {
+  slug?: string;
   title: string;
   group: string;
   intro: string;
   description: string;
   outcomes: string[];
+  faqs?: { question: string; answer: string }[];
   images: SolutionImage[];
   isPublished?: boolean;
 };
@@ -24,16 +26,22 @@ export function solutionSlug(title: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+export function solutionPathSlug(solution: Pick<Solution, "title" | "slug">): string {
+  return solution.slug || solutionSlug(solution.title);
+}
+
 export async function getDynamicSolutions(): Promise<Solution[]> {
   try {
     const list = await solutionService.getAllPublished();
     if (list && list.length > 0) {
       return list.map((item) => ({
+        slug: item.slug,
         title: item.title,
         group: item.group,
         intro: item.intro || "",
         description: item.description || "",
         outcomes: item.outcomes || [],
+        faqs: item.faqs || [],
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,
@@ -53,11 +61,13 @@ export async function getDynamicSolutionBySlug(slug: string): Promise<Solution |
     const item = await solutionService.getBySlug(slug, true);
     if (item) {
       return {
+        slug: item.slug,
         title: item.title,
         group: item.group,
         intro: item.intro || "",
         description: item.description || "",
         outcomes: item.outcomes || [],
+        faqs: item.faqs || [],
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,

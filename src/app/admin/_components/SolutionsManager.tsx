@@ -44,6 +44,9 @@ export function SolutionsManager({
 
   // Form states for modal
   const [formTitle, setFormTitle] = useState("");
+  const [formSlug, setFormSlug] = useState("");
+  const [formPublished, setFormPublished] = useState(true);
+  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string }[]>([]);
   const [formGroup, setFormGroup] = useState<string>("Survey & Mapping");
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
@@ -66,17 +69,14 @@ export function SolutionsManager({
   const openAddModal = () => {
     setIsNew(true);
     setFormTitle("");
+    setFormSlug("");
+    setFormPublished(true);
+    setFormFaqs([]);
     setFormGroup(selectedGroup !== "All" ? selectedGroup : "Survey & Mapping");
     setFormIntro("");
     setFormDesc("");
-    setFormOutcomes(["Calibrated LAS/LAZ point clouds", "High-accuracy DTM & DSM"]);
-    setFormImages([
-      {
-        src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85",
-        alt: "Field operations",
-        caption: "Precision geospatial capture",
-      },
-    ]);
+    setFormOutcomes([""]);
+    setFormImages([{ src: "", alt: "", caption: "" }]);
     setEditingItem({
       title: "",
       group: "Survey & Mapping",
@@ -91,6 +91,9 @@ export function SolutionsManager({
     setIsNew(false);
     setEditingItem(item);
     setFormTitle(item.title);
+    setFormSlug(item.slug || "");
+    setFormPublished(item.isPublished !== false);
+    setFormFaqs(item.faqs || []);
     setFormGroup(item.group);
     setFormIntro(item.intro);
     setFormDesc(item.description);
@@ -110,30 +113,27 @@ export function SolutionsManager({
     const cleanedImages = formImages.filter((img) => img.src.trim() !== "");
 
     const newSolution: SolutionItem = {
+      id: isNew ? undefined : editingItem?.id,
       title: formTitle.trim(),
+      slug: formSlug.trim() || formTitle.trim().toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      isPublished: formPublished,
+      faqs: formFaqs.filter((faq) => faq.question.trim() && faq.answer.trim()),
       group: formGroup,
       intro: formIntro.trim(),
       description: formDesc.trim(),
-      outcomes: cleanedOutcomes.length > 0 ? cleanedOutcomes : ["Deliverable specification confirmed"],
-      images: cleanedImages.length > 0 ? cleanedImages : [
-        {
-          src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85",
-          alt: formTitle,
-          caption: "Geospatial data deliverable",
-        },
-      ],
+      outcomes: cleanedOutcomes,
+      images: cleanedImages.map((image) => ({ ...image, alt: image.alt.trim() || formTitle.trim() })),
     };
 
     let updatedList: SolutionItem[];
     if (isNew) {
       updatedList = [newSolution, ...solutions];
-      onTriggerToast("Solution Added", `"${newSolution.title}" is now active in ${newSolution.group}`);
     } else {
       updatedList = solutions.map((s) => (s.title === editingItem?.title ? newSolution : s));
-      onTriggerToast("Solution Updated", `Saved changes to "${newSolution.title}"`);
     }
 
     await onSaveSolutions(updatedList);
+    onTriggerToast(isNew ? "Solution Added" : "Solution Updated", isNew ? `"${newSolution.title}" is now active in ${newSolution.group}` : `Saved changes to "${newSolution.title}"`);
     setEditingItem(null);
   };
 
@@ -351,6 +351,16 @@ export function SolutionsManager({
               </div>
 
               <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">Page slug</label>
+                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="uav-lidar-survey" className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white" />
+              </div>
+              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={formPublished} onChange={(e) => setFormPublished(e.target.checked)} /> Published</label>
+              <section className="space-y-2">
+                <div className="flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Frequently asked questions</label><button type="button" onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])} className="text-xs text-cyan-400">Add FAQ</button></div>
+                {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove FAQ</button></div>)}
+              </section>
+
+              <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
                   Discipline / Group
                 </label>
@@ -439,9 +449,7 @@ export function SolutionsManager({
 
               {/* Images */}
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                  Image Assets & Gallery (URL, Caption)
-                </label>
+                <div className="mb-1.5 flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Hero image and gallery</label><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "" }])} className="text-xs text-cyan-400 disabled:opacity-50">Add image</button></div>
                 {formImages.map((img, idx) => (
                   <div key={idx} className="p-3 mb-2 rounded-lg bg-[#f1ece5] border border-zinc-800 space-y-2">
                     <input
@@ -455,6 +463,7 @@ export function SolutionsManager({
                       placeholder="Image URL (e.g. Unsplash or hosted URL)"
                       className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     />
+                    <input type="text" value={img.alt} onChange={(e) => { const updated = [...formImages]; updated[idx].alt = e.target.value; setFormImages(updated); }} placeholder="Accessible image description" className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" />
                     <input
                       type="text"
                       value={img.caption}
@@ -466,6 +475,7 @@ export function SolutionsManager({
                       placeholder="Image Caption"
                       className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
                     />
+                    <button type="button" onClick={() => setFormImages(formImages.filter((_, i) => i !== idx))} className="text-xs text-red-400">Remove image</button>
                   </div>
                 ))}
               </div>

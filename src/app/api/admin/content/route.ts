@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { siteContentService } from "@/lib/db/services/site-content.service";
 import {
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
 
     if (action === "reset") {
       const resetData = await siteContentService.resetAll();
+      revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
         message: "Content successfully restored to default state in database",
@@ -81,6 +83,7 @@ export async function POST(req: Request) {
       await siteContentService.updateSection("Company", parsedData.data.Company);
 
       const refreshed = await siteContentService.getFullSiteContent();
+      revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
         message: "Full site content saved successfully to database",
@@ -103,11 +106,13 @@ export async function POST(req: Request) {
     if (!parsedData.ok) return parsedData.response;
 
     await siteContentService.updateSection(section, parsedData.data);
+    const refreshed = await siteContentService.getFullSiteContent();
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,
       message: `${section} updated successfully in database`,
-      data: parsedData.data,
+      data: refreshed[section],
     });
   } catch (error: any) {
     return NextResponse.json(

@@ -49,7 +49,7 @@ export default async function CareersPage() {
                 <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-ink-3">
                   <span className="inline-flex items-center gap-2">
                     <BriefcaseBusiness className="size-3.5" aria-hidden="true" />
-                    {role.category}
+                    {role.status === "closed" ? `Closed · ${role.category}` : role.category}
                   </span>
                   <ArrowUpRight className="size-4 text-aqua transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
                 </div>

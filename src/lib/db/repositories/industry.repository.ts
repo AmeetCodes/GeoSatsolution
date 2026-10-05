@@ -1,7 +1,9 @@
 import connectDB from "../connection";
+import { Types } from "mongoose";
 import { Industry, IIndustry, IIndustryImage } from "../../models/Industry";
 
 export interface CreateIndustryDTO {
+  id?: string;
   title: string;
   slug?: string;
   intro?: string;
@@ -85,9 +87,14 @@ export class IndustryRepository {
 
   async replaceAll(industries: CreateIndustryDTO[]): Promise<IIndustry[]> {
     await connectDB();
-    await Industry.deleteMany({});
-    if (industries.length === 0) return [];
-    return Industry.insertMany(industries) as unknown as Promise<IIndustry[]>;
+    const slugs = industries.map((item) => item.slug).filter((slug): slug is string => Boolean(slug));
+    const ids = industries.flatMap((item) => item.id ? [new Types.ObjectId(item.id)] : []);
+    if (industries.length) await Industry.bulkWrite(industries.map((item) => {
+      const { id, ...data } = item;
+      return { updateOne: { filter: id ? { _id: new Types.ObjectId(id) } : { slug: item.slug }, update: { $set: data }, upsert: true } };
+    }));
+    await Industry.deleteMany({ $and: [{ _id: { $nin: ids } }, { slug: { $nin: slugs } }] });
+    return Industry.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IIndustry[]>;
   }
 
   async count(): Promise<number> {

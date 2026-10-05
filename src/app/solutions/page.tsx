@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Layers } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { getDynamicSolutions, solutionSlug } from "./_lib/solutions";
+import { getDynamicSolutions, solutionPathSlug } from "./_lib/solutions";
 
 export const metadata: Metadata = {
   title: "Solutions | GeoSAT Solutions",
@@ -83,7 +83,7 @@ export default async function SolutionsPage() {
                               {solution.group}
                             </span>
                             <Link
-                              href={`/solutions/${solutionSlug(solution.title)}`}
+                              href={`/solutions/${solutionPathSlug(solution)}`}
                               className="text-ink-3 transition-colors hover:text-aqua"
                               aria-label={`View details for ${solution.title}`}
                             >
@@ -93,7 +93,7 @@ export default async function SolutionsPage() {
 
                           <h3 className="mt-3 font-display text-xl font-medium text-ink">
                             <Link
-                              href={`/solutions/${solutionSlug(solution.title)}`}
+                              href={`/solutions/${solutionPathSlug(solution)}`}
                               className="hover:underline"
                             >
                               {solution.title}
@@ -124,7 +124,7 @@ export default async function SolutionsPage() {
 
                         <div className="mt-6 pt-4">
                           <Link
-                            href={`/solutions/${solutionSlug(solution.title)}`}
+                            href={`/solutions/${solutionPathSlug(solution)}`}
                             className="inline-flex w-full items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 text-xs font-medium text-ink transition-colors hover:border-aqua/50 hover:bg-aqua/10 hover:text-aqua"
                           >
                             Explore Solution

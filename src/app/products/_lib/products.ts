@@ -7,11 +7,14 @@ export type ProductImage = {
 };
 
 export type Product = {
+  slug?: string;
   title: string;
   group: string;
   intro: string;
   description: string;
   outcomes: string[];
+  specifications?: Record<string, string>;
+  faqs?: { question: string; answer: string }[];
   images: ProductImage[];
   isPublished?: boolean;
 };
@@ -24,16 +27,23 @@ export function productSlug(title: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+export function productPathSlug(product: Pick<Product, "title" | "slug">): string {
+  return product.slug || productSlug(product.title);
+}
+
 export async function getDynamicProducts(): Promise<Product[]> {
   try {
     const list = await productService.getAllPublished();
     if (list && list.length > 0) {
       return list.map((item) => ({
+        slug: item.slug,
         title: item.title,
         group: item.group,
         intro: item.intro || "",
         description: item.description || "",
         outcomes: item.outcomes || [],
+        specifications: item.specifications || {},
+        faqs: item.faqs || [],
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,
@@ -53,11 +63,14 @@ export async function getDynamicProductBySlug(slug: string): Promise<Product | u
     const item = await productService.getBySlug(slug, true);
     if (item) {
       return {
+        slug: item.slug,
         title: item.title,
         group: item.group,
         intro: item.intro || "",
         description: item.description || "",
         outcomes: item.outcomes || [],
+        specifications: item.specifications || {},
+        faqs: item.faqs || [],
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,

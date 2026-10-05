@@ -1,6 +1,7 @@
 import { industryService } from "@/lib/db/services/industry.service";
 
 export type Industry = {
+  slug?: string;
   title: string;
   intro: string;
   description: string;
@@ -16,11 +17,16 @@ export function industrySlug(title: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+export function industryPathSlug(industry: Pick<Industry, "title" | "slug">): string {
+  return industry.slug || industrySlug(industry.title);
+}
+
 export async function getDynamicIndustries(): Promise<Industry[]> {
   try {
     const list = await industryService.getAllPublished();
     if (list && list.length > 0) {
       return list.map((item) => ({
+        slug: item.slug,
         title: item.title,
         intro: item.intro || "",
         description: item.description || "",
@@ -39,6 +45,7 @@ export async function getDynamicIndustryBySlug(slug: string): Promise<Industry |
     const item = await industryService.getBySlug(slug, true);
     if (item) {
       return {
+        slug: item.slug,
         title: item.title,
         intro: item.intro || "",
         description: item.description || "",

@@ -5,7 +5,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import {
-  industrySlug,
+  industryPathSlug,
   getDynamicIndustryBySlug,
   getDynamicIndustries,
 } from "../_lib/industries";
@@ -16,7 +16,7 @@ type IndustryPageProps = {
 
 export async function generateStaticParams() {
   const list = await getDynamicIndustries();
-  return list.map((industry) => ({ slug: industrySlug(industry.title) }));
+  return list.map((industry) => ({ slug: industryPathSlug(industry) }));
 }
 
 export const dynamicParams = true;

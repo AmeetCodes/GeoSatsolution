@@ -6,27 +6,18 @@ import { DEFAULT_SITE_CONTENT, SiteContentData } from "../../data-store";
 
 export class SiteContentService {
   async getFullSiteContent(): Promise<SiteContentData> {
-    let [solutions, products, industries, company] = await Promise.all([
+    const [solutions, products, industries, company] = await Promise.all([
       solutionService.getAllForAdmin(),
       productService.getAllForAdmin(),
       industryService.getAllForAdmin(),
       companyService.getCompanyData(),
     ]);
 
-    if (solutions.length === 0) {
-      const { seedDatabase } = await import("../seed");
-      await seedDatabase(false);
-      [solutions, products, industries, company] = await Promise.all([
-        solutionService.getAllForAdmin(),
-        productService.getAllForAdmin(),
-        industryService.getAllForAdmin(),
-        companyService.getCompanyData(),
-      ]);
-    }
-
     return {
       Solutions: solutions.map((s) => ({
+        id: s._id.toString(),
         title: s.title,
+        slug: s.slug,
         group: s.group,
         intro: s.intro,
         description: s.description,
@@ -36,9 +27,13 @@ export class SiteContentService {
           alt: img.alt,
           caption: img.caption || "",
         })),
+        faqs: s.faqs || [],
+        isPublished: s.isPublished,
       })),
       Products: products.map((p) => ({
+        id: p._id.toString(),
         title: p.title,
+        slug: p.slug,
         group: p.group,
         intro: p.intro,
         description: p.description,
@@ -48,12 +43,18 @@ export class SiteContentService {
           alt: img.alt,
           caption: img.caption || "",
         })),
+        specifications: p.specifications || {},
+        faqs: p.faqs || [],
+        isPublished: p.isPublished,
       })),
       Industries: industries.map((ind) => ({
+        id: ind._id.toString(),
         title: ind.title,
+        slug: ind.slug,
         intro: ind.intro,
         description: ind.description,
         items: ind.items || [],
+        isPublished: ind.isPublished,
       })),
       Company: company,
     };

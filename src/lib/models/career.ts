@@ -5,6 +5,10 @@ export interface ICareer extends Document {
   title: string;
   category: string;
   location: string;
+  description: string;
+  employmentType: string;
+  applicationInfo: string;
+  status: "open" | "closed";
   summary: string;
   responsibilities: string[];
   requirements: string[];
@@ -19,6 +23,10 @@ const CareerSchema = new Schema<ICareer>(
     title: { type: String, required: true, trim: true },
     category: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+    employmentType: { type: String, default: "Full-time" },
+    applicationInfo: { type: String, default: "" },
+    status: { type: String, enum: ["open", "closed"], default: "open" },
     summary: { type: String, required: true },
     responsibilities: { type: [String], default: [] },
     requirements: { type: [String], default: [] },

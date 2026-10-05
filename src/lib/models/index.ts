@@ -7,6 +7,8 @@ export * from "./leader";
 export * from "./partner";
 export * from "./client";
 export * from "./equipment";
+export * from "./Resource";
+export * from "./ContentMigration";
 export * from "./project";
 export * from "./Navigation";
 export * from "./Admin";

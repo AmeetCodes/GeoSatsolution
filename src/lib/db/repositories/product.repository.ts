@@ -1,7 +1,9 @@
 import connectDB from "../connection";
+import { Types } from "mongoose";
 import { Product, IProduct, IProductImage } from "../../models/product";
 
 export interface CreateProductDTO {
+  id?: string;
   title: string;
   slug?: string;
   group: string;
@@ -10,6 +12,7 @@ export interface CreateProductDTO {
   outcomes?: string[];
   images?: IProductImage[];
   specifications?: Record<string, string>;
+  faqs?: { question: string; answer: string }[];
   isPublished?: boolean;
   order?: number;
 }
@@ -23,6 +26,7 @@ export interface UpdateProductDTO {
   outcomes?: string[];
   images?: IProductImage[];
   specifications?: Record<string, string>;
+  faqs?: { question: string; answer: string }[];
   isPublished?: boolean;
   order?: number;
 }
@@ -90,9 +94,14 @@ export class ProductRepository {
 
   async replaceAll(products: CreateProductDTO[]): Promise<IProduct[]> {
     await connectDB();
-    await Product.deleteMany({});
-    if (products.length === 0) return [];
-    return Product.insertMany(products) as unknown as Promise<IProduct[]>;
+    const slugs = products.map((item) => item.slug).filter((slug): slug is string => Boolean(slug));
+    const ids = products.flatMap((item) => item.id ? [new Types.ObjectId(item.id)] : []);
+    if (products.length) await Product.bulkWrite(products.map((item) => {
+      const { id, ...data } = item;
+      return { updateOne: { filter: id ? { _id: new Types.ObjectId(id) } : { slug: item.slug }, update: { $set: data }, upsert: true } };
+    }));
+    await Product.deleteMany({ $and: [{ _id: { $nin: ids } }, { slug: { $nin: slugs } }] });
+    return Product.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IProduct[]>;
   }
 
   async count(): Promise<number> {
