@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -25,39 +26,43 @@ type PageProps = {
 
 // ─── DB-backed content enrichment ────────────────────────────────────────────
 
-async function getDbContentForTreeItem(match: {
-  tab: NavTreeTab;
-  column?: NavTreeColumn;
-  item: NavTreeItem;
-} | null): Promise<any | null> {
-  if (!match) return null;
-  const { tab, item } = match;
-
-  const title = item.title || "";
-  if (!title) return null;
-
+const getCachedDbContent = cache(async (
+  tabId: string,
+  explicitSlug: string,
+  slugifiedTitle: string,
+): Promise<any | null> => {
   try {
-    const explicitSlug = item.slug || item.href?.split("/").filter(Boolean).at(-1);
-    const slugifiedTitle = title
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    if (tab.id === "solutions") {
+    if (tabId === "solutions") {
       return (explicitSlug ? await solutionService.getBySlug(explicitSlug) : null)
         || await solutionService.getBySlug(slugifiedTitle);
     }
-    if (tab.id === "products") {
+    if (tabId === "products") {
       return (explicitSlug ? await productService.getBySlug(explicitSlug) : null)
         || await productService.getBySlug(slugifiedTitle);
     }
-    if (tab.id === "industries") {
+    if (tabId === "industries") {
       return await industryService.getBySlug(slugifiedTitle);
     }
   } catch (err) {
     console.error("Error fetching DB content for tree item:", err);
   }
   return null;
+});
+
+async function getDbContentForTreeItem(match: {
+  tab: NavTreeTab;
+  column?: NavTreeColumn;
+  item: NavTreeItem;
+} | null): Promise<any | null> {
+  if (!match?.item.title) return null;
+  const { tab, item } = match;
+  const explicitSlug = item.slug || item.href?.split("/").filter(Boolean).at(-1) || "";
+  const slugifiedTitle = item.title
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return getCachedDbContent(tab.id, explicitSlug, slugifiedTitle);
 }
 
 // ─── Static Params & Dynamic Config ──────────────────────────────────────────

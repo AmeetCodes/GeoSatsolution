@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
+import { getPublicNavigation } from "@/lib/public-navigation-client";
 import { cn, solutionSlug } from "@/lib/utils";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem, NavigationTree } from "@/lib/tree-store";
 
@@ -77,27 +78,19 @@ function useScrolled(threshold = 12) {
   return scrolled;
 }
 
-/** Periodically fetch dynamic nav data from our API */
+/** Load dynamic navigation once; the shared client helper deduplicates sibling requests. */
 function useDynamicNav(): DynNavData {
   const [data, setData] = useState<DynNavData>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/content/nav", { cache: "no-store" });
-      if (!res.ok) return;
-      const json = await res.json();
-      if (json.success) setData(json.data);
-    } catch {
-      // silently ignore – static fallback still works
-    }
-  }, []);
-
   useEffect(() => {
-    load();
-    // Re-fetch every 2.5s so admin changes appear quickly
-    const id = setInterval(load, 2500);
-    return () => clearInterval(id);
-  }, [load]);
+    let active = true;
+    void getPublicNavigation().then((payload) => {
+      if (active && payload) setData(payload);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return data;
 }

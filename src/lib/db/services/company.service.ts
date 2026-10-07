@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { companyRepository } from "../repositories/company.repository";
 import { ILeader } from "../../models/leader";
 import { IPartner } from "../../models/partner";
@@ -243,6 +243,7 @@ export class CompanyService {
 
   private revalidate() {
     try {
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       revalidatePath("/company/careers");
       revalidatePath("/company/insights/news");

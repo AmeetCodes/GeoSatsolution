@@ -1,4 +1,5 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cache } from "react";
 import { navigationRepository } from "../repositories/navigation.repository";
 import {
   DEFAULT_NAVIGATION_TREE,
@@ -9,13 +10,17 @@ import {
   slugify,
 } from "../../tree-store";
 
+const getTreeForRequest = cache(async (): Promise<NavigationTree> => {
+  const tree = await navigationRepository.getTree();
+  if (!tree || tree.tabs.length === 0) {
+    return navigationRepository.saveTree(DEFAULT_NAVIGATION_TREE);
+  }
+  return tree;
+});
+
 export class NavigationService {
   async getTree(): Promise<NavigationTree> {
-    const tree = await navigationRepository.getTree();
-    if (!tree || tree.tabs.length === 0) {
-      return navigationRepository.saveTree(DEFAULT_NAVIGATION_TREE);
-    }
-    return tree;
+    return getTreeForRequest();
   }
 
   async saveTree(tree: NavigationTree): Promise<NavigationTree> {
@@ -101,6 +106,7 @@ export class NavigationService {
 
   private revalidateAll(tree: NavigationTree) {
     try {
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       for (const tab of tree.tabs) {
         if (tab.href && tab.href.startsWith("/")) {

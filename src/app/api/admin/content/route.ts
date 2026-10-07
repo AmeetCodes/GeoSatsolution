@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { siteContentService } from "@/lib/db/services/site-content.service";
 import {
@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 
     if (action === "reset") {
       const resetData = await siteContentService.resetAll();
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
       await siteContentService.updateSection("Company", parsedData.data.Company);
 
       const refreshed = await siteContentService.getFullSiteContent();
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       return NextResponse.json({
         success: true,
@@ -107,6 +109,7 @@ export async function POST(req: Request) {
 
     await siteContentService.updateSection(section, parsedData.data);
     const refreshed = await siteContentService.getFullSiteContent();
+    revalidateTag("public-navigation", { expire: 0 });
     revalidatePath("/", "layout");
 
     return NextResponse.json({

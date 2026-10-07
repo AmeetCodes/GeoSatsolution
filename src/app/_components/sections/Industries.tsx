@@ -1,8 +1,9 @@
 "use client";
 
 import { Activity, ArrowRight, ChevronDown, Compass, Layers, MapPin, type LucideIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SECTION_HEADERS } from "@/lib/content";
+import { getPublicNavigation } from "@/lib/public-navigation-client";
 import { solutionSlug } from "@/lib/utils";
 import { Container, Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal, RevealItem } from "@/components/ui/Reveal";
@@ -37,24 +38,15 @@ const ICONS: LucideIcon[] = [Layers, MapPin, Compass, Activity];
 function useDynamicIndustries(): IndustryItem[] | null {
   const [data, setData] = useState<IndustryItem[] | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/content/nav", { cache: "no-store" });
-      if (!res.ok) return;
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data?.industries)) {
-        setData(json.data.industries);
-      }
-    } catch {
-      // use static fallback
-    }
-  }, []);
-
   useEffect(() => {
-    load();
-    const id = setInterval(load, 5000);
-    return () => clearInterval(id);
-  }, [load]);
+    let active = true;
+    void getPublicNavigation().then((payload) => {
+      if (active && Array.isArray(payload?.industries)) setData(payload.industries);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return data;
 }

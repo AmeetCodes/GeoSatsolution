@@ -1,11 +1,12 @@
+import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { navigationService } from "@/lib/db/services/navigation.service";
 import { siteContentService } from "@/lib/db/services/site-content.service";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  try {
+const getCachedNavigationPayload = unstable_cache(
+  async () => {
     const [tree, content] = await Promise.all([
       navigationService.getTree(),
       siteContentService.getFullSiteContent(),
@@ -41,19 +42,25 @@ export async function GET() {
       items: col.items.map((i) => i.title),
     }));
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        tree, // Full dynamic hierarchical navigation tree
-        tabs: tree.tabs,
-        solutionGroups,
-        productGroups,
-        companyGroups,
-        industries,
-        solutions: content.Solutions,
-        products: content.Products,
-      },
-    });
+    return {
+      tree,
+      tabs: tree.tabs,
+      solutionGroups,
+      productGroups,
+      companyGroups,
+      industries,
+      solutions: content.Solutions,
+      products: content.Products,
+    };
+  },
+  ["public-navigation-payload-v1"],
+  { revalidate: 3600, tags: ["public-navigation"] },
+);
+
+export async function GET() {
+  try {
+    const data = await getCachedNavigationPayload();
+    return NextResponse.json({ success: true, data });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
   }

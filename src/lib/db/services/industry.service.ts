@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { industryRepository, CreateIndustryDTO, UpdateIndustryDTO } from "../repositories/industry.repository";
 import { IIndustry } from "../../models/Industry";
 
@@ -119,6 +119,7 @@ export class IndustryService {
 
   private revalidate(slug?: string) {
     try {
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       revalidatePath("/industries");
       if (slug) {

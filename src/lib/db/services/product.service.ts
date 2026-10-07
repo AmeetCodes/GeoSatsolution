@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { productRepository, CreateProductDTO, UpdateProductDTO } from "../repositories/product.repository";
 import { IProduct } from "../../models/product";
 
@@ -126,6 +126,7 @@ export class ProductService {
 
   private revalidate(slug?: string) {
     try {
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       revalidatePath("/products");
       if (slug) {

@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { solutionRepository, CreateSolutionDTO, UpdateSolutionDTO } from "../repositories/solution.repository";
 import { ISolution } from "../../models/solution";
 
@@ -122,6 +122,7 @@ export class SolutionService {
 
   private revalidate(slug?: string) {
     try {
+      revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
       revalidatePath("/solutions");
       revalidatePath("/solutions/[slug]", "page");

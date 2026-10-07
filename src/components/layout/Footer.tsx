@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { CONTACT, CREDENTIALS, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
 import { solutionSlug } from "@/lib/utils";
+import { getPublicNavigation } from "@/lib/public-navigation-client";
 
 type FooterCol = {
   title: string;
@@ -32,11 +33,9 @@ export function Footer() {
   useEffect(() => {
     async function loadNav() {
       try {
-        const res = await fetch("/api/content/nav", { cache: "no-store" });
-        if (!res.ok) return;
-        const json = await res.json();
-        if (json.success && json.data?.tree?.tabs) {
-          const tabs = json.data.tree.tabs;
+        const data = await getPublicNavigation();
+        if (data?.tree?.tabs) {
+          const tabs = data.tree.tabs;
           const solTab = tabs.find((t: any) => t.id === "solutions");
           const indTab = tabs.find((t: any) => t.id === "industries");
           const compTab = tabs.find((t: any) => t.id === "company");
