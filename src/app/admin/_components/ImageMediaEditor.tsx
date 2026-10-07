@@ -10,10 +10,11 @@ interface ImageMediaEditorProps {
   onChange: (image: ContentImage) => void;
   onRemove: () => void;
   showCaption?: boolean;
+  title?: string;
   onUploadingChange?: (uploading: boolean) => void;
 }
 
-export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption = true, onUploadingChange }: ImageMediaEditorProps) {
+export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption = true, title = "Profile image", onUploadingChange }: ImageMediaEditorProps) {
   const mode = image.source === "upload" || image.src.startsWith("/api/media/") ? "upload" : "url";
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
@@ -54,7 +55,7 @@ export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption
 
   return (
     <fieldset className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-      <legend className="px-1 text-sm font-semibold text-zinc-900">Profile image</legend>
+      <legend className="px-1 text-sm font-semibold text-zinc-900">{title}</legend>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex rounded-lg border border-zinc-200 bg-zinc-50 p-1" aria-label={`Image ${index + 1} source`}>
           <button

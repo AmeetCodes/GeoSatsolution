@@ -221,6 +221,8 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     sector: proj.sector,
     body: proj.body,
     tags: proj.tags || [],
+    images: proj.images || [],
+    isPublished: proj.isPublished !== false,
     order: idx + 1,
   }));
   if (projectDocs.length > 0) {

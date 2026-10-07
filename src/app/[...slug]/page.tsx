@@ -6,6 +6,7 @@ import { navigationService } from "@/lib/db/services/navigation.service";
 import { solutionService } from "@/lib/db/services/solution.service";
 import { productService } from "@/lib/db/services/product.service";
 import { industryService } from "@/lib/db/services/industry.service";
+import { contentService } from "@/lib/db/services/content.service";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem } from "@/lib/tree-store";
 import {
   SolutionsTemplate,
@@ -13,6 +14,7 @@ import {
   IndustriesTemplate,
   CompanyTemplate,
   FallbackTemplate,
+  OurWorkTemplate,
 } from "./_templates";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -182,6 +184,10 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
   const { tab, column, item } = match;
   const dbContent = await getDbContentForTreeItem(match);
   const dbManagedSection = tab.id === "solutions" || tab.id === "products";
+  const routeLeaf = (Array.isArray(slug) ? slug : [slug]).at(-1);
+  const isOurWork = tab.id === "company" && (
+    routeLeaf === "our-work" || item.slug === "our-work" || item.title?.trim().toLowerCase() === "our work"
+  );
 
   const resolvedItem = {
     ...item,
@@ -197,6 +203,15 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
   const galleryImages = dbManagedSection
     ? resolvedItem.images
     : (resolvedItem.images.length > 0 ? resolvedItem.images : DEFAULT_IMAGES);
+
+  let projectRecords: Awaited<ReturnType<typeof contentService.getProjects>> = [];
+  if (isOurWork) {
+    try {
+      projectRecords = await contentService.getProjects(true);
+    } catch (error) {
+      console.error("Failed to fetch Our Work projects from DB:", error);
+    }
+  }
 
   // ── JSON-LD Structured Data ─────────────────────────────────────────────────
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
@@ -276,7 +291,15 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       ) : tab.id === "industries" ? (
         <IndustriesTemplate item={resolvedItem} tab={tab} column={column} />
       ) : tab.id === "company" ? (
-        <CompanyTemplate item={resolvedItem} tab={tab} column={column} />
+        isOurWork ? <OurWorkTemplate item={resolvedItem} tab={tab} column={column} projects={projectRecords.map((project) => ({
+          code: project.code,
+          title: project.title,
+          sector: project.sector,
+          body: project.body,
+          tags: project.tags || [],
+          images: (project.images || []).map((image) => ({ src: image.src, alt: image.alt || project.title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })),
+          isPublished: project.isPublished !== false,
+        }))} /> : <CompanyTemplate item={resolvedItem} tab={tab} column={column} />
       ) : tab.id === "solutions" ? (
         <SolutionsTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       ) : (

@@ -7,9 +7,12 @@ import { Consultation, IConsultation } from "../../models/Consultation";
 import type { ProjectItem } from "../../data/project-content";
 
 export class ContentService {
-  async getProjects(): Promise<IProject[]> {
+  async getProjects(publishedOnly = false): Promise<IProject[]> {
     await connectDB();
-    return Project.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IProject[]>;
+    const query = publishedOnly
+      ? { $or: [{ isPublished: true }, { isPublished: { $exists: false } }] }
+      : {};
+    return Project.find(query).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IProject[]>;
   }
 
   async replaceProjects(projects: ProjectItem[]): Promise<IProject[]> {
@@ -20,11 +23,14 @@ export class ContentService {
       ? await Project.insertMany(projects.map((project, index) => ({
           ...project,
           order: index + 1,
+          images: project.images || [],
+          isPublished: project.isPublished !== false,
         })))
       : [];
 
     try {
       revalidatePath("/", "page");
+      revalidatePath("/company/our-work");
     } catch {
       // Revalidation is unavailable outside a Next.js request context.
     }

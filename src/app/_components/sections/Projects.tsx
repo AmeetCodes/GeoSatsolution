@@ -57,7 +57,7 @@ function Card({
 export async function Projects() {
   let projectList = DEFAULT_PROJECTS;
   try {
-    const dbProjects = await contentService.getProjects();
+    const dbProjects = await contentService.getProjects(true);
     projectList = dbProjects.map((p) => ({
       code: p.code,
       title: p.title,

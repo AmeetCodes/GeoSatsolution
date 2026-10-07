@@ -34,7 +34,7 @@ export default async function AdminPage() {
     <AdminDashboard
       initialContent={content}
       initialTree={tree}
-      initialProjects={projects.map(({ code, title, sector, body, tags }) => ({ code, title, sector, body, tags }))}
+      initialProjects={projects.map(({ code, title, sector, body, tags, images, isPublished }) => ({ code, title, sector, body, tags, images: (images || []).map((image) => ({ src: image.src, alt: image.alt || title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })), isPublished: isPublished !== false }))}
       userEmail={session.email}
     />
   );

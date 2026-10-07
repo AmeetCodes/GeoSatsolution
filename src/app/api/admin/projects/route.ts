@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Projects saved successfully",
-      data: saved.map(({ code, title, sector, body, tags }) => ({ code, title, sector, body, tags })),
+      data: saved.map(({ code, title, sector, body, tags, images, isPublished }) => ({ code, title, sector, body, tags, images: images || [], isPublished: isPublished !== false })),
     });
   } catch (error: unknown) {
     return NextResponse.json(

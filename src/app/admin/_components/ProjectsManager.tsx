@@ -3,6 +3,8 @@
 import React, { useMemo, useState } from "react";
 import { Briefcase, Edit2, Plus, Search, Trash2 } from "lucide-react";
 import type { ProjectItem } from "@/lib/data/project-content";
+import type { ContentImage } from "@/lib/data-store";
+import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface ProjectsManagerProps {
   projects: ProjectItem[];
@@ -16,6 +18,8 @@ const emptyProject: ProjectItem = {
   sector: "",
   body: "",
   tags: [],
+  images: [],
+  isPublished: true,
 };
 
 export function ProjectsManager({
@@ -28,6 +32,7 @@ export function ProjectsManager({
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState<ProjectItem>(emptyProject);
   const [tagText, setTagText] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -48,7 +53,7 @@ export function ProjectsManager({
   const openEdit = (project: ProjectItem) => {
     setIsNew(false);
     setEditingProject(project);
-    setForm({ ...project });
+    setForm({ ...project, images: project.images || [], isPublished: project.isPublished !== false });
     setTagText(project.tags.join(", "));
   };
 
@@ -62,6 +67,8 @@ export function ProjectsManager({
       title: form.title.trim(),
       sector: form.sector.trim(),
       body: form.body.trim(),
+      images: (form.images || []).filter((image) => image.src.trim()),
+      isPublished: form.isPublished !== false,
       tags: tagText.split(/[,\n]/).map((tag) => tag.trim()).filter(Boolean),
     };
     const updated = isNew
@@ -131,6 +138,11 @@ export function ProjectsManager({
                     <span className="text-xs text-zinc-500">{project.sector}</span>
                   </div>
                   <h2 className="mt-2 text-base font-semibold text-zinc-100">{project.title}</h2>
+                  {project.images?.[0]?.src && <div className="mt-3 flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={project.images[0].src} alt={project.images[0].alt || ""} className="size-16 rounded-lg object-cover" />
+                    <span className="text-xs text-zinc-500">{project.images.length} gallery {project.images.length === 1 ? "image" : "images"}</span>
+                  </div>}
                   <p className="mt-2 max-w-4xl text-sm leading-relaxed text-zinc-400">{project.body}</p>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
@@ -221,6 +233,23 @@ export function ProjectsManager({
                   className="w-full resize-y rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 />
               </label>
+              <section className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-semibold text-zinc-100">Gallery images</h3>
+                  <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), { src: "", alt: "", caption: "", source: "upload" }] })} className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-900">Add image</button>
+                </div>
+                {(form.images || []).length === 0 && <p className="rounded-lg border border-dashed border-zinc-700 p-4 text-xs text-zinc-500">Add images here. Uploaded files are stored in MongoDB and displayed on the Our Work gallery.</p>}
+                {(form.images || []).map((image, index) => <ImageMediaEditor
+                  key={`${image.mediaId || image.src || "new"}-${index}`}
+                  image={image}
+                  index={index}
+                  title={`Gallery image ${index + 1}`}
+                  onChange={(updated: ContentImage) => setForm({ ...form, images: (form.images || []).map((item, itemIndex) => itemIndex === index ? updated : item) })}
+                  onRemove={() => setForm({ ...form, images: (form.images || []).filter((_, itemIndex) => itemIndex !== index) })}
+                  onUploadingChange={setIsUploadingImage}
+                />)}
+              </section>
+              <label className="flex items-center gap-2 text-xs font-medium text-zinc-300"><input type="checkbox" checked={form.isPublished !== false} onChange={(event) => setForm({ ...form, isPublished: event.target.checked })} /> Show this project in the public gallery</label>
               <div className="flex justify-end gap-2 border-t border-zinc-800 pt-4">
                 <button
                   type="button"
@@ -231,9 +260,10 @@ export function ProjectsManager({
                 </button>
                 <button
                   type="submit"
+                  disabled={isUploadingImage}
                   className="rounded-lg bg-cyan-500 px-3.5 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-400"
                 >
-                  Save Project
+                  {isUploadingImage ? "Uploading image…" : "Save Project"}
                 </button>
               </div>
             </form>

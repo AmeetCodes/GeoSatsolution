@@ -4,3 +4,4 @@ export { ProductsTemplate } from "./ProductsTemplate";
 export { IndustriesTemplate } from "./IndustriesTemplate";
 export { CompanyTemplate } from "./CompanyTemplate";
 export { FallbackTemplate } from "./FallbackTemplate";
+export { OurWorkTemplate } from "./OurWorkTemplate";
