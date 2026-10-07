@@ -59,6 +59,12 @@ export const imageSchema = z.object({
     ),
   alt: optionalText(200, "Image alt text"),
   caption: optionalText(300, "Image caption"),
+  source: z.enum(["upload", "url"]).optional(),
+  mediaId: z.string().regex(/^[a-f\d]{24}$/i, "Media id is invalid").optional(),
+}).superRefine((image, ctx) => {
+  if (image.source === "upload" && (!image.mediaId || !image.src.startsWith("/api/media/"))) {
+    ctx.addIssue({ code: "custom", path: ["src"], message: "Uploaded images must reference stored media." });
+  }
 });
 
 export const imageListSchema = z

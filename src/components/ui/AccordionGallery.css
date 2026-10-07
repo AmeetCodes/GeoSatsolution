@@ -32,7 +32,9 @@
   outline: none;
   transform-style: preserve-3d;
   transform-origin: center center;
-  background: #ebf0f3;
+  background:
+    radial-gradient(circle at 80% 15%, color-mix(in srgb, var(--ag-accent) 24%, transparent), transparent 38%),
+    linear-gradient(145deg, #233c45 0%, #13262e 58%, #0d1b22 100%);
   box-shadow: 0 12px 32px -22px rgba(15, 23, 42, 0.8);
   will-change: flex-grow, transform;
   -webkit-tap-highlight-color: transparent;
@@ -55,7 +57,10 @@
   --ag-gray: 1;
   --ag-dim: 0.35;
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  width: var(--ag-media-size);
+  height: 100%;
   filter: grayscale(var(--ag-gray));
   will-change: transform, filter;
 }
@@ -149,13 +154,15 @@
   }
 
   .ag-panel {
-    min-height: 84px;
+    flex: 0 0 auto;
+    height: clamp(160px, 24vh, 220px);
+    min-height: 160px;
     transform: none !important;
   }
 
   .accordion-gallery .ag-panel__media {
     width: 100%;
-    height: var(--ag-media-size);
+    height: 100%;
   }
 }
 

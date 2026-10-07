@@ -1,4 +1,5 @@
 import { productService } from "@/lib/db/services/product.service";
+import type { ProductDownloadItem } from "@/lib/data-store";
 
 export type ProductImage = {
   src: string;
@@ -15,6 +16,7 @@ export type Product = {
   outcomes: string[];
   specifications?: Record<string, string>;
   faqs?: { question: string; answer: string }[];
+  resources?: ProductDownloadItem[];
   images: ProductImage[];
   isPublished?: boolean;
 };
@@ -44,6 +46,10 @@ export async function getDynamicProducts(): Promise<Product[]> {
         outcomes: item.outcomes || [],
         specifications: item.specifications || {},
         faqs: item.faqs || [],
+        resources: (item.resources || []).map((resource) => ({
+          ...resource,
+          fileMediaId: resource.fileMediaId ? String(resource.fileMediaId) : undefined,
+        })),
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,
@@ -71,6 +77,10 @@ export async function getDynamicProductBySlug(slug: string): Promise<Product | u
         outcomes: item.outcomes || [],
         specifications: item.specifications || {},
         faqs: item.faqs || [],
+        resources: (item.resources || []).map((resource) => ({
+          ...resource,
+          fileMediaId: resource.fileMediaId ? String(resource.fileMediaId) : undefined,
+        })),
         images: (item.images || []).map((img) => ({
           src: img.src,
           alt: img.alt,

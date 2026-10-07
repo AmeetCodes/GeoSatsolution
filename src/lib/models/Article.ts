@@ -6,7 +6,7 @@ export interface IArticle extends Document {
   date: Date;
   category: string;
   excerpt: string;
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   body: string[];
   author?: string;
   isPublished: boolean;
@@ -21,7 +21,12 @@ const ArticleSchema = new Schema<IArticle>(
     date: { type: Date, default: Date.now },
     category: { type: String, required: true, trim: true },
     excerpt: { type: String, required: true },
-    image: { src: { type: String }, alt: { type: String } },
+    image: {
+      src: { type: String },
+      alt: { type: String },
+      source: { type: String, enum: ["upload", "url"] },
+      mediaId: { type: Schema.Types.ObjectId, ref: "MediaAsset" },
+    },
     body: { type: [String], required: true },
     author: { type: String, default: "GeoSAT Team" },
     isPublished: { type: Boolean, default: true },

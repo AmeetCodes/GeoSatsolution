@@ -124,6 +124,7 @@ export class SolutionService {
     try {
       revalidatePath("/", "layout");
       revalidatePath("/solutions");
+      revalidatePath("/solutions/[slug]", "page");
       if (slug) {
         revalidatePath(`/solutions/${slug}`);
         revalidatePath(`/${slug}`);

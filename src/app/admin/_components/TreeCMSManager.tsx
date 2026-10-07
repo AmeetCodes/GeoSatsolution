@@ -373,7 +373,7 @@ export function TreeCMSManager({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="admin-tree-cms space-y-7">
       {/* Top Banner / Explainer */}
       <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-r from-cyan-950/20 via-zinc-900/40 to-slate-900/20 p-5 sm:p-6 backdrop-blur-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

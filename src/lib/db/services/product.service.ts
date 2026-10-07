@@ -46,6 +46,7 @@ export class ProductService {
       outcomes: data.outcomes || [],
       faqs: data.faqs || [],
       images: data.images || [],
+      resources: data.resources || [],
       isPublished: data.isPublished !== undefined ? data.isPublished : true,
     });
 
@@ -112,10 +113,14 @@ export class ProductService {
       outcomes: item.outcomes || [],
       faqs: item.faqs || [],
       images: item.images || [],
+      resources: item.resources || [],
     }));
 
     const result = await productRepository.replaceAll(docs);
     this.revalidate();
+    for (const item of docs) {
+      if (item.slug) this.revalidate(item.slug);
+    }
     return result;
   }
 

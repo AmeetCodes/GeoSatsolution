@@ -9,24 +9,26 @@ export type SolutionImage = {
   caption?: string;
 };
 
-const PLACEHOLDER_IMAGES: SolutionImage[] = [
-  {
-    src: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1800&q=85",
-    alt: "Field operations",
-    caption: "High-precision survey execution and sensor deployment",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85",
-    alt: "Aerial capture",
-    caption: "Rigorous quality verification against national datum",
-  },
-];
-
 export function SolutionGallery({ images }: { images: SolutionImage[] }) {
-  const resolvedImages = images && images.length > 0 ? images : PLACEHOLDER_IMAGES;
+  const resolvedImages = images || [];
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const activeImage = resolvedImages[activeIndex];
+
+  if (!activeImage) {
+    return (
+      <div className="overflow-hidden rounded-panel border border-line bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
+        <div
+          role="img"
+          aria-label="No images have been added for this page"
+          className="flex aspect-4/3 items-center justify-center bg-slate-100 text-sm text-slate-500 sm:aspect-[1.18/1]"
+        >
+          No images available
+        </div>
+        <div className="px-5 py-3 text-xs text-ink-3 sm:px-7">Project imagery</div>
+      </div>
+    );
+  }
 
   function showImage(index: number) {
     setActiveIndex((index + resolvedImages.length) % resolvedImages.length);
@@ -53,9 +55,16 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
         <div
           role="img"
           aria-label={activeImage.alt}
-          className="relative aspect-4/3 overflow-hidden bg-slate-200 bg-cover bg-center transition-[background-image] duration-300 sm:aspect-[1.18/1]"
-          style={{ backgroundImage: `url("${activeImage.src}")` }}
+          className="relative aspect-4/3 overflow-hidden bg-slate-200 sm:aspect-[1.18/1]"
         >
+          <img
+            src={activeImage.src}
+            alt={activeImage.alt}
+            className="absolute inset-0 size-full object-cover"
+            onError={(event) => {
+              event.currentTarget.style.visibility = "hidden";
+            }}
+          />
           <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 via-slate-950/20 to-transparent px-6 pb-6 pt-16 sm:px-8 sm:pb-8">
             <p className="max-w-md font-display text-lg leading-snug text-white sm:text-xl">
               {activeImage.caption}

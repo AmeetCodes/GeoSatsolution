@@ -15,7 +15,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
-import type { SolutionItem } from "@/lib/data-store";
+import type { ContentImage, SolutionItem } from "@/lib/data-store";
+import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface SolutionsManagerProps {
   solutions: SolutionItem[];
@@ -51,8 +52,8 @@ export function SolutionsManager({
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
-  const [formImages, setFormImages] = useState<{ src: string; alt: string; caption: string }[]>([
-    { src: "", alt: "", caption: "" },
+  const [formImages, setFormImages] = useState<ContentImage[]>([
+    { src: "", alt: "", caption: "", source: "url" },
   ]);
 
   const filtered = useMemo(() => {
@@ -76,7 +77,7 @@ export function SolutionsManager({
     setFormIntro("");
     setFormDesc("");
     setFormOutcomes([""]);
-    setFormImages([{ src: "", alt: "", caption: "" }]);
+    setFormImages([{ src: "", alt: "", caption: "", source: "url" }]);
     setEditingItem({
       title: "",
       group: "Survey & Mapping",
@@ -101,13 +102,17 @@ export function SolutionsManager({
     setFormImages(
       item.images?.length > 0
         ? [...item.images]
-        : [{ src: "", alt: "", caption: "" }]
+        : [{ src: "", alt: "", caption: "", source: "url" }]
     );
   };
 
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle.trim()) return;
+    if (formImages.some((image) => image.source === "upload" && !image.mediaId)) {
+      onTriggerToast("Image upload required", "Finish uploading the selected image or remove that image entry.");
+      return;
+    }
 
     const cleanedOutcomes = formOutcomes.filter((o) => o.trim() !== "");
     const cleanedImages = formImages.filter((img) => img.src.trim() !== "");
@@ -449,34 +454,15 @@ export function SolutionsManager({
 
               {/* Images */}
               <div>
-                <div className="mb-1.5 flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Hero image and gallery</label><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "" }])} className="text-xs text-cyan-400 disabled:opacity-50">Add image</button></div>
+                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-zinc-900">Solution images</label><p className="mt-0.5 text-xs text-zinc-500">Upload images to store them in the database, or use an external image URL.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])} className="text-xs font-semibold text-cyan-700 disabled:opacity-50">Add image</button></div>
                 {formImages.map((img, idx) => (
-                  <div key={idx} className="p-3 mb-2 rounded-lg bg-[#f1ece5] border border-zinc-800 space-y-2">
-                    <input
-                      type="text"
-                      value={img.src}
-                      onChange={(e) => {
-                        const updated = [...formImages];
-                        updated[idx].src = e.target.value;
-                        setFormImages(updated);
-                      }}
-                      placeholder="Image URL (e.g. Unsplash or hosted URL)"
-                      className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                    />
-                    <input type="text" value={img.alt} onChange={(e) => { const updated = [...formImages]; updated[idx].alt = e.target.value; setFormImages(updated); }} placeholder="Accessible image description" className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" />
-                    <input
-                      type="text"
-                      value={img.caption}
-                      onChange={(e) => {
-                        const updated = [...formImages];
-                        updated[idx].caption = e.target.value;
-                        setFormImages(updated);
-                      }}
-                      placeholder="Image Caption"
-                      className="w-full px-3 py-1.5 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                    />
-                    <button type="button" onClick={() => setFormImages(formImages.filter((_, i) => i !== idx))} className="text-xs text-red-400">Remove image</button>
-                  </div>
+                  <ImageMediaEditor
+                    key={idx}
+                    index={idx}
+                    image={img}
+                    onChange={(updatedImage) => setFormImages(formImages.map((image, index) => index === idx ? updatedImage : image))}
+                    onRemove={() => setFormImages(formImages.filter((_, index) => index !== idx))}
+                  />
                 ))}
               </div>
 

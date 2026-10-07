@@ -13,6 +13,7 @@ export interface CreateProductDTO {
   images?: IProductImage[];
   specifications?: Record<string, string>;
   faqs?: { question: string; answer: string }[];
+  resources?: IProduct["resources"];
   isPublished?: boolean;
   order?: number;
 }
@@ -27,6 +28,7 @@ export interface UpdateProductDTO {
   images?: IProductImage[];
   specifications?: Record<string, string>;
   faqs?: { question: string; answer: string }[];
+  resources?: IProduct["resources"];
   isPublished?: boolean;
   order?: number;
 }

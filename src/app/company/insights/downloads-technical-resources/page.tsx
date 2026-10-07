@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowUpRight, Download, Folder } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { getDynamicResources } from "@/app/company/_lib/company-content";
+import { ResourceMorphingGallery } from "@/components/ui/resource-morphing-gallery";
 
 export const metadata: Metadata = {
   title: "Downloads & Technical Resources | GeoSAT Solutions",
@@ -38,35 +37,8 @@ export default async function DownloadsTechnicalResourcesPage() {
             </p>
           </header>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-2">
-            {resources.map((document) => (
-              <div
-                key={document.slug}
-                className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 transition-colors duration-300 hover:border-line-strong hover:bg-panel/55"
-              >
-                <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-ink-3">
-                  <span className="inline-flex items-center gap-2">
-                    <Folder className="size-3.5" aria-hidden="true" />
-                    {document.category}
-                  </span>
-                  <span className="text-ink-3">Updated {document.updated}</span>
-                </div>
-
-                <h2 className="mt-5 font-display text-2xl leading-tight text-ink">{document.title}</h2>
-                <p className="mt-4 text-sm leading-relaxed text-ink-2">{document.summary}</p>
-
-                <Link
-                  href={document.fileUrl || "#contact"}
-                  target={document.fileUrl ? "_blank" : undefined}
-                  rel={document.fileUrl ? "noreferrer" : undefined}
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-aqua transition-colors hover:text-aqua-bright"
-                >
-                  <Download className="size-4" aria-hidden="true" />
-                  Download resource
-                  <ArrowUpRight className="size-4" aria-hidden="true" />
-                </Link>
-              </div>
-            ))}
+          <div className="mt-10">
+            <ResourceMorphingGallery items={resources} />
           </div>
         </div>
       </main>

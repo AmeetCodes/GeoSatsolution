@@ -35,29 +35,22 @@ async function getDbContentForTreeItem(match: {
   if (!title) return null;
 
   try {
+    const explicitSlug = item.slug || item.href?.split("/").filter(Boolean).at(-1);
+    const slugifiedTitle = title
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     if (tab.id === "solutions") {
-      const slugified = title
-        .toLowerCase()
-        .replace(/&/g, "and")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      return await solutionService.getBySlug(slugified);
+      return (explicitSlug ? await solutionService.getBySlug(explicitSlug) : null)
+        || await solutionService.getBySlug(slugifiedTitle);
     }
     if (tab.id === "products") {
-      const slugified = title
-        .toLowerCase()
-        .replace(/&/g, "and")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      return await productService.getBySlug(slugified);
+      return (explicitSlug ? await productService.getBySlug(explicitSlug) : null)
+        || await productService.getBySlug(slugifiedTitle);
     }
     if (tab.id === "industries") {
-      const slugified = title
-        .toLowerCase()
-        .replace(/&/g, "and")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      return await industryService.getBySlug(slugified);
+      return await industryService.getBySlug(slugifiedTitle);
     }
   } catch (err) {
     console.error("Error fetching DB content for tree item:", err);
@@ -130,9 +123,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     "GeoSAT",
   ].filter(Boolean) as string[];
 
-  const heroImages = item.images && item.images.length > 0
-    ? item.images
-    : (dbContent?.images || []);
+  const dbManagedSection = tab.id === "solutions" || tab.id === "products";
+  const heroImages = dbManagedSection
+    ? (dbContent?.images || [])
+    : (item.images?.length ? item.images : (dbContent?.images || []));
 
   return {
     title,
@@ -187,18 +181,22 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
 
   const { tab, column, item } = match;
   const dbContent = await getDbContentForTreeItem(match);
+  const dbManagedSection = tab.id === "solutions" || tab.id === "products";
 
   const resolvedItem = {
     ...item,
-    title: item.title || dbContent?.title || "Untitled page",
-    intro: item.intro || dbContent?.intro || "",
-    description: item.description || dbContent?.description || "",
-    outcomes: item.outcomes || dbContent?.outcomes || [],
-    images: (item.images && item.images.length > 0) ? item.images : (dbContent?.images || []),
+    title: dbManagedSection ? (dbContent?.title ?? item.title ?? "Untitled page") : (item.title || dbContent?.title || "Untitled page"),
+    intro: dbManagedSection ? (dbContent?.intro ?? item.intro ?? "") : (item.intro || dbContent?.intro || ""),
+    description: dbManagedSection ? (dbContent?.description ?? item.description ?? "") : (item.description || dbContent?.description || ""),
+    outcomes: dbManagedSection ? (dbContent?.outcomes ?? item.outcomes ?? []) : (item.outcomes || dbContent?.outcomes || []),
+    images: dbManagedSection
+      ? (dbContent?.images || [])
+      : (item.images?.length ? item.images : (dbContent?.images || [])),
   };
 
-  const galleryImages =
-    resolvedItem.images && resolvedItem.images.length > 0 ? resolvedItem.images : DEFAULT_IMAGES;
+  const galleryImages = dbManagedSection
+    ? resolvedItem.images
+    : (resolvedItem.images.length > 0 ? resolvedItem.images : DEFAULT_IMAGES);
 
   // ── JSON-LD Structured Data ─────────────────────────────────────────────────
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;

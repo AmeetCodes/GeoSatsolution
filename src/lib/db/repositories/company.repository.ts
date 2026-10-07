@@ -40,7 +40,9 @@ export class CompanyRepository {
       const filter = item.customId
         ? { $or: [{ customId: item.customId }, ...(Types.ObjectId.isValid(item.customId) ? [{ _id: new Types.ObjectId(item.customId) }] : []), { name: item.name }] }
         : { name: item.name };
-      return { updateOne: { filter, update: { $set: item }, upsert: true } };
+      const { logo, ...data } = item;
+      const update = logo ? { $set: item } : { $set: data, $unset: { logo: 1 as const } };
+      return { updateOne: { filter, update, upsert: true } };
     }));
     await Partner.deleteMany({ customId: { $nin: ids } });
     return Partner.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IPartner[]>;
@@ -97,6 +99,27 @@ export class CompanyRepository {
   // Clients
   async getClients(): Promise<IClient[]> {
     await connectDB();
+    return Client.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IClient[]>;
+  }
+
+  async replaceClients(clients: (Partial<IClient> & { id?: string })[]): Promise<IClient[]> {
+    await connectDB();
+    const ids = clients.flatMap((item) => item.id && Types.ObjectId.isValid(item.id)
+      ? [new Types.ObjectId(item.id)]
+      : []);
+    const names = clients.flatMap((item) => item.name ? [item.name] : []);
+    if (clients.length) {
+      await Client.bulkWrite(clients.map((item) => {
+        const { id, image, ...data } = item;
+        const filter = id && Types.ObjectId.isValid(id) ? { _id: new Types.ObjectId(id) } : { name: item.name };
+        const update = {
+          $set: image ? { ...data, image } : data,
+          $unset: { logo: 1 as const, ...(!image ? { image: 1 as const } : {}) },
+        };
+        return { updateOne: { filter, update, upsert: true } };
+      }));
+    }
+    await Client.deleteMany({ $and: [{ _id: { $nin: ids } }, { name: { $nin: names } }] });
     return Client.find({}).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IClient[]>;
   }
 

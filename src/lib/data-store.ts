@@ -9,7 +9,7 @@ export interface SolutionItem {
   intro: string;
   description: string;
   outcomes: string[];
-  images: { src: string; alt: string; caption: string }[];
+  images: ContentImage[];
   faqs?: { question: string; answer: string }[];
   isPublished?: boolean;
 }
@@ -22,10 +22,27 @@ export interface ProductItem {
   intro: string;
   description: string;
   outcomes: string[];
-  images: { src: string; alt: string; caption: string }[];
+  images: ContentImage[];
   specifications?: Record<string, string>;
   faqs?: { question: string; answer: string }[];
+  resources?: ProductDownloadItem[];
   isPublished?: boolean;
+}
+
+export interface ProductDownloadItem {
+  title: string;
+  fileUrl: string;
+  fileSource?: "upload" | "url";
+  fileMediaId?: string;
+  fileName?: string;
+}
+
+export interface ContentImage {
+  src: string;
+  alt: string;
+  caption: string;
+  source?: "upload" | "url";
+  mediaId?: string;
 }
 
 export interface IndustryItem {
@@ -46,7 +63,7 @@ export interface NewsItem {
   category: string;
   excerpt: string;
   body: string[];
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   author?: string;
   isPublished?: boolean;
 }
@@ -74,7 +91,10 @@ export interface ResourceItem {
   category: string;
   description: string;
   fileUrl: string;
-  thumbnail?: { src: string; alt: string };
+  fileSource?: "upload" | "url";
+  fileMediaId?: string;
+  fileName?: string;
+  thumbnail?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   updated: string;
   isPublished: boolean;
 }
@@ -85,7 +105,16 @@ export interface PartnerItem {
   category: string;
   tier: string;
   description: string;
-  logo?: { src: string; alt: string };
+  logo?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
+  order?: number;
+}
+
+export interface CompanyClientItem {
+  id?: string;
+  name: string;
+  category: string;
+  description: string;
+  image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   order?: number;
 }
 
@@ -95,7 +124,10 @@ export interface LeaderItem {
   role: string;
   division: string;
   bio: string;
-  image?: { src: string; alt: string };
+  expertise?: string;
+  image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
+  accent?: string;
+  imagePosition?: string;
   order?: number;
 }
 
@@ -106,6 +138,7 @@ export interface SiteContentData {
   Company: {
     Leadership: LeaderItem[];
     Partners: PartnerItem[];
+    Clients: CompanyClientItem[];
     Insights: NewsItem[];
     Careers: CareerRole[];
     Resources: ResourceItem[];
@@ -569,6 +602,16 @@ export const DEFAULT_SITE_CONTENT: SiteContentData = {
         tier: "Data Provider Partner",
         description: "Direct tasking and high-resolution optical and SAR imagery provider for multi-temporal site analytics."
       }
+    ],
+    Clients: [
+      { name: "Nepal Electricity Authority", category: "Energy & Infrastructure", description: "", order: 1 },
+      { name: "Kathmandu University", category: "Education & Research", description: "", order: 2 },
+      { name: "Food and Agriculture Organization", category: "Public Institutions", description: "", order: 3 },
+      { name: "Land Management Training Centre", category: "Land & Geospatial", description: "", order: 4 },
+      { name: "Armed Police Force Nepal", category: "Public Institutions", description: "", order: 5 },
+      { name: "Department of Survey", category: "Land & Geospatial", description: "", order: 6 },
+      { name: "Municipal Governments", category: "Local Government", description: "", order: 7 },
+      { name: "Hydropower Developers", category: "Energy & Infrastructure", description: "", order: 8 },
     ],
     Insights: [
       {

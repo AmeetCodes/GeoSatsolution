@@ -14,7 +14,7 @@ import { gsap } from "gsap";
 import "./AccordionGallery.css";
 
 export type AccordionGalleryItem = {
-  image: string;
+  image?: string;
   label: string;
   title?: string;
   description?: string;
@@ -42,19 +42,12 @@ type AccordionGalleryProps = {
   showLabels?: boolean;
   grayscale?: boolean;
   className?: string;
+  ariaLabel?: string;
 };
 
-const DEFAULT_ITEMS: AccordionGalleryItem[] = [
-  { image: "/team/dipesh-kuwar.svg", label: "Dipesh Kuwar", title: "CEO", description: "Company strategy, partnerships and client engagement." },
-  { image: "/team/head-of-survey-engineering.svg", label: "Head of Survey Engineering", title: "Survey Operations", description: "Control networks, field operations and accuracy assurance." },
-  { image: "/team/dibbesh-kacoul.svg", label: "Dibbesh Kacoul", title: "Managing Director", description: "Company strategy, partnerships and client engagement." },
-  { image: "/team/head-of-gis.svg", label: "Head of GIS & Remote Sensing", title: "Geo-Analytics", description: "Enterprise GIS architecture and analytical products." },
-  { image: "/team/lidar-processing-lead.svg", label: "LiDAR Processing Lead", title: "Data Processing", description: "Point-cloud classification, feature extraction and QA/QC." },
-];
-
 export default function AccordionGallery({
-  items = DEFAULT_ITEMS,
-  defaultIndex = 2,
+  items = [],
+  defaultIndex = 0,
   accentColor = "#ffffff",
   overlayColor = "#060010",
   textColor = "#ffffff",
@@ -72,6 +65,7 @@ export default function AccordionGallery({
   showLabels = true,
   grayscale = true,
   className = "",
+  ariaLabel = "Accordion gallery",
 }: AccordionGalleryProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const panelRefs = useRef<Array<HTMLElement | null>>([]);
@@ -84,7 +78,7 @@ export default function AccordionGallery({
 
   const vertical = orientation === "vertical";
   const count = items.length;
-  const [active, setActive] = useState(Math.min(Math.max(defaultIndex, 0), count - 1));
+  const [active, setActive] = useState(count ? Math.min(Math.max(defaultIndex, 0), count - 1) : -1);
 
   const prefersReduced =
     typeof window !== "undefined" && window.matchMedia
@@ -222,7 +216,7 @@ export default function AccordionGallery({
       className={`accordion-gallery${vertical ? " accordion-gallery--vertical" : ""}${className ? ` ${className}` : ""}`}
       style={galleryStyle}
       role="list"
-      aria-label="Leadership accordion gallery"
+      aria-label={ariaLabel}
     >
       {items.map((item, i) => {
         const isActive = i === active;
@@ -253,7 +247,7 @@ export default function AccordionGallery({
                   mediaRefs.current[i] = el;
                 }}
               >
-                <img src={item.image} alt={item.alt || item.label || ""} draggable="false" />
+                {item.image ? <img src={item.image} alt={item.alt || item.label || ""} draggable="false" /> : null}
               </span>
               <span className="ag-panel__overlay" aria-hidden="true" />
             </span>

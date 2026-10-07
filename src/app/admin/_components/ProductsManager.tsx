@@ -9,11 +9,14 @@ import {
   Check,
   Box,
   Filter,
+  Download,
+  LoaderCircle,
 } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
-import type { ProductItem } from "@/lib/data-store";
+import type { ContentImage, ProductDownloadItem, ProductItem } from "@/lib/data-store";
+import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface ProductsManagerProps {
   products: ProductItem[];
@@ -48,9 +51,11 @@ export function ProductsManager({
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
-  const [formImages, setFormImages] = useState<{ src: string; alt: string; caption: string }[]>([
-    { src: "", alt: "", caption: "" },
+  const [formImages, setFormImages] = useState<ContentImage[]>([
+    { src: "", alt: "", caption: "", source: "url" },
   ]);
+  const [formResources, setFormResources] = useState<ProductDownloadItem[]>([]);
+  const [uploadingResourceIndex, setUploadingResourceIndex] = useState<number | null>(null);
 
   const filtered = useMemo(() => {
     return products.filter((item) => {
@@ -69,12 +74,13 @@ export function ProductsManager({
     setFormSlug("");
     setFormPublished(true);
     setFormFaqs([]);
-    setFormImages([{ src: "", alt: "", caption: "" }]);
+    setFormImages([{ src: "", alt: "", caption: "", source: "url" }]);
+    setFormResources([]);
     setFormGroup(selectedGroup !== "All" ? selectedGroup : "UAV & Payloads");
     setFormIntro("");
     setFormDesc("");
     setFormOutcomes(["Survey-grade accuracy", "IP55 weather resistance", "High payload capacity"]);
-    setFormImages([{ src: "", alt: "", caption: "" }]);
+    setFormImages([{ src: "", alt: "", caption: "", source: "url" }]);
     setEditingItem({
       title: "",
       group: "UAV & Payloads",
@@ -97,16 +103,26 @@ export function ProductsManager({
     setFormIntro(item.intro);
     setFormDesc(item.description);
     setFormOutcomes(item.outcomes.length > 0 ? [...item.outcomes] : [""]);
+    setFormResources(item.resources ? item.resources.map((resource) => ({ ...resource, fileMediaId: resource.fileMediaId ? String(resource.fileMediaId) : undefined })) : []);
     setFormImages(
       item.images?.length > 0
         ? [...item.images]
-        : [{ src: "", alt: "", caption: "" }]
+        : [{ src: "", alt: "", caption: "", source: "url" }]
     );
   };
 
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploadingResourceIndex !== null) return;
     if (!formTitle.trim()) return;
+    if (formImages.some((image) => image.source === "upload" && !image.mediaId)) {
+      onTriggerToast("Image upload required", "Finish uploading the selected image or remove that image entry.");
+      return;
+    }
+    if (formResources.some((resource) => Boolean(resource.title.trim() || resource.fileUrl.trim()) && (!resource.title.trim() || !resource.fileUrl.trim()))) {
+      onTriggerToast("Complete product downloads", "Each download needs both a display title and a file or URL.");
+      return;
+    }
 
     const cleanedOutcomes = formOutcomes.filter((o) => o.trim() !== "");
     const cleanedImages = formImages.filter((img) => img.src.trim() !== "");
@@ -122,6 +138,7 @@ export function ProductsManager({
       description: formDesc.trim(),
       outcomes: cleanedOutcomes.length > 0 ? cleanedOutcomes : ["Standard calibration certified"],
       images: cleanedImages.slice(0, 4).map((image) => ({ ...image, alt: image.alt.trim() || formTitle.trim() })),
+      resources: formResources.filter((resource) => resource.title.trim() && resource.fileUrl.trim()),
     };
 
     let updatedList: ProductItem[];
@@ -134,6 +151,30 @@ export function ProductsManager({
     await onSaveProducts(updatedList);
     onTriggerToast(isNew ? "Product Added" : "Product Updated", isNew ? `"${newProduct.title}" added to ${newProduct.group}` : `Saved "${newProduct.title}"`);
     setEditingItem(null);
+  };
+
+  const uploadProductResource = async (index: number, file?: File) => {
+    if (!file) return;
+    setUploadingResourceIndex(index);
+    try {
+      const data = new FormData();
+      data.set("file", file);
+      const response = await fetch("/api/admin/documents", { method: "POST", body: data });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "The file could not be uploaded.");
+      setFormResources((current) => current.map((resource, i) => i === index ? {
+        ...resource,
+        fileUrl: result.data.fileUrl,
+        fileSource: "upload",
+        fileMediaId: result.data.fileMediaId,
+        fileName: result.data.fileName,
+      } : resource));
+      onTriggerToast("File Uploaded", `${result.data.fileName} is ready to attach to this product.`);
+    } catch (error) {
+      onTriggerToast("Upload Failed", error instanceof Error ? error.message : "The resource could not be uploaded.");
+    } finally {
+      setUploadingResourceIndex(null);
+    }
   };
 
   const handleDelete = async (title: string) => {
@@ -356,9 +397,29 @@ export function ProductsManager({
                 {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove FAQ</button></div>)}
               </section>
 
-              <section className="space-y-2">
-                <div className="flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Product carousel: main image and up to 3 additional images</label><button type="button" disabled={formImages.length >= 4} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "" }])} className="text-xs text-blue-400 disabled:opacity-50">Add image</button></div>
-                {formImages.map((image, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={image.src} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, src: e.target.value } : item))} placeholder="Image URL or site path" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><input value={image.alt} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, alt: e.target.value } : item))} placeholder="Accessible image description" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><input value={image.caption} onChange={(e) => setFormImages(formImages.map((item, i) => i === index ? { ...item, caption: e.target.value } : item))} placeholder="Caption (optional)" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormImages(formImages.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove image</button></div>)}
+              <section className="space-y-3">
+                <div className="flex items-center justify-between gap-3"><div><label className="block text-sm font-semibold text-zinc-900">Product images</label><p className="mt-0.5 text-xs text-zinc-500">Choose a database upload or an external image URL. Up to four carousel images.</p></div><button type="button" disabled={formImages.length >= 4} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])} className="shrink-0 text-xs font-semibold text-blue-700 disabled:opacity-50">Add image</button></div>
+                {formImages.map((image, index) => <ImageMediaEditor key={index} image={image} index={index} onChange={(updatedImage) => setFormImages(formImages.map((item, i) => i === index ? updatedImage : item))} onRemove={() => setFormImages(formImages.filter((_, i) => i !== index))} />)}
+              </section>
+
+              <section className="space-y-3 rounded-xl border border-slate-600 bg-slate-900/70 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div><h4 className="text-sm font-semibold text-white">Product downloads</h4><p className="mt-1 text-xs text-slate-400">These files appear from this product page’s Download Resources button. PDF, office docs, images, CSV, text, and ZIP up to 20 MB.</p></div>
+                  <button type="button" onClick={() => setFormResources([...formResources, { title: "", fileUrl: "", fileSource: "upload" }])} className="rounded-lg border border-amber-300/40 px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-300/10">Add download</button>
+                </div>
+                {formResources.length === 0 && <p className="rounded-lg border border-dashed border-slate-600 px-3 py-4 text-center text-xs text-slate-400">No product downloads yet. Add a file here to enable downloads on the product page.</p>}
+                {formResources.map((resource, index) => <div key={index} className="grid gap-2 rounded-lg border border-slate-700 bg-[#0b141b] p-3 sm:grid-cols-[1fr_auto]">
+                  <div className="space-y-2">
+                    <input value={resource.title} onChange={(event) => setFormResources(formResources.map((item, i) => i === index ? { ...item, title: event.target.value } : item))} placeholder="Download label (e.g. Product specification sheet)" className="w-full rounded-md border border-slate-600 bg-slate-950 px-3 py-2 text-xs text-white placeholder:text-slate-500" />
+                    <label className="flex cursor-pointer flex-wrap items-center gap-2 text-xs text-slate-300">
+                      {uploadingResourceIndex === index ? <LoaderCircle className="size-4 animate-spin text-amber-300" /> : <Download className="size-4 text-amber-300" />}
+                      <span>{resource.fileName || (uploadingResourceIndex === index ? "Uploading…" : "Upload a file")}</span>
+                      <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.rtf,.csv,.txt,.zip,.jpg,.jpeg,.png,.webp,.gif,.avif" disabled={uploadingResourceIndex !== null} onChange={(event) => void uploadProductResource(index, event.target.files?.[0])} className="sr-only" />
+                    </label>
+                    <input value={resource.fileSource === "url" ? resource.fileUrl : ""} onChange={(event) => setFormResources(formResources.map((item, i) => i === index ? { ...item, fileUrl: event.target.value, fileSource: "url", fileMediaId: undefined, fileName: "" } : item))} placeholder="Or enter a file URL" className="w-full rounded-md border border-slate-600 bg-slate-950 px-3 py-2 text-xs text-white placeholder:text-slate-500" />
+                  </div>
+                  <button type="button" onClick={() => setFormResources(formResources.filter((_, i) => i !== index))} aria-label={`Remove download ${index + 1}`} className="justify-self-end self-start rounded-md px-2 py-1 text-xs text-rose-300 hover:bg-rose-500/10">Remove</button>
+                </div>)}
               </section>
 
               <div>
@@ -458,6 +519,7 @@ export function ProductsManager({
                 </button>
                 <button
                   type="submit"
+                  disabled={uploadingResourceIndex !== null}
                   className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 transition-all"
                 >
                   Save Product

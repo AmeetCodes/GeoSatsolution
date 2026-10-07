@@ -277,8 +277,8 @@ function TreeGroupColumn({
           // Resolve target URL
           let href = item.href;
           if (!href) {
-            if (tabSlug === "solutions") href = `/solutions/${solutionSlug(item.title)}`;
-            else if (tabSlug === "products") href = `/products/${solutionSlug(item.title)}`;
+            if (tabSlug === "solutions") href = `/solutions/${item.slug || solutionSlug(item.title)}`;
+            else if (tabSlug === "products") href = `/products/${item.slug || solutionSlug(item.title)}`;
             else if (tabSlug === "company") {
               const colSlug = column.slug || solutionSlug(column.title);
               const iSlug = item.slug || solutionSlug(item.title);

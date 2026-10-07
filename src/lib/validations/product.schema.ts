@@ -13,6 +13,17 @@ export const productItemSchema = z.object({
   images: z.array(imageSchema).max(4, "A product may use one main image and up to three carousel images").default([]),
   specifications: z.record(z.string(), z.string()).default({}),
   faqs: z.array(z.object({ question: requiredText(300, "FAQ question"), answer: requiredText(3000, "FAQ answer") })).max(50).default([]),
+  resources: z.array(z.object({
+    title: requiredText(200, "Download title"),
+    fileUrl: z.string().trim().min(1).max(2048).refine((value) => (value.startsWith("/") && !value.startsWith("//")) || /^https?:\/\//i.test(value), "Download must use a site path or http(s) URL"),
+    fileSource: z.enum(["upload", "url"]).optional(),
+    fileMediaId: z.string().regex(/^[a-f\d]{24}$/i, "Download file media id is invalid").optional(),
+    fileName: optionalText(200, "Download file name"),
+  }).superRefine((file, ctx) => {
+    if (file.fileSource === "upload" && (!file.fileMediaId || !file.fileUrl.startsWith(`/api/media/${file.fileMediaId}?download=1`))) {
+      ctx.addIssue({ code: "custom", path: ["fileUrl"], message: "Uploaded downloads must reference their stored file." });
+    }
+  })).max(30, "A product may have up to 30 downloads").default([]),
   isPublished: z.boolean().default(true),
 });
 

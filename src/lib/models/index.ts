@@ -13,3 +13,4 @@ export * from "./project";
 export * from "./Navigation";
 export * from "./Admin";
 export * from "./Consultation";
+export * from "./MediaAsset";

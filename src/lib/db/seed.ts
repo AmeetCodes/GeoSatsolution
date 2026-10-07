@@ -61,17 +61,6 @@ const SEED_EQUIPMENT = [
   { label: "Analysis", value: "PLS-CADD, eCognition, GIS platforms" },
 ];
 
-const SEED_CLIENTS = [
-  "Nepal Electricity Authority",
-  "Kathmandu University",
-  "Food and Agriculture Organization",
-  "Land Management Training Centre",
-  "Armed Police Force Nepal",
-  "Department of Survey",
-  "Municipal Governments",
-  "Hydropower Developers",
-];
-
 export async function seedDatabase(force = false): Promise<{ seeded: boolean; counts: Record<string, number> }> {
   await connectDB();
 
@@ -249,10 +238,15 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
   }
 
   // 10. Seed Clients
-  const clientDocs = SEED_CLIENTS.map((name, idx) => ({
-    name,
-    category: "Institutional",
-    order: idx + 1,
+  const clientSource = siteContent.Company?.Clients?.length
+    ? siteContent.Company.Clients
+    : DEFAULT_SITE_CONTENT.Company.Clients;
+  const clientDocs = clientSource.map((client, idx) => ({
+    name: client.name,
+    category: client.category || "Institutional",
+    description: client.description || "",
+    image: client.image,
+    order: client.order ?? idx + 1,
   }));
   if (clientDocs.length > 0) {
     await Client.insertMany(clientDocs);

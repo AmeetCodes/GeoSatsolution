@@ -9,6 +9,8 @@ export interface IPartner extends Document {
   logo?: {
     src: string;
     alt: string;
+    source?: "upload" | "url";
+    mediaId?: string;
   };
   order: number;
   createdAt: Date;
@@ -25,6 +27,8 @@ const PartnerSchema = new Schema<IPartner>(
     logo: {
       src: { type: String },
       alt: { type: String },
+      source: { type: String, enum: ["upload", "url"] },
+      mediaId: { type: Schema.Types.ObjectId, ref: "MediaAsset" },
     },
     order: { type: Number, default: 0 },
   },
