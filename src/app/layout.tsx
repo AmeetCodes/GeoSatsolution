@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk, Geist, IBM_Plex_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk, Geist, IBM_Plex_Sans, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,13 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
+  subsets: ["latin"],
+  weight: "variable",
   display: "swap",
 });
 
@@ -70,7 +77,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", spaceGrotesk.variable, inter.variable, jetbrainsMono.variable, "font-sans", geist.variable, ibmPlexSans.variable)}
+      className={cn("h-full", "antialiased", spaceGrotesk.variable, inter.variable, jetbrainsMono.variable, "font-sans", geist.variable, ibmPlexSans.variable, openSans.variable)}
     >
       <body className="min-h-full flex flex-col bg-abyss text-ink">{children}</body>
     </html>

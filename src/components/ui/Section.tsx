@@ -21,13 +21,19 @@ type SectionProps = {
   children: ReactNode;
   /** Full-bleed hairline above the section content. */
   rule?: boolean;
+  /** Tighter spacing for dense landing page sections. */
+  compact?: boolean;
 };
 
-export function Section({ id, className, children, rule = true }: SectionProps) {
+export function Section({ id, className, children, rule = true, compact = false }: SectionProps) {
   return (
     <section
       id={id}
-      className={cn("relative scroll-mt-20 py-24 sm:py-28 lg:py-32", className)}
+      className={cn(
+        "relative scroll-mt-20",
+        compact ? "py-14 sm:py-16 lg:py-20" : "py-24 sm:py-28 lg:py-32",
+        className,
+      )}
     >
       {rule ? (
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px hairline" aria-hidden="true" />
@@ -44,6 +50,7 @@ type SectionHeaderProps = {
   title: ReactNode;
   lede?: ReactNode;
   className?: string;
+  compact?: boolean;
 };
 
 export function SectionHeader({
@@ -52,6 +59,7 @@ export function SectionHeader({
   title,
   lede,
   className,
+  compact = false,
 }: SectionHeaderProps) {
   return (
     <div className={cn("max-w-3xl", className)}>
@@ -60,9 +68,9 @@ export function SectionHeader({
         <span aria-hidden="true" className="h-px w-8 bg-line-strong" />
         <span className="label">{label}</span>
       </div>
-      <h2 className="mt-6 text-[clamp(2rem,4.2vw,3.375rem)] text-balance">{title}</h2>
+      <h2 className={cn(compact ? "mt-4" : "mt-6", "text-[clamp(2rem,4.2vw,3.375rem)] text-balance")}>{title}</h2>
       {lede ? (
-        <p className="mt-6 max-w-2xl text-[1.0625rem] leading-relaxed text-ink-2 sm:text-lg">
+        <p className={cn(compact ? "mt-4" : "mt-6", "max-w-2xl text-[1.0625rem] leading-relaxed text-ink-2 sm:text-lg")}>
           {lede}
         </p>
       ) : null}

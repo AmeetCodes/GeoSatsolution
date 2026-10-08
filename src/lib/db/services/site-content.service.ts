@@ -62,6 +62,13 @@ export class SiteContentService {
         intro: ind.intro,
         description: ind.description,
         items: ind.items || [],
+        images: (ind.images || []).map((image) => ({
+          src: image.src,
+          alt: image.alt,
+          caption: image.caption || "",
+          source: image.source,
+          mediaId: image.mediaId ? String(image.mediaId) : undefined,
+        })),
         isPublished: ind.isPublished,
       })),
       Company: company,

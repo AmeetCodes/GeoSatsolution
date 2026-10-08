@@ -4,6 +4,8 @@ export interface IIndustryImage {
   src: string;
   alt: string;
   caption?: string;
+  source?: "upload" | "url";
+  mediaId?: string;
 }
 
 export interface IIndustry extends Document {
@@ -29,8 +31,10 @@ const IndustrySchema = new Schema<IIndustry>(
     images: [
       {
         src: { type: String, required: true },
-        alt: { type: String, required: true },
+        alt: { type: String, default: "" },
         caption: { type: String },
+        source: { type: String, enum: ["upload", "url"] },
+        mediaId: { type: String, match: /^[a-f\d]{24}$/i },
       },
     ],
     isPublished: { type: Boolean, default: true },
@@ -38,6 +42,11 @@ const IndustrySchema = new Schema<IIndustry>(
   },
   { timestamps: true }
 );
+
+// Rebuild stale development models so Mongoose recognizes uploaded image metadata.
+if (mongoose.models.Industry && !mongoose.models.Industry.schema.path("images.source")) {
+  delete mongoose.models.Industry;
+}
 
 export const Industry: Model<IIndustry> =
   mongoose.models.Industry || mongoose.model<IIndustry>("Industry", IndustrySchema);

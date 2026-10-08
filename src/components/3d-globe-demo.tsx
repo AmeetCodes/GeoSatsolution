@@ -84,10 +84,10 @@ const sampleMarkers: GlobeMarker[] = [
 
 export function Globe3DDemo() {
   return (
-    <div className="relative flex min-h-[700px] w-full items-center justify-center overflow-visible bg-transparent py-6">
-      <div className="pointer-events-auto relative flex h-[620px] w-full max-w-4xl cursor-grab items-center justify-center active:cursor-grabbing">
+    <div className="relative flex min-h-[520px] w-full items-center justify-center overflow-visible bg-transparent py-6">
+      <div className="pointer-events-auto relative flex h-[500px] w-full max-w-4xl cursor-grab items-center justify-center active:cursor-grabbing">
         <Globe3D
-          className="pointer-events-auto h-[620px] w-full max-w-4xl"
+          className="pointer-events-auto h-[500px] w-full max-w-4xl"
           markers={sampleMarkers}
           config={{
             radius: 2,

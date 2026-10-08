@@ -418,7 +418,8 @@ export function Navbar() {
 
             <nav className="hidden items-center lg:flex" aria-label="Primary">
               {dynamicTabs.map((item, index) => {
-                const hasMenu = (item.columns && item.columns.length > 0) || item.label === "Industries";
+                const isIndustriesLink = item.label === "Industries";
+                const hasMenu = !isIndustriesLink && (item.columns?.length ?? 0) > 0;
                 const expandedState = openMenu === item.label;
 
                 return (
@@ -461,7 +462,7 @@ export function Navbar() {
                       </button>
                     ) : (
                       <a
-                        href={item.href || `/${item.slug}`}
+                        href={isIndustriesLink ? "/industries" : item.href || `/${item.slug}`}
                         className={cn(
                           "relative inline-flex items-center rounded-full text-[#212223] transition-colors duration-200 hover:text-[#000000]",
                           isActive(item) ? "text-[#000000]" : "",
@@ -624,13 +625,14 @@ export function Navbar() {
                   <ul className="divide-y divide-line">
                     {dynamicTabs.map((item) => {
                       const isOpen = expanded === item.label;
-                      const hasColumns = (item.columns && item.columns.length > 0) || item.label === "Industries";
+                      const isIndustriesLink = item.label === "Industries";
+                      const hasColumns = !isIndustriesLink && (item.columns?.length ?? 0) > 0;
 
                       if (!hasColumns) {
                         return (
                           <li key={item.id || item.label}>
                             <a
-                              href={item.href || `/${item.slug}`}
+                              href={isIndustriesLink ? "/industries" : item.href || `/${item.slug}`}
                               onClick={() => setDrawerOpen(false)}
                               className="flex items-center justify-between py-4 font-display text-xl text-ink"
                             >

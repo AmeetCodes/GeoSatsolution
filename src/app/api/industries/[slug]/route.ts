@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { industryService } from "@/lib/db/services/industry.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
+import { industryItemSchema } from "@/lib/validations/industry.schema";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,15 @@ export async function PUT(req: Request, { params }: RouteProps) {
 
     const { slug } = await params;
     const body = await req.json();
-    const updated = await industryService.update(slug, body);
+    const parsed = industryItemSchema.partial().omit({ id: true }).safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, message: "Validation error", errors: parsed.error.issues },
+        { status: 400 },
+      );
+    }
+
+    const updated = await industryService.update(slug, parsed.data);
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {

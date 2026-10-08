@@ -120,22 +120,40 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
               </div>
             </header>
 
-            <section className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 sm:p-8" aria-label="Use cases">
-              <p className="label text-aqua">Use cases</p>
-              <ul className="mt-6 grid gap-3">
-                {industry.items.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-line bg-white/[0.02] p-4"
-                  >
-                    <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-aqua/10 text-aqua">
-                      <Check className="size-3.5" aria-hidden="true" />
-                    </span>
-                    <span className="text-sm leading-relaxed text-ink-2">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div className="space-y-6">
+              {industry.images.length > 0 ? (
+                <section className="grid gap-3 sm:grid-cols-2" aria-label={`${industry.title} images`}>
+                  {industry.images.map((image, index) => (
+                    <figure key={`${image.src}-${index}`} className={`overflow-hidden rounded-[var(--radius-panel)] border border-line bg-surface ${index === 0 ? "sm:col-span-2" : ""}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image.src}
+                        alt={image.alt || industry.title}
+                        className={`w-full object-cover ${index === 0 ? "h-64 sm:h-80" : "h-44"}`}
+                      />
+                      {image.caption ? <figcaption className="px-4 py-3 text-xs text-ink-3">{image.caption}</figcaption> : null}
+                    </figure>
+                  ))}
+                </section>
+              ) : null}
+
+              <section className="rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 sm:p-8" aria-label="Use cases">
+                <p className="label text-aqua">Use cases</p>
+                <ul className="mt-6 grid gap-3">
+                  {industry.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-3 rounded-2xl border border-line bg-white/[0.02] p-4"
+                    >
+                      <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-aqua/10 text-aqua">
+                        <Check className="size-3.5" aria-hidden="true" />
+                      </span>
+                      <span className="text-sm leading-relaxed text-ink-2">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
           </article>
         </div>
       </main>

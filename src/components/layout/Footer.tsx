@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
-import { CONTACT, CREDENTIALS, FOOTER_COLUMNS } from "@/lib/content";
+import { CONTACT, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
 import { solutionSlug } from "@/lib/utils";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
@@ -93,8 +93,8 @@ export function Footer() {
     <footer className="relative border-t border-line bg-abyss-2/40">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px hairline" aria-hidden="true" />
 
-      <Container className="py-20 sm:py-24">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-10">
+      <Container className="py-16 sm:py-20">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-8">
           <div>
             <a
               href="/"
@@ -138,15 +138,15 @@ export function Footer() {
                   {CONTACT.phone}
                 </a>
               </li>
-              <li className="flex items-start gap-3 text-ink-3">
+              <li className="flex items-start gap-3 text-ink-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-aqua/70" aria-hidden="true" />
-                <span>
+                <address className="not-italic">
                   {CONTACT.address.map((line) => (
                     <span key={line} className="block">
                       {line}
                     </span>
                   ))}
-                </span>
+                </address>
               </li>
             </ul>
           </div>
@@ -170,14 +170,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-col gap-6 border-t border-line pt-8 lg:flex-row lg:items-center lg:justify-between">
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {CREDENTIALS.map((credential) => (
-              <li key={credential} className="label text-ink-4">
-                {credential}
-              </li>
-            ))}
-          </ul>
+        <div className="mt-12 flex flex-col gap-5 border-t border-line pt-7 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-xs text-ink-4 tabular">
             © {year} GeoSAT Solutions. All rights reserved.
           </p>

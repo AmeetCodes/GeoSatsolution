@@ -65,7 +65,7 @@ export function Industries() {
   }, [industries]);
 
   return (
-    <Section id="industries">
+    <Section id="industries" compact>
       <Container>
         <Reveal>
           <SectionHeader
@@ -73,10 +73,11 @@ export function Industries() {
             label={SECTION_HEADERS.industries.label}
             title={SECTION_HEADERS.industries.title}
             lede={SECTION_HEADERS.industries.lede}
+            compact
           />
         </Reveal>
 
-        <Reveal stagger className="mt-14 grid gap-4 sm:mt-16 lg:grid-cols-2">
+        <Reveal stagger className="mt-10 grid gap-4 sm:mt-12 lg:grid-cols-2">
           {industries.map((industry, index) => {
             const Icon = ICONS[index % ICONS.length];
             const isExpanded = expanded === industry.title;
@@ -87,7 +88,7 @@ export function Industries() {
                 <button
                   type="button"
                   onClick={() => setExpanded(isExpanded ? null : industry.title)}
-                  className="group relative block h-full w-full overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/30 p-8 text-left transition-[border-color,background-color,transform] duration-300 hover:border-line-strong hover:bg-panel/55 hover:-translate-y-0.5 sm:p-10"
+                  className="group relative block h-full w-full overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/30 p-6 text-left transition-[border-color,background-color,transform] duration-300 hover:border-line-strong hover:bg-panel/55 hover:-translate-y-0.5 sm:p-7"
                 >
                   <span
                     aria-hidden="true"
@@ -112,10 +113,10 @@ export function Industries() {
                     </span>
                   </div>
 
-                  <p className="mt-6 text-sm leading-relaxed text-ink-2">{bodyText}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-ink-2">{bodyText}</p>
 
                   {isExpanded ? (
-                    <ul className="mt-7 space-y-3 border-t border-line pt-7">
+                    <ul className="mt-5 space-y-2 border-t border-line pt-5">
                       {industry.items.map((item) => (
                         <li key={item}>
                           <a

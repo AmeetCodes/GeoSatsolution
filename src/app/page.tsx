@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { Approach } from "./_components/sections/Approach";
+import CircularGallery from "@/components/ui/CircularGallery";
+import { Container } from "@/components/ui/Section";
 import { Capabilities } from "./_components/sections/Capabilities";
-import { CtaBand } from "./_components/sections/CtaBand";
+import { ContactAssessment } from "./_components/sections/ContactAssessment";
 import { Equipment } from "./_components/sections/Equipment";
 import { Hero } from "./_components/sections/Hero";
 import { Industries } from "./_components/sections/Industries";
@@ -68,12 +69,26 @@ export default function Home() {
       <main id="main" className="flex-1">
         <Hero />
         <Capabilities />
-        <Approach />
         <Equipment />
         <Projects />
         <Industries />
-        <CtaBand />
       </main>
+
+      <Container className="py-8 sm:py-10">
+        <div className="relative h-[600px] w-full">
+          <CircularGallery
+            bend={1}
+            textColor="#111827"
+            borderRadius={0.05}
+            scrollEase={0.05}
+            fontUrl=""
+            font="bold 30px Orbitron"
+            scrollSpeed={2}
+          />
+        </div>
+      </Container>
+
+      <ContactAssessment />
 
       <Footer />
     </>

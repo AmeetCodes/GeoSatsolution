@@ -135,7 +135,7 @@ export const HERO = {
   title: ["Precision you can", "build on.", ""] as const,
   sub: "GeoSAT captures survey-grade spatial data — UAV LiDAR, drone photogrammetry, engineering survey, enterprise GIS and continuous asset monitoring — for the infrastructure, institutions and industries that cannot afford to guess.",
   primaryCta: "Request a site assessment",
-  secondaryCta: "See how we work",
+  secondaryCta: "Explore our platform",
 } as const;
 
 /** Credential strip under the hero — the fast trust check. */
@@ -154,19 +154,19 @@ export const SECTION_HEADERS = {
     lede: "Most projects fail in the gaps between contractors. We keep capture, processing, data engineering and monitoring under one roof, on one datum, so nothing has to be reconciled twice.",
   },
   equipment: {
-    index: "03",
+    index: "02",
     label: "Platform",
     title: "Instruments that hold their calibration.",
     lede: "Capture, positioning, processing and analysis — maintained, traceable and checked before and after every mobilisation.",
   },
   projects: {
-    index: "04",
+    index: "03",
     label: "Selected work",
     title: "Sites where a guess was not an option.",
     lede: "A cross-section of recent engagements, delivered as data the client's own engineers work from directly.",
   },
   industries: {
-    index: "05",
+    index: "04",
     label: "Industries",
     title: "Measured in the units your discipline uses.",
     lede: "The same accuracy, reported the way each sector already reasons about ground — volumes, slopes, corridors, baselines or change.",
@@ -236,21 +236,12 @@ export const FOOTER_COLUMNS = [
 
 /**
  * Contact block for the footer and the closing CTA.
- * NOTE: the address and inbox below are placeholders — swap them for the
- * production details before the site goes live.
+ * Shared contact details used by the footer and closing CTA.
  */
 export const CONTACT = {
-  email: "hello@geosat.co",
-  phone: "+977 1 5912 340",
-  address: ["Level 4, Trade Tower Annex", "Thapathali, Kathmandu", "Nepal"],
+  email: "info@geosatsolutions.com.np",
+  phone: "+977 9842496370",
+  address: ["Phulbari Nagar Marg", "Koteshwor-32, Kathmandu 44600", "Nepal"],
   hours: "Sun–Fri · 09:30–18:00 NPT",
-} as const;
-
-export const CTA = {
-  eyebrow: "Start a project",
-  title: "Tell us the decision you need to defend.",
-  body: "Send us the site, the tolerance and the deadline. You will get a method, a crew and a schedule — not a brochure.",
-  primaryCta: "Request a site assessment",
-  secondaryCta: "Download capability profile",
 } as const;
 

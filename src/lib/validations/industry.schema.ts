@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { requiredText, textList, uniqueBy, optionalText, slugSchema } from "./shared.schema";
+import { requiredText, textList, uniqueBy, optionalText, slugSchema, imageListSchema } from "./shared.schema";
 
 export const industryItemSchema = z.object({
   id: z.string().regex(/^[a-f\d]{24}$/i, "Industry id is invalid").optional(),
@@ -9,6 +9,7 @@ export const industryItemSchema = z.object({
   intro: optionalText(600, "Industry intro"),
   description: optionalText(5000, "Industry description"),
   items: textList(60, 200, "Industry focus areas"),
+  images: imageListSchema,
   isPublished: z.boolean().default(true),
 });
 

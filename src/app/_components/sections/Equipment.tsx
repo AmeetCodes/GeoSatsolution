@@ -39,7 +39,7 @@ export async function Equipment() {
   }
 
   return (
-    <Section id="equipment">
+    <Section id="equipment" compact>
       <Container>
         <div className="grid gap-14 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-20">
           <Reveal>
@@ -49,9 +49,10 @@ export async function Equipment() {
                 label={SECTION_HEADERS.equipment.label}
                 title={SECTION_HEADERS.equipment.title}
                 lede={SECTION_HEADERS.equipment.lede}
+                compact
               />
 
-              <ul className="mt-10 space-y-3.5 rounded-[var(--radius-card)] border border-line bg-white/[0.02] p-6">
+              <ul className="mt-7 space-y-3 rounded-[var(--radius-card)] border border-line bg-white/[0.02] p-5">
                 {CALIBRATION.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm text-ink-2">
                     <Check
@@ -68,7 +69,7 @@ export async function Equipment() {
 
           <Reveal className="lg:pt-2" stagger delay={0.08}>
             <div className="border-t border-line">
-              <div className="grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-6 border-b border-line py-3.5">
+              <div className="grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-5 border-b border-line py-3">
                 <p className="label">System</p>
                 <p className="label">Configuration</p>
               </div>
@@ -76,7 +77,7 @@ export async function Equipment() {
               {equipmentList.map((item) => (
                 <RevealItem
                   key={item.label}
-                  className="group grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] items-baseline gap-6 border-b border-line py-6 transition-colors duration-300 hover:bg-white/[0.02]"
+                  className="group grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] items-baseline gap-5 border-b border-line py-4 transition-colors duration-300 hover:bg-white/[0.02]"
                 >
                   <p className="text-sm text-ink-3">{item.label}</p>
                   <p className="font-mono text-sm text-ink tabular">{item.value}</p>

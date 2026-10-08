@@ -13,7 +13,7 @@ export function Hero() {
   return (
  <section
   id="top"
-  className="relative isolate min-h-[100svh] overflow-hidden pb-16 pt-[calc(var(--nav-h)+2.5rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]"
+  className="relative isolate min-h-[min(48rem,88svh)] overflow-hidden pb-12 pt-[calc(var(--nav-h)+2rem)]"
 >
   {/* Engineering grid, faded out toward the bottom of the viewport. */}
   <div
@@ -27,7 +27,7 @@ export function Hero() {
     </div>
   </div>
 
-  <Container className="relative flex min-h-[calc(100svh-var(--nav-h)-6rem)] flex-col justify-center">
+  <Container className="relative flex flex-col justify-center">
     <div className="max-w-[36rem] lg:max-w-[34rem]">
       {/* Eyebrow Label */}
       <Reveal>
@@ -97,7 +97,7 @@ export function Hero() {
           <Button href="#contact" size="lg" trailingIcon>
             {HERO.primaryCta}
           </Button>
-          <Button href="#approach" variant="secondary" size="lg">
+          <Button href="#equipment" variant="secondary" size="lg">
             {HERO.secondaryCta}
           </Button>
         </div>
@@ -116,7 +116,7 @@ export function Hero() {
     </div>
 
     {/* Scroll Link */}
-    <Reveal className="mt-16 lg:mt-24" delay={0.3}>
+    <Reveal className="mt-10" delay={0.3}>
       <a
         href="#capabilities"
         className="group mb-10 inline-flex items-center gap-2 py-1.5 text-xs text-[#16264A] transition-colors duration-200 hover:opacity-80 lg:mb-0"

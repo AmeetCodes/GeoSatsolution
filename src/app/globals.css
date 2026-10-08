@@ -110,10 +110,30 @@
     text-wrap: pretty;
   }
 
-  /* Firefox scrollbar */
+  /* Keep the page scrollbar dark, rounded and easy to spot on the light UI. */
   html {
-    scrollbar-color: rgba(60, 227, 214, 0.28) transparent;
+    scrollbar-color: #111827 #e5e7eb;
     scrollbar-width: thin;
+  }
+
+  html::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: #e5e7eb;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    min-height: 40px;
+    border: 3px solid #e5e7eb;
+    border-radius: 999px;
+    background: #111827;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: #000000;
   }
 }
 

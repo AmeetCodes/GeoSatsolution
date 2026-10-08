@@ -1,4 +1,5 @@
 import { industryService } from "@/lib/db/services/industry.service";
+import type { ContentImage } from "@/lib/data-store";
 
 export type Industry = {
   slug?: string;
@@ -6,6 +7,7 @@ export type Industry = {
   intro: string;
   description: string;
   items: string[];
+  images: ContentImage[];
   isPublished?: boolean;
 };
 
@@ -31,6 +33,13 @@ export async function getDynamicIndustries(): Promise<Industry[]> {
         intro: item.intro || "",
         description: item.description || "",
         items: item.items || [],
+        images: (item.images || []).map((image) => ({
+          src: image.src,
+          alt: image.alt,
+          caption: image.caption || "",
+          source: image.source,
+          mediaId: image.mediaId ? String(image.mediaId) : undefined,
+        })),
         isPublished: item.isPublished,
       }));
     }
@@ -50,6 +59,13 @@ export async function getDynamicIndustryBySlug(slug: string): Promise<Industry |
         intro: item.intro || "",
         description: item.description || "",
         items: item.items || [],
+        images: (item.images || []).map((image) => ({
+          src: image.src,
+          alt: image.alt,
+          caption: image.caption || "",
+          source: image.source,
+          mediaId: image.mediaId ? String(image.mediaId) : undefined,
+        })),
         isPublished: item.isPublished,
       };
     }

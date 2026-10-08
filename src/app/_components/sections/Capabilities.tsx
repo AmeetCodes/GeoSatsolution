@@ -14,7 +14,7 @@ export function Capabilities() {
   const reduced = useReducedMotion();
 
   return (
-    <Section id="capabilities">
+    <Section id="capabilities" compact>
       <Container>
         <Reveal>
           <SectionHeader
@@ -22,10 +22,11 @@ export function Capabilities() {
             label={SECTION_HEADERS.capabilities.label}
             title={SECTION_HEADERS.capabilities.title}
             lede={SECTION_HEADERS.capabilities.lede}
+            compact
           />
         </Reveal>
 
-        <div className="mt-16 border-t border-line sm:mt-20">
+        <div className="mt-9 border-t border-line sm:mt-10">
           {CAPABILITIES.map((capability) => {
             const isOpen = open === capability.title;
 
@@ -37,7 +38,7 @@ export function Capabilities() {
                     aria-expanded={isOpen}
                     aria-controls={`capability-${capability.index}`}
                     onClick={() => setOpen(isOpen ? "" : capability.title)}
-                    className="group grid w-full grid-cols-[auto_1fr_auto] items-start gap-x-5 gap-y-3 py-8 text-left sm:gap-x-8 sm:py-10"
+                    className="group grid w-full grid-cols-[auto_1fr_auto] items-start gap-x-4 gap-y-3 rounded-lg px-3 py-5 text-left transition-colors sm:gap-x-6 sm:px-4 sm:py-6"
                   >
                     <span
                       className={cn(
@@ -51,7 +52,7 @@ export function Capabilities() {
                     <span className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:gap-8">
                       <span
                         className={cn(
-                          "font-display text-[clamp(1.375rem,2.6vw,1.875rem)] leading-tight tracking-[-0.03em] transition-colors duration-300",
+                          "font-[family-name:var(--font-open-sans)] text-[22.4px] font-[100] leading-tight tracking-[-0.02em] transition-colors duration-300",
                           isOpen ? "text-ink" : "text-ink-2 group-hover:text-ink",
                         )}
                       >
@@ -86,7 +87,7 @@ export function Capabilities() {
                       transition={{ duration: reduced ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="grid gap-6 pb-10 sm:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] sm:gap-12 sm:pb-12">
+                      <div className="grid gap-5 pb-7 sm:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] sm:gap-10 sm:pb-8">
                         <p className="text-[0.9375rem] leading-relaxed text-ink-2 sm:pl-[calc(2rem+2rem)]">
                           {capability.detail}
                         </p>

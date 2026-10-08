@@ -17,7 +17,7 @@ function Card({
     <a
       href="#contact"
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/40 p-7 transition-[border-color,background-color,transform] duration-300 ease-out hover:-translate-y-1 hover:border-aqua/30 hover:bg-panel/70 sm:p-9",
+        "group relative flex flex-col overflow-hidden rounded-[var(--radius-panel)] border border-line bg-panel/40 p-6 transition-[border-color,background-color,transform] duration-300 ease-out hover:-translate-y-1 hover:border-aqua/30 hover:bg-panel/70 sm:p-7",
         className,
       )}
     >
@@ -34,13 +34,13 @@ function Card({
         />
       </div>
 
-      <h3 className="mt-6 max-w-md text-[clamp(1.25rem,2.1vw,1.625rem)] leading-snug text-ink">
+      <h3 className="mt-4 max-w-md text-[clamp(1.25rem,2.1vw,1.625rem)] leading-snug text-ink">
         {project.title}
       </h3>
       <p className="mt-3 text-xs text-aqua/70">{project.sector}</p>
-      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-ink-2">{project.body}</p>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-2">{project.body}</p>
 
-      <ul className="mt-7 flex flex-wrap gap-2 pt-1">
+      <ul className="mt-5 flex flex-wrap gap-2 pt-1">
         {project.tags.map((tag) => (
           <li
             key={tag}
@@ -72,7 +72,7 @@ export async function Projects() {
   const [featured, ...rest] = projectList;
 
   return (
-    <Section id="projects" className="bg-abyss-2/30">
+    <Section id="projects" compact className="bg-abyss-2/30">
       <Container>
         <Reveal>
           <SectionHeader
@@ -80,11 +80,12 @@ export async function Projects() {
             label={SECTION_HEADERS.projects.label}
             title={SECTION_HEADERS.projects.title}
             lede={SECTION_HEADERS.projects.lede}
+            compact
           />
         </Reveal>
 
         {featured && (
-          <Reveal stagger className="mt-14 grid gap-4 sm:mt-16 lg:grid-cols-3">
+          <Reveal stagger className="mt-10 grid gap-4 sm:mt-12 lg:grid-cols-3">
             <RevealItem className="lg:col-span-3">
               <Card project={featured} className="lg:p-12" />
             </RevealItem>

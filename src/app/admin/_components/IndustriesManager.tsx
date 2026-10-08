@@ -7,9 +7,10 @@ import {
   Plus,
   Trash2,
   CheckCircle2,
-  Layers,
+  ImagePlus,
 } from "lucide-react";
-import type { IndustryItem } from "@/lib/data-store";
+import type { ContentImage, IndustryItem } from "@/lib/data-store";
+import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface IndustriesManagerProps {
   industries: IndustryItem[];
@@ -32,8 +33,11 @@ export function IndustriesManager({
   const [intro, setIntro] = useState("");
   const [desc, setDesc] = useState("");
   const [items, setItems] = useState<string[]>([""]);
+  const [images, setImages] = useState<ContentImage[]>([]);
+  const [uploadingImageIndexes, setUploadingImageIndexes] = useState<Set<number>>(() => new Set());
 
   const openAddModal = () => {
+    setUploadingImageIndexes(new Set());
     setIsNew(true);
     setTitle("");
     setSlug("");
@@ -41,6 +45,7 @@ export function IndustriesManager({
     setIntro("");
     setDesc("");
     setItems(["Sector Sub-field 1", "Sector Sub-field 2"]);
+    setImages([]);
     setEditingItem({
       title: "",
       intro: "",
@@ -50,6 +55,7 @@ export function IndustriesManager({
   };
 
   const openEditModal = (item: IndustryItem) => {
+    setUploadingImageIndexes(new Set());
     setIsNew(false);
     setEditingItem(item);
     setTitle(item.title);
@@ -58,6 +64,16 @@ export function IndustriesManager({
     setIntro(item.intro);
     setDesc(item.description);
     setItems([...item.items]);
+    setImages((item.images || []).map((image) => ({ ...image, caption: image.caption || "" })));
+  };
+
+  const setImageUploading = (index: number, uploading: boolean) => {
+    setUploadingImageIndexes((current) => {
+      const next = new Set(current);
+      if (uploading) next.add(index);
+      else next.delete(index);
+      return next;
+    });
   };
 
   const handleSaveModal = async (e: React.FormEvent) => {
@@ -74,6 +90,9 @@ export function IndustriesManager({
       intro: intro.trim(),
       description: desc.trim(),
       items: cleanedItems.length > 0 ? cleanedItems : ["General Sector Solutions"],
+      images: images
+        .filter((image) => image.src.trim())
+        .map((image) => ({ ...image, alt: image.alt.trim() || title.trim() })),
     };
 
     let updatedList: IndustryItem[];
@@ -137,8 +156,8 @@ export function IndustriesManager({
             className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-5 hover:border-zinc-700 transition-all"
           >
             <div>
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2.5">
                   <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                     <Building2 className="w-4 h-4" />
                   </div>
@@ -171,6 +190,13 @@ export function IndustriesManager({
                   </button>
                 </div>
               </div>
+
+              {ind.images?.[0]?.src ? (
+                <div className="mb-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={ind.images[0].src} alt="" className="h-32 w-full rounded-lg border border-zinc-700/60 object-cover" />
+                </div>
+              ) : null}
 
               <p className="text-xs text-zinc-300 font-medium leading-relaxed mb-2">
                 {ind.intro}
@@ -256,6 +282,43 @@ export function IndustriesManager({
                 />
               </div>
 
+              <fieldset disabled={uploadingImageIndexes.size > 0} className="space-y-3 rounded-xl border border-zinc-700/80 bg-white/60 p-4 disabled:opacity-80" aria-labelledby="industry-images-label">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h4 id="industry-images-label" className="text-xs font-semibold text-zinc-900">Industry images</h4>
+                    <p className="mt-1 text-[11px] leading-5 text-zinc-600">The first image is used as the industry card cover. Add up to 5 images for the detail view.</p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={images.length >= 5}
+                    onClick={() => setImages((current) => [...current, { src: "", alt: title, caption: "", source: "upload" }])}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-700/20 px-3 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ImagePlus className="size-3.5" aria-hidden="true" /> Add image
+                  </button>
+                </div>
+                {images.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-zinc-300 bg-white/70 px-3 py-4 text-center text-xs text-zinc-500">No industry images added yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {images.map((image, index) => (
+                      <ImageMediaEditor
+                        key={`${image.mediaId || image.src || "new-image"}-${index}`}
+                        image={image}
+                        index={index}
+                        title={`Industry image ${index + 1}`}
+                        onChange={(updatedImage) => setImages((current) => current.map((entry, entryIndex) => entryIndex === index ? updatedImage : entry))}
+                        onRemove={() => {
+                          setImages((current) => current.filter((_, entryIndex) => entryIndex !== index));
+                          setUploadingImageIndexes((current) => new Set([...current].filter((entryIndex) => entryIndex !== index).map((entryIndex) => entryIndex > index ? entryIndex - 1 : entryIndex)));
+                        }}
+                        onUploadingChange={(uploading) => setImageUploading(index, uploading)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </fieldset>
+
               {/* Items List */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
@@ -303,15 +366,17 @@ export function IndustriesManager({
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
+                  disabled={uploadingImageIndexes.size > 0}
                   className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-[#f1ece5] hover:bg-zinc-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-[#f1ece5] shadow-md shadow-emerald-600/30 transition-all"
+                  disabled={uploadingImageIndexes.size > 0}
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-[#f1ece5] shadow-md shadow-emerald-600/30 transition-all disabled:cursor-wait disabled:opacity-60"
                 >
-                  Save Sector
+                  {uploadingImageIndexes.size > 0 ? "Uploading image…" : "Save Sector"}
                 </button>
               </div>
             </form>

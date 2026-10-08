@@ -52,6 +52,7 @@ export interface IndustryItem {
   intro: string;
   description: string;
   items: string[];
+  images?: ContentImage[];
   isPublished?: boolean;
 }
 
