@@ -5,7 +5,6 @@ import { solutionListSchema } from "./solution.schema";
 import { productListSchema } from "./product.schema";
 import { industryListSchema } from "./industry.schema";
 import { articleListSchema } from "./article.schema";
-import { careerListSchema } from "./career.schema";
 
 const leaderItemSchema = z.object({
   id: z.string().regex(/^[a-f\d]{24}$/i, "Leader id is invalid").optional(),
@@ -108,7 +107,6 @@ export const companySchema = z.object({
   }),
   Clients: clientListSchema.default([]),
   Insights: articleListSchema.default([]),
-  Careers: careerListSchema.default([]),
   Resources: resourceListSchema.default([]),
 });
 

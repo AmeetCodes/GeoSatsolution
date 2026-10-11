@@ -13,7 +13,6 @@ import {
 import { parsePayload } from "./utils";
 import { createConsultationSchema } from "./consultation.schema";
 import { articleSchema } from "./article.schema";
-import { careerSchema } from "./career.schema";
 import { industryItemSchema } from "./industry.schema";
 import { productItemSchema } from "./product.schema";
 import { solutionItemSchema } from "./solution.schema";
@@ -73,7 +72,7 @@ describe("entity schemas reject incomplete or invalid records", () => {
     assert.equal(productItemSchema.safeParse(withImages("https://example.com/a.jpg")).success, true);
   });
 
-  it("validates industries, articles and careers", () => {
+  it("validates industries and articles", () => {
     assert.equal(
       industryItemSchema.safeParse({
         title: "Construction",
@@ -129,23 +128,6 @@ describe("entity schemas reject incomplete or invalid records", () => {
       false,
       "dates must be ISO",
     );
-
-    assert.equal(
-      careerSchema.safeParse({
-        slug: "gis-analyst",
-        title: "GIS Analyst",
-        category: "Technical",
-        location: "Remote",
-        summary: "Own the pipeline",
-        responsibilities: ["Analysis"],
-        requirements: ["Degree"],
-      }).success,
-      true,
-    );
-    assert.equal(
-      careerSchema.safeParse({ slug: "gis-analyst", title: "GIS Analyst" }).success,
-      false,
-    );
   });
 
   it("validates project fields and requires unique project codes", () => {
@@ -171,7 +153,7 @@ describe("entity schemas reject incomplete or invalid records", () => {
       Solutions: duplicatedSolutions,
       Products: [],
       Industries: [],
-      Company: { Leadership: [], Partners: [], Insights: [], Careers: [] },
+      Company: { Leadership: [], Partners: [], Insights: [] },
     });
 
     assert.equal(result.success, false);
@@ -247,7 +229,7 @@ describe("admin content requests", () => {
         Solutions: [validSolution],
         Products: [],
         Industries: [],
-        Company: { Leadership: [], Partners: [], Insights: [], Careers: [] },
+        Company: { Leadership: [], Partners: [], Insights: [] },
       }).ok,
       true,
     );

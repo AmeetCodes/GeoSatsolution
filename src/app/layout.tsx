@@ -1,40 +1,49 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk, Geist, IBM_Plex_Sans, Open_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = localFont({
+  src: [{ path: "./fonts/geist-var-100-900-latin.woff2", weight: "100 900", style: "normal" }],
+  variable: "--font-sans",
+  display: "swap",
+});
 
-const ibmPlexSans = IBM_Plex_Sans({
+const ibmPlexSans = localFont({
+  src: [{ path: "./fonts/ibm-plex-sans-var-100-700-latin.woff2", weight: "100 700", style: "normal" }],
   variable: "--font-ibm-plex-sans",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const openSans = Open_Sans({
+const openSans = localFont({
+  src: [{ path: "./fonts/open-sans-var-300-800-latin.woff2", weight: "300 800", style: "normal" }],
   variable: "--font-open-sans",
-  subsets: ["latin"],
-  weight: "variable",
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = localFont({
+  src: [
+    { path: "./fonts/space-grotesk-400-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/space-grotesk-500-latin.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/space-grotesk-600-latin.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/space-grotesk-700-latin.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const inter = Inter({
+const inter = localFont({
+  src: [{ path: "./fonts/inter-var-100-900-latin.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-inter",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: [
+    { path: "./fonts/jetbrains-mono-400-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/jetbrains-mono-500-latin.woff2", weight: "500", style: "normal" },
+  ],
   variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 

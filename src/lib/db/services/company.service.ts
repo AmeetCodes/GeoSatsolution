@@ -3,19 +3,17 @@ import { companyRepository } from "../repositories/company.repository";
 import { ILeader } from "../../models/leader";
 import { IPartner } from "../../models/partner";
 import { IArticle } from "../../models/Article";
-import { ICareer } from "../../models/career";
 import { IClient } from "../../models/client";
 import { Types } from "mongoose";
 import type { SiteContentData } from "../../data-store";
 
 export class CompanyService {
   async getCompanyData() {
-    const [leadership, partners, clients, insights, careers, resources] = await Promise.all([
+    const [leadership, partners, clients, insights, resources] = await Promise.all([
       companyRepository.getLeaders(),
       companyRepository.getPartners(),
       companyRepository.getClients(),
       companyRepository.getArticles(false),
-      companyRepository.getCareers(false),
       companyRepository.getResources(false),
     ]);
 
@@ -81,21 +79,6 @@ export class CompanyService {
         author: a.author,
         isPublished: a.isPublished,
       })),
-      Careers: careers.map((c) => ({
-        id: c._id.toString(),
-        slug: c.slug,
-        title: c.title,
-        category: c.category,
-        location: c.location,
-        summary: c.summary,
-        description: c.description,
-        employmentType: c.employmentType,
-        applicationInfo: c.applicationInfo,
-        status: c.status,
-        isPublished: c.isPublished,
-        responsibilities: c.responsibilities || [],
-        requirements: c.requirements || [],
-      })),
       Resources: resources.map((resource) => ({
         id: resource._id.toString(),
         slug: resource.slug,
@@ -138,14 +121,6 @@ export class CompanyService {
 
   async getArticleBySlug(slug: string): Promise<IArticle | null> {
     return companyRepository.getArticleBySlug(slug);
-  }
-
-  async getCareers(publishedOnly = true): Promise<ICareer[]> {
-    return companyRepository.getCareers(publishedOnly);
-  }
-
-  async getCareerBySlug(slug: string): Promise<ICareer | null> {
-    return companyRepository.getCareerBySlug(slug);
   }
 
   async updateCompany(data: Partial<SiteContentData["Company"]>) {
@@ -209,25 +184,6 @@ export class CompanyService {
       await companyRepository.replaceArticles(articleDocs);
     }
 
-    if (data.Careers) {
-      const careerDocs = data.Careers.map((item) => ({
-        id: item.id,
-        slug: item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        title: item.title,
-        category: item.category,
-        location: item.location,
-        summary: item.summary,
-        description: item.description || "",
-        employmentType: item.employmentType || "Full-time",
-        applicationInfo: item.applicationInfo || "",
-        status: item.status || "open",
-        responsibilities: item.responsibilities || [],
-        requirements: item.requirements || [],
-        isPublished: item.isPublished !== false,
-      }));
-      await companyRepository.replaceCareers(careerDocs);
-    }
-
     if (data.Resources) {
       await companyRepository.replaceResources(data.Resources.map((item, index) => ({
         ...item,
@@ -245,7 +201,6 @@ export class CompanyService {
     try {
       revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
-      revalidatePath("/company/careers");
       revalidatePath("/company/insights/news");
       revalidatePath("/company/insights/downloads-technical-resources");
       revalidatePath("/company/about/executive-technical-leads");

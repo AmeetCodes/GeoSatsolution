@@ -116,14 +116,6 @@ export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
         title: "Insights",
         links: ["News & Field Notes", "Downloads & Technical Resources"],
       },
-      {
-        title: "Careers",
-        links: [
-          "Survey & GIS Engineering Roles",
-          "UAV & LiDAR Operations Roles",
-          "Software Development Roles",
-        ],
-      },
     ],
   },
 ];
@@ -230,7 +222,7 @@ export const FOOTER_COLUMNS = [
   },
   {
     title: "Company",
-    links: ["About", "Selected Projects", "Training", "Support", "Careers", "Insights"],
+    links: ["About", "Selected Projects", "Training", "Support", "Insights"],
   },
 ];
 

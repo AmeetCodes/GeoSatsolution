@@ -857,56 +857,6 @@
               ]
             }
           ]
-        },
-        {
-          "id": "col-careers",
-          "title": "Careers",
-          "slug": "careers",
-          "order": 3,
-          "items": [
-            {
-              "id": "comp-career-survey",
-              "title": "Survey & GIS Engineering Roles",
-              "slug": "survey-gis-engineering-roles",
-              "href": "/company/careers/survey-gis-engineering-roles",
-              "order": 1,
-              "intro": "Join our geodetic control and cadastral engineering teams executing complex terrain surveys.",
-              "description": "Opportunities for Senior Geomatics Engineers, GIS Analysts, and Cadastral Surveyors.",
-              "outcomes": [
-                "Work on nation-building infrastructure projects",
-                "Access to Trimble, Leica, and high-end survey equipment",
-                "Competitive compensation and continuous professional development"
-              ]
-            },
-            {
-              "id": "comp-career-uav",
-              "title": "UAV & LiDAR Operations Roles",
-              "slug": "uav-lidar-operations-roles",
-              "href": "/company/careers/uav-lidar-operations-roles",
-              "order": 2,
-              "intro": "Plan and execute aerial survey missions across high-altitude and rugged corridors.",
-              "description": "Roles for Commercial Drone Pilots, LiDAR Operators, and Flight Operations Leads.",
-              "outcomes": [
-                "Fly enterprise DJI Matrice and VTOL aircraft",
-                "High-altitude mountainous mission experience",
-                "Flight safety training and certification support"
-              ]
-            },
-            {
-              "id": "comp-career-software",
-              "title": "Software Development Roles",
-              "slug": "software-development-roles",
-              "href": "/company/careers/software-development-roles",
-              "order": 3,
-              "intro": "Build cloud-native GIS portals, real-time sensor dashboards, and geoprocessing pipelines.",
-              "description": "Full-Stack Geospatial Software Developers, PostGIS Engineers, and WebGL/Three.js creators.",
-              "outcomes": [
-                "Build modern Next.js and MapLibre platforms",
-                "Architect real-time IoT sensor telemetry streams",
-                "Flexible hybrid working environment"
-              ]
-            }
-          ]
         }
       ]
     }

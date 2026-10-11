@@ -20,7 +20,6 @@ import type {
   CompanyClientItem,
   NewsItem,
   ContentImage,
-  CareerRole,
   SiteContentData,
 } from "@/lib/data-store";
 import { ResourcesManager } from "./ResourcesManager";
@@ -32,7 +31,7 @@ interface CompanyManagerProps {
   onTriggerToast: (title: string, desc?: string, actionLabel?: string, onAction?: () => void) => void;
 }
 
-type SubTab = "leadership" | "partners" | "clients" | "insights" | "careers" | "resources";
+type SubTab = "leadership" | "partners" | "clients" | "insights" | "resources";
 
 export function CompanyManager({
   company,
@@ -60,23 +59,6 @@ export function CompanyManager({
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
   const [newsForm, setNewsForm] = useState<NewsItem>({ slug: "", title: "", date: "", category: "", excerpt: "", body: [""], author: "GeoSAT Editorial", isPublished: true });
   const [isUploadingNewsImage, setIsUploadingNewsImage] = useState(false);
-
-  // Career editing state
-  const [editingCareer, setEditingCareer] = useState<CareerRole | null>(null);
-  const [careerForm, setCareerForm] = useState<CareerRole>({
-    slug: "",
-    title: "",
-    category: "Survey & GIS Engineering Roles",
-    location: "",
-    summary: "",
-    responsibilities: [""],
-    requirements: [""],
-    description: "",
-    employmentType: "Full-time",
-    applicationInfo: "",
-    status: "open",
-    isPublished: true,
-  });
 
   // Handler for Leadership
   const handleSaveLeader = async (e: React.FormEvent) => {
@@ -177,33 +159,6 @@ export function CompanyManager({
     onTriggerToast("Article Deleted", `Removed insight article`);
   };
 
-  // Handler for Careers
-  const handleSaveCareer = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const current = company.Careers || [];
-    const exists = current.some((c) => c.slug === editingCareer?.slug);
-    const itemToSave = {
-      ...careerForm,
-      slug: careerForm.slug || careerForm.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      responsibilities: careerForm.responsibilities.filter((r) => r.trim() !== ""),
-      requirements: careerForm.requirements.filter((r) => r.trim() !== ""),
-    };
-
-    const updated = exists
-      ? current.map((c) => (c.slug === editingCareer?.slug ? itemToSave : c))
-      : [...current, itemToSave];
-
-    await onSaveCompany({ ...company, Careers: updated });
-    onTriggerToast("Career Posting Saved", `Updated ${itemToSave.title}`);
-    setEditingCareer(null);
-  };
-
-  const handleDeleteCareer = async (slug: string) => {
-    const updated = (company.Careers || []).filter((c) => c.slug !== slug);
-    await onSaveCompany({ ...company, Careers: updated });
-    onTriggerToast("Job Role Deleted", `Removed vacancy posting`);
-  };
-
   return (
     <div className="space-y-6">
       {/* Sub tabs */}
@@ -258,19 +213,6 @@ export function CompanyManager({
         >
           <BookOpen className="w-3.5 h-3.5" />
           <span>Insights & News ({company?.Insights?.length || 0})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setSubTab("careers")}
-          className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${
-            subTab === "careers"
-              ? "bg-[#f1ece5] text-zinc-950"
-              : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-          }`}
-        >
-          <Briefcase className="w-3.5 h-3.5" />
-          <span>Careers & Roles ({company?.Careers?.length || 0})</span>
         </button>
         <button type="button" onClick={() => setSubTab("resources")} className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors ${subTab === "resources" ? "bg-[#f1ece5] text-zinc-950" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}>
           <BookOpen className="w-3.5 h-3.5" /><span>Downloads ({company.Resources?.length || 0})</span>
@@ -535,97 +477,6 @@ export function CompanyManager({
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* CAREERS SECTION */}
-      {subTab === "careers" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-zinc-400">
-              Open engineering positions, field operations roles, and software vacancies.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setCareerForm({
-                  slug: "",
-                  title: "",
-                  category: "Survey & GIS Engineering Roles",
-                  location: "Kathmandu / Field",
-                  summary: "",
-                  responsibilities: [""],
-                  requirements: [""],
-                  description: "",
-                  employmentType: "Full-time",
-                  applicationInfo: "",
-                  status: "open",
-                  isPublished: true,
-                });
-                setEditingCareer({
-                  slug: "",
-                  title: "",
-                  category: "Survey & GIS Engineering Roles",
-                  location: "Kathmandu / Field",
-                  summary: "",
-                  responsibilities: [""],
-                  requirements: [""],
-                  description: "",
-                  employmentType: "Full-time",
-                  applicationInfo: "",
-                  status: "open",
-                  isPublished: true,
-                });
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" /> Post Job Role
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(company.Careers || []).map((job) => (
-              <div
-                key={job.slug}
-                className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <h4 className="text-sm font-bold text-zinc-950">{job.title}</h4>
-                      <p className="text-xs text-purple-400 font-medium">{job.category}</p>
-                      <p className="text-[11px] text-zinc-500 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3" />
-                        {job.location}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCareerForm({ ...job });
-                          setEditingCareer({ ...job });
-                        }}
-                        className="p-1 text-zinc-400 hover:text-zinc-950"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteCareer(job.slug)}
-                        className="p-1 text-zinc-400 hover:text-red-400"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed mt-2 line-clamp-3">
-                    {job.summary}
-                  </p>
                 </div>
               </div>
             ))}
@@ -917,76 +768,6 @@ export function CompanyManager({
                   className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-zinc-950 disabled:cursor-wait disabled:opacity-60"
                 >
                   Publish Article
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Career Edit Modal */}
-      {editingCareer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white">
-            <h3 className="text-base font-bold mb-4">Job Role Posting</h3>
-            <form onSubmit={handleSaveCareer} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">Job Title</label>
-                <input
-                  type="text"
-                  value={careerForm.title}
-                  onChange={(e) => setCareerForm({ ...careerForm, title: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">Category</label>
-                  <select value={careerForm.category} onChange={(e) => setCareerForm({ ...careerForm, category: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" required>
-                    {[...new Set([careerForm.category, "Survey & GIS Engineering Roles", "UAV & LiDAR Operations Roles", "Software Development Roles"])].filter(Boolean).map((category) => <option key={category} value={category}>{category}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">Location</label>
-                  <input
-                    type="text"
-                    value={careerForm.location}
-                    onChange={(e) => setCareerForm({ ...careerForm, location: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">Role Summary</label>
-                <textarea
-                  rows={2}
-                  value={careerForm.summary}
-                  onChange={(e) => setCareerForm({ ...careerForm, summary: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"
-                  required
-                />
-              </div>
-              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Full description</label><textarea rows={3} value={careerForm.description || ""} onChange={(e) => setCareerForm({ ...careerForm, description: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
-              <div className="grid grid-cols-2 gap-3"><div><label className="block text-xs font-medium text-zinc-300 mb-1">Employment type</label><input value={careerForm.employmentType || ""} onChange={(e) => setCareerForm({ ...careerForm, employmentType: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div><div><label className="block text-xs font-medium text-zinc-300 mb-1">Posting status</label><select value={careerForm.status || "open"} onChange={(e) => setCareerForm({ ...careerForm, status: e.target.value as "open" | "closed" })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white"><option value="open">Open</option><option value="closed">Closed</option></select></div></div>
-              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Responsibilities (one per line)</label><textarea rows={4} value={careerForm.responsibilities.join("\n")} onChange={(e) => setCareerForm({ ...careerForm, responsibilities: e.target.value.split("\n") })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
-              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Requirements (one per line)</label><textarea rows={4} value={careerForm.requirements.join("\n")} onChange={(e) => setCareerForm({ ...careerForm, requirements: e.target.value.split("\n") })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
-              <div><label className="block text-xs font-medium text-zinc-300 mb-1">Application information</label><textarea rows={2} value={careerForm.applicationInfo || ""} onChange={(e) => setCareerForm({ ...careerForm, applicationInfo: e.target.value })} className="w-full px-3 py-2 text-xs rounded bg-[#f1ece5] border border-zinc-800 text-white" /></div>
-              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={careerForm.isPublished !== false} onChange={(e) => setCareerForm({ ...careerForm, isPublished: e.target.checked })} /> Published</label>
-              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
-                <button
-                  type="button"
-                  onClick={() => setEditingCareer(null)}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-950"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold rounded bg-purple-600 hover:bg-purple-500 text-zinc-950"
-                >
-                  Post Role
                 </button>
               </div>
             </form>

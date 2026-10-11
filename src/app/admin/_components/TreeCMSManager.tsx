@@ -869,7 +869,7 @@ export function TreeCMSManager({
                   required
                   value={colTitle}
                   onChange={(e) => setColTitle(e.target.value)}
-                  placeholder="e.g. Survey & Mapping, About, Insights, Careers"
+                  placeholder="e.g. Survey & Mapping, About, Insights"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none"
                   autoFocus
                 />

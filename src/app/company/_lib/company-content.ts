@@ -11,20 +11,6 @@ export type NewsItem = {
   author?: string;
 };
 
-export type CareerRole = {
-  slug: string;
-  title: string;
-  category: string;
-  location: string;
-  summary: string;
-  responsibilities: string[];
-  requirements: string[];
-  description?: string;
-  employmentType?: string;
-  applicationInfo?: string;
-  status?: "open" | "closed";
-};
-
 export type ResourceDocument = {
   id?: string;
   slug: string;
@@ -99,14 +85,6 @@ export function newsSlug(rawTitle: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export function careerSlug(rawTitle: string): string {
-  return rawTitle
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
 export async function getDynamicNewsItems(): Promise<NewsItem[]> {
   try {
     const list = await companyService.getArticles(true);
@@ -145,54 +123,6 @@ export async function getDynamicNewsItemBySlug(slug: string): Promise<NewsItem |
     }
   } catch (err) {
     console.error("Error fetching dynamic news by slug:", err);
-  }
-  return undefined;
-}
-
-export async function getDynamicCareerRoles(): Promise<CareerRole[]> {
-  try {
-    const list = await companyService.getCareers(true);
-    if (list && list.length > 0) {
-      return list.map((c) => ({
-        slug: c.slug,
-        title: c.title,
-        category: c.category || "General",
-        location: c.location || "Kathmandu and field projects",
-        summary: c.summary || "",
-        description: c.description || "",
-        employmentType: c.employmentType || "Full-time",
-        applicationInfo: c.applicationInfo || "",
-        status: c.status || "open",
-        responsibilities: c.responsibilities || [],
-        requirements: c.requirements || [],
-      }));
-    }
-  } catch (err) {
-    console.error("Error fetching dynamic careers:", err);
-  }
-  return [];
-}
-
-export async function getDynamicCareerRoleBySlug(slug: string): Promise<CareerRole | undefined> {
-  try {
-    const c = await companyService.getCareerBySlug(slug);
-    if (c) {
-      return {
-        slug: c.slug,
-        title: c.title,
-        category: c.category || "General",
-        location: c.location || "Kathmandu and field projects",
-        summary: c.summary || "",
-        description: c.description || "",
-        employmentType: c.employmentType || "Full-time",
-        applicationInfo: c.applicationInfo || "",
-        status: c.status || "open",
-        responsibilities: c.responsibilities || [],
-        requirements: c.requirements || [],
-      };
-    }
-  } catch (err) {
-    console.error("Error fetching dynamic career by slug:", err);
   }
   return undefined;
 }

@@ -33,7 +33,6 @@ import {
   Leader,
   Partner,
   Article,
-  Career,
   Project,
   Equipment,
   Client,
@@ -73,7 +72,6 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
       leaders: await Leader.countDocuments(),
       partners: await Partner.countDocuments(),
       articles: await Article.countDocuments(),
-      careers: await Career.countDocuments(),
       projects: await Project.countDocuments(),
       equipment: await Equipment.countDocuments(),
       clients: await Client.countDocuments(),
@@ -94,7 +92,6 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     await Leader.deleteMany({});
     await Partner.deleteMany({});
     await Article.deleteMany({});
-    await Career.deleteMany({});
     await Project.deleteMany({});
     await Equipment.deleteMany({});
     await Client.deleteMany({});
@@ -194,21 +191,6 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     await Article.insertMany(articleDocs);
   }
 
-  // 7. Seed Company - Careers
-  const careerDocs = (siteContent.Company?.Careers || []).map((item) => ({
-    slug: item.slug || slugify(item.title),
-    title: item.title,
-    category: item.category,
-    location: item.location,
-    summary: item.summary,
-    responsibilities: item.responsibilities || [],
-    requirements: item.requirements || [],
-    isPublished: true,
-  }));
-  if (careerDocs.length > 0) {
-    await Career.insertMany(careerDocs);
-  }
-
   if (DEFAULT_RESOURCES.length) {
     await Resource.insertMany(DEFAULT_RESOURCES.map((item, index) => ({ ...item, order: index + 1, updated: new Date(item.updated) })));
     await ContentMigration.updateOne({ _id: "legacy-downloads-v1" }, { $setOnInsert: { appliedAt: new Date() } }, { upsert: true });
@@ -268,7 +250,6 @@ export async function seedDatabase(force = false): Promise<{ seeded: boolean; co
     leaders: await Leader.countDocuments(),
     partners: await Partner.countDocuments(),
     articles: await Article.countDocuments(),
-    careers: await Career.countDocuments(),
     projects: await Project.countDocuments(),
     equipment: await Equipment.countDocuments(),
     clients: await Client.countDocuments(),

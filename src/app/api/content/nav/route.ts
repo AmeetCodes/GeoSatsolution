@@ -53,7 +53,7 @@ const getCachedNavigationPayload = unstable_cache(
       products: content.Products,
     };
   },
-  ["public-navigation-payload-v1"],
+  ["public-navigation-payload-v2"],
   { revalidate: 3600, tags: ["public-navigation"] },
 );
 

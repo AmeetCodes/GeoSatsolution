@@ -279,9 +279,6 @@ function TreeGroupColumn({
               else if (item.title === "GeoSat Partners") href = "/company/about/geosat-partners";
               else if (item.title === "News & Field Notes") href = "/company/insights/news";
               else if (item.title === "Downloads & Technical Resources") href = "/company/insights/downloads-technical-resources";
-              else if (item.title === "Survey & GIS Engineering Roles") href = "/company/careers/survey-gis-engineering-roles";
-              else if (item.title === "UAV & LiDAR Operations Roles") href = "/company/careers/uav-lidar-operations-roles";
-              else if (item.title === "Software Development Roles") href = "/company/careers/software-development-roles";
               else href = `/company/${colSlug}/${iSlug}`;
             } else {
               href = `/${tabSlug}/${column.slug}/${item.slug || solutionSlug(item.title)}`;

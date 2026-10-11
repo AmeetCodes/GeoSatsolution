@@ -69,22 +69,6 @@ export interface NewsItem {
   isPublished?: boolean;
 }
 
-export interface CareerRole {
-  id?: string;
-  slug: string;
-  title: string;
-  category: string;
-  location: string;
-  summary: string;
-  responsibilities: string[];
-  requirements: string[];
-  description?: string;
-  employmentType?: string;
-  applicationInfo?: string;
-  status?: "open" | "closed";
-  isPublished?: boolean;
-}
-
 export interface ResourceItem {
   id?: string;
   slug: string;
@@ -141,7 +125,6 @@ export interface SiteContentData {
     Partners: PartnerItem[];
     Clients: CompanyClientItem[];
     Insights: NewsItem[];
-    Careers: CareerRole[];
     Resources: ResourceItem[];
   };
 }
@@ -646,59 +629,6 @@ export const DEFAULT_SITE_CONTENT: SiteContentData = {
         excerpt: "Case study on how continuous sub-millimeter displacement monitoring helps prevent slope failure on major hydro assets.",
         body: [
           "Continuous optical and GNSS monitoring deployed along the spillway structure provided real-time telemetry throughout the monsoon season without human intervention."
-        ]
-      }
-    ],
-    Careers: [
-      {
-        slug: "senior-geomatics-engineer",
-        title: "Senior Geomatics Engineer",
-        category: "Survey & Engineering",
-        location: "Kathmandu, Nepal (with field deployment)",
-        summary: "Lead complex cadastral, LiDAR, and geodetic control surveys for major infrastructure projects.",
-        responsibilities: [
-          "Design and execute geodetic control networks using static GNSS and network adjustment",
-          "Oversee quality assurance and accuracy reporting for client deliverables",
-          "Mentor junior surveyors and train client engineering teams"
-        ],
-        requirements: [
-          "Bachelor's or Master's degree in Geomatics / Survey Engineering",
-          "Minimum 4 years experience with Trimble, Leica, or similar survey equipment",
-          "Proficiency in Trimble Business Center, AutoCAD Civil 3D, and QGIS"
-        ]
-      },
-      {
-        slug: "uav-lidar-mission-pilot",
-        title: "UAV LiDAR Mission Pilot & Operator",
-        category: "Aerial Operations",
-        location: "Field operations nationwide",
-        summary: "Plan and execute aerial survey missions across challenging mountainous terrain.",
-        responsibilities: [
-          "Conduct pre-flight site assessments, risk analysis, and airspace coordination",
-          "Fly multirotor and VTOL platforms carrying LiDAR and photogrammetric sensors",
-          "Perform initial field data verification and trajectory processing"
-        ],
-        requirements: [
-          "Certified drone pilot with at least 150 logged flight hours",
-          "Experience flying commercial mapping payloads in rugged terrain",
-          "Strong understanding of safety protocols and airspace regulations"
-        ]
-      },
-      {
-        slug: "full-stack-gis-developer",
-        title: "Full-Stack Geospatial Software Developer",
-        category: "Software Development",
-        location: "Kathmandu / Hybrid",
-        summary: "Build cloud-native GIS portals, real-time sensor dashboards, and geoprocessing microservices.",
-        responsibilities: [
-          "Develop web-based map interfaces using Next.js, MapLibre, and Three.js",
-          "Design spatial schemas and REST/GraphQL APIs with PostGIS and Node.js",
-          "Implement automated point cloud and raster processing pipelines"
-        ],
-        requirements: [
-          "Proficiency in TypeScript, React, Next.js, and modern CSS",
-          "Hands-on experience with spatial databases (PostGIS, GeoServer)",
-          "Knowledge of cloud infrastructure (Docker, AWS/GCP)"
         ]
       }
     ],

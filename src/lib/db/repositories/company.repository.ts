@@ -3,7 +3,6 @@ import { Types } from "mongoose";
 import { Leader, ILeader } from "../../models/leader";
 import { Partner, IPartner } from "../../models/partner";
 import { Article, IArticle } from "../../models/Article";
-import { Career, ICareer } from "../../models/career";
 import { Client, IClient } from "../../models/client";
 import { Resource, IResource } from "../../models/Resource";
 
@@ -70,30 +69,6 @@ export class CompanyRepository {
     }));
     await Article.deleteMany({ $and: [{ _id: { $nin: ids } }, { slug: { $nin: slugs } }] });
     return Article.find({}).sort({ date: -1, createdAt: -1 }).lean().exec() as unknown as Promise<IArticle[]>;
-  }
-
-  // Careers
-  async getCareers(publishedOnly = false): Promise<ICareer[]> {
-    await connectDB();
-    const query = publishedOnly ? { isPublished: true } : {};
-    return Career.find(query).sort({ createdAt: -1 }).lean().exec() as unknown as Promise<ICareer[]>;
-  }
-
-  async getCareerBySlug(slug: string): Promise<ICareer | null> {
-    await connectDB();
-    return Career.findOne({ slug, isPublished: true }).lean().exec() as unknown as Promise<ICareer | null>;
-  }
-
-  async replaceCareers(careers: (Partial<ICareer> & { id?: string })[]): Promise<ICareer[]> {
-    await connectDB();
-    const ids = careers.flatMap((item) => item.id ? [new Types.ObjectId(String(item.id))] : []);
-    const slugs = careers.flatMap((item) => item.slug ? [item.slug] : []);
-    if (careers.length) await Career.bulkWrite(careers.map((item) => {
-      const { id, ...data } = item;
-      return { updateOne: { filter: id ? { _id: new Types.ObjectId(String(id)) } : { slug: item.slug }, update: { $set: data }, upsert: true } };
-    }));
-    await Career.deleteMany({ $and: [{ _id: { $nin: ids } }, { slug: { $nin: slugs } }] });
-    return Career.find({}).sort({ createdAt: -1 }).lean().exec() as unknown as Promise<ICareer[]>;
   }
 
   // Clients

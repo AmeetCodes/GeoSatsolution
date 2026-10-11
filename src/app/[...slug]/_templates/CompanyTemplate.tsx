@@ -14,11 +14,9 @@ export function CompanyTemplate({
   column,
 }: CompanyTemplateProps) {
   const Icon =
-    column.slug === "careers"
-      ? Briefcase
-      : column.slug === "insights"
-        ? BookOpen
-        : FileText;
+    column.slug === "insights"
+      ? BookOpen
+      : FileText;
 
   return (
     <main className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">

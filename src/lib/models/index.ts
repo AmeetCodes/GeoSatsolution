@@ -2,7 +2,6 @@ export * from "./solution";
 export * from "./product";
 export * from "./Industry";
 export * from "./Article";
-export * from "./career";
 export * from "./leader";
 export * from "./partner";
 export * from "./client";

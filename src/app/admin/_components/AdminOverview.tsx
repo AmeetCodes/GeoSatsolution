@@ -34,10 +34,9 @@ export function AdminOverview({
   const totalProducts = content?.Products?.length || 0;
   const totalIndustries = content?.Industries?.length || 0;
   const totalInsights = content?.Company?.Insights?.length || 0;
-  const totalCareers = content?.Company?.Careers?.length || 0;
   const totalPartners = content?.Company?.Partners?.length || 0;
   const totalLeaders = content?.Company?.Leadership?.length || 0;
-  const totalCompany = totalInsights + totalCareers + totalPartners + totalLeaders;
+  const totalCompany = totalInsights + totalPartners + totalLeaders;
 
   const stats = [
     {

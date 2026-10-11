@@ -5,7 +5,6 @@ import connectDB, {
 import {
   Admin,
   Article,
-  Career,
   Client,
   Consultation,
   Equipment,
@@ -27,7 +26,6 @@ const models = [
   Product,
   Industry,
   Article,
-  Career,
   Leader,
   Partner,
   Client,
