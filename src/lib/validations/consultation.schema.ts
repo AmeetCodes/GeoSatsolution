@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-const EMAIL_MAX = 254;
+import {
+  isValidEmail,
+  isValidOrganisation,
+  isValidPhone,
+  isHumanName,
+  isMeaningfulLabel,
+  isMeaningfulMessage,
+} from "./text.rules";
 
 export function createConsultationSchema(interests: readonly string[]) {
   const validInterests = new Set(interests);
@@ -11,25 +18,29 @@ export function createConsultationSchema(interests: readonly string[]) {
         .string({ error: "Enter your full name." })
         .trim()
         .min(2, "Enter your full name.")
-        .max(120, "Enter your full name."),
+        .max(80, "Enter your full name.")
+        .refine((value) => isHumanName(value), "Enter a valid full name (letters only)."),
       organisation: z
-        .string({ error: "Organisation is invalid." })
+        .string({ error: "Enter a valid organisation name." })
         .trim()
-        .max(160, "Organisation is too long.")
+        .max(160, "Organisation name must be 160 characters or fewer.")
         .optional()
-        .default(""),
+        .default("")
+        .refine(
+          (value) => value.length === 0 || isValidOrganisation(value),
+          "Enter a valid organisation name.",
+        ),
       email: z
         .string({ error: "Enter a valid email address." })
         .trim()
-        .max(EMAIL_MAX, "Enter a valid email address.")
-        .min(1, "Enter a valid email address.")
-        .refine((value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), "Enter a valid email address."),
+        .min(1, "Enter your email address.")
+        .max(254, "Enter a valid email address.")
+        .refine((value) => isValidEmail(value), "Enter a valid email address."),
       phone: z
-        .string({ error: "Enter a valid phone number." })
+        .string({ error: "Enter your phone number." })
         .trim()
-        .max(60, "Phone number is too long.")
-        .optional()
-        .default(""),
+        .min(1, "Enter your phone number.")
+        .refine((value) => isValidPhone(value), "Enter a valid 10-digit phone number starting with 6-9."),
       interest: z
         .string({ error: "Choose a valid area of interest." })
         .trim()
@@ -47,8 +58,12 @@ export function createConsultationSchema(interests: readonly string[]) {
       details: z
         .string({ error: "Add a few details so our team can prepare." })
         .trim()
-        .min(12, "Add a few details so our team can prepare.")
-        .max(3000, "Add a few details so our team can prepare."),
+        .min(15, "Add a few details so our team can prepare.")
+        .max(3000, "Add a few details so our team can prepare.")
+        .refine(
+          (value) => isMeaningfulMessage(value),
+          "Please describe your requirement in a few clear words.",
+        ),
       website: z.unknown().optional(),
     })
     .superRefine((value, ctx) => {
@@ -60,12 +75,20 @@ export function createConsultationSchema(interests: readonly string[]) {
         });
       }
 
-      if (value.interest === "Other" && value.otherInterest.trim().length < 2) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["otherInterest"],
-          message: "Tell us what service you need.",
-        });
+      if (value.interest === "Other") {
+        if (value.otherInterest.trim().length === 0) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["otherInterest"],
+            message: "Tell us what service you need.",
+          });
+        } else if (!isMeaningfulLabel(value.otherInterest)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["otherInterest"],
+            message: "Tell us what service you need in a few clear words.",
+          });
+        }
       }
     });
 }

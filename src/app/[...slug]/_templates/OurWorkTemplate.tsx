@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { PageTransition } from "@/components/layout/PageTransition";
 import type { ProjectItem } from "@/lib/data/project-content";
 import DomeGallery, { type DomeGalleryImage } from "@/components/ui/DomeGallery";
 
@@ -30,7 +31,7 @@ export function OurWorkTemplate({ item, tab, column, projects }: { item: any; ta
       code: project.code,
     }));
 
-  return <main className="min-h-screen bg-abyss pb-16 pt-[calc(var(--nav-h)+1.5rem)] sm:pt-[calc(var(--nav-h)+2rem)]">
+  return <PageTransition className="min-h-screen bg-abyss pb-16 pt-[calc(var(--nav-h)+1.5rem)] sm:pt-[calc(var(--nav-h)+2rem)]">
     <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12">
       <nav className="mb-7 flex items-center gap-2 text-sm text-ink-3" aria-label="Breadcrumb">
         <Link href="/" className="inline-flex items-center gap-1.5 transition-colors hover:text-aqua"><ArrowLeft className="size-4" aria-hidden="true" />Home</Link>
@@ -46,5 +47,5 @@ export function OurWorkTemplate({ item, tab, column, projects }: { item: any; ta
       </header>
       <DomeGallery images={images} placeholderProjects={projectPlaceholders} fit={0.8} minRadius={600} maxVerticalRotationDeg={0} segments={34} dragDampening={2} grayscale />
     </div>
-  </main>;
+  </PageTransition>;
 }

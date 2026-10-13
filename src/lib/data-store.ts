@@ -19,6 +19,9 @@ export interface ProductItem {
   slug?: string;
   title: string;
   group: string;
+  subcategory?: string;
+  brand?: string;
+  brandUrl?: string;
   intro: string;
   description: string;
   outcomes: string[];
@@ -28,6 +31,8 @@ export interface ProductItem {
   resources?: ProductDownloadItem[];
   isPublished?: boolean;
 }
+
+export { PRODUCT_TAXONOMY } from "./product-taxonomy";
 
 export interface ProductDownloadItem {
   title: string;
@@ -323,173 +328,224 @@ export const DEFAULT_SITE_CONTENT: SiteContentData = {
   ],
   Products: [
     {
-      title: "Unmanned Aerial Vehicles (UAV)",
+      title: "DJI Matrice 350 RTK",
       group: "UAV & Payloads",
-      intro: "Heavy-lift multirotors and long-endurance VTOL fixed-wing survey aircraft.",
-      description: "Platforms engineered for high-altitude missions, heavy winds, and terrain-following survey operations.",
-      outcomes: ["Up to 90 min flight endurance", "RTK/PPK GNSS receivers", "Modular payload bay", "Weather-resistant IP55 enclosure"],
+      subcategory: "Unmanned Aerial Vehicles (UAV)",
+      brand: "DJI Enterprise",
+      brandUrl: "https://enterprise.dji.com/matrice-350-rtk",
+      intro: "Flagship commercial drone platform with 55-min flight time, IP55 rating, and multi-payload support.",
+      description: "The Matrice 350 RTK sets an industrial benchmark with next-generation video transmission, enhanced flight safety, and comprehensive payload compatibility for surveying, mapping, and public safety.",
+      outcomes: ["55-minute max flight time", "IP55 weather resistance rating", "DJI O3 Enterprise transmission up to 20 km", "2.7 kg max payload capacity"],
       images: [
-        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "UAV Drone", caption: "Industrial survey-grade UAV systems" }
+        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "DJI Matrice 350 RTK", caption: "Heavy-duty enterprise survey UAV" }
       ]
     },
     {
-      title: "LiDAR & Photogrammetry Payloads",
+      title: "DJI Zenmuse L2",
       group: "UAV & Payloads",
-      intro: "High-density laser scanners and full-frame calibrated photogrammetry cameras.",
-      description: "Multi-echo laser sensors capturing up to 2 million pulses per second alongside 61MP RGB mapping cameras.",
-      outcomes: ["Multi-target return scanning", "Integrated tactical grade IMU", "Global shutter photogrammetry", "Pre-calibrated lens optics"],
+      subcategory: "LiDAR & Photogrammetry Payloads",
+      brand: "DJI Enterprise",
+      brandUrl: "https://enterprise.dji.com/zenmuse-l2",
+      intro: "Integrated aerial LiDAR system with high-precision IMU and 4/3 CMOS RGB mapping camera.",
+      description: "Combines high-accuracy frame LiDAR, a self-developed high-accuracy IMU system, and a 4/3 CMOS RGB mapping camera to deliver precise geospatial data acquisition under dense vegetation and complex terrain.",
+      outcomes: ["250,000 pts/s sampling rate", "Up to 5 returns support", "4/3 CMOS 20MP mechanical shutter camera", "Vertical accuracy 4 cm / Horizontal 5 cm"],
       images: [
-        { src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85", alt: "LiDAR sensor payload", caption: "Payloads designed for bare-earth capture" }
+        { src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85", alt: "DJI Zenmuse L2 LiDAR", caption: "Industrial aerial LiDAR & photogrammetry payload" }
       ]
     },
     {
-      title: "Surveillance & Search Payloads",
+      title: "DJI Zenmuse H30 Series",
       group: "UAV & Payloads",
-      intro: "Radiometric thermal sensors and 30x optical zoom gimbal stabilization systems.",
-      description: "Dual-sensor thermal and optical payloads for asset inspection, disaster response, and corridor security.",
-      outcomes: ["640x512 Radiometric Thermal", "30x Optical Zoom with Laser Rangefinder", "Target tracking & geo-location", "Weatherproof IP44 rating"],
+      subcategory: "Surveillance & Search Payloads",
+      brand: "DJI Enterprise",
+      brandUrl: "https://enterprise.dji.com/zenmuse-h30-series",
+      intro: "All-weather multi-sensor aerial payload with zoom, wide-angle, thermal, and laser rangefinder.",
+      description: "Integrates five major modules: wide camera, zoom camera, infrared thermal camera, laser rangefinder, and NIR auxiliary light for 24/7 security, emergency inspection, and monitoring.",
+      outcomes: ["Up to 34x optical zoom (400x digital)", "1280x1024 high-res infrared thermal", "3,000 m laser rangefinder range", "IP54 protection from -20°C to 50°C"],
       images: [
-        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Thermal payload", caption: "Actionable inspection intelligence" }
+        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Zenmuse H30 Series", caption: "Multi-sensor aerial surveillance payload" }
       ]
     },
     {
-      title: "GNSS Receivers",
+      title: "Trimble R12i GNSS Receiver",
       group: "Survey Equipment",
-      intro: "Multi-constellation, multi-frequency geodetic receivers with tilt compensation.",
-      description: "1408 channels tracking GPS, GLONASS, Galileo, BeiDou, and QZSS with IMU calibration-free tilt survey.",
-      outcomes: ["Sub-cm RTK accuracy", "60-degree IMU tilt compensation", "Internal 4G LTE & UHF radio", "Rugged IP68 magnesium alloy body"],
+      subcategory: "GNSS Receivers",
+      brand: "Trimble",
+      brandUrl: "https://geospatial.trimble.com/en/products/hardware/trimble-r12i",
+      intro: "Industry-leading GNSS system powered by Trimble ProPoint RTK engine and TIP tilt compensation.",
+      description: "Delivers unmatched GNSS performance, speed, and accuracy to boost surveyor productivity. TIP technology allows tilt compensation without magnetic interference calibration.",
+      outcomes: ["Trimble ProPoint GNSS technology", "Trimble TIP tilt compensation", "672-channel multi-constellation tracking", "Sub-centimeter RTK precision"],
       images: [
-        { src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85", alt: "GNSS Rover", caption: "Field-tested geodetic positioning" }
+        { src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85", alt: "Trimble R12i GNSS Receiver", caption: "Survey-grade geodetic rover and base system" }
       ]
     },
     {
-      title: "Total Stations",
+      title: "Trimble S9 Robotic Total Station",
       group: "Survey Equipment",
-      intro: "Sub-second robotic total stations with auto-pointing and prism tracking.",
-      description: "Precision motorized optics delivering 0.5-second angular accuracy and 1000m reflectorless measurement.",
-      outcomes: ["0.5\" / 1\" angular accuracy", "1000m non-prism range", "Long-range Bluetooth & robotic control", "Built-in camera for digital aiming"],
+      subcategory: "Total Stations",
+      brand: "Trimble",
+      brandUrl: "https://geospatial.trimble.com/en/products/hardware/trimble-s9-total-station",
+      intro: "Top-tier 0.5-second robotic total station for high-precision engineering, monitoring, and tunneling.",
+      description: "Engineered for superior performance in specialized applications like monitoring and tunneling where maximum accuracy and precision are paramount.",
+      outcomes: ["0.5\" or 1\" angular accuracy", "Trimble DR Plus & DR HP EDM options", "MagDrive servo technology", "FineLock technology for interference-free locking"],
       images: [
-        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Total Station", caption: "Robotic high-precision optics" }
+        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Trimble S9 Total Station", caption: "Sub-second robotic total station optics" }
       ]
     },
     {
-      title: "Laser Scanners & SLAM",
+      title: "GreenValley LiGrip H300 Handheld SLAM",
       group: "Survey Equipment",
-      intro: "Handheld mobile SLAM and terrestrial 3D laser scanners for interiors and underground.",
-      description: "Rapid 3D mapping without GPS requirements for tunnels, mines, architectural BIM, and complex forestry.",
-      outcomes: ["300,000 points per second capture", "Real-time SLAM trajectory calculation", "Colorized point clouds with 360 camera", "Lightweight handheld ergonomic form"],
+      subcategory: "Laser Scanners & SLAM",
+      brand: "GreenValley",
+      brandUrl: "https://greenvalleyintl.com",
+      intro: "Handheld mobile LiDAR scanner with multi-platform adaptability and real-time SLAM point cloud display.",
+      description: "Lightweight and versatile mobile mapping system designed to capture high-density 3D spatial data in GPS-denied indoor, underground, and forest canopy environments.",
+      outcomes: ["300 m measurement range", "640,000 points per second rate", "Real-time SLAM point cloud display", "Integrated panoramic HD camera"],
       images: [
-        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "Handheld SLAM", caption: "GPS-denied 3D laser scanning" }
+        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "LiGrip H300 SLAM", caption: "Mobile handheld 3D laser scanner" }
       ]
     },
     {
-      title: "Mobile Mapping Systems",
+      title: "Trimble MX50 Mobile Mapping System",
       group: "Survey Equipment",
-      intro: "Turnkey vehicle-roof modular scanning rigs with dual LiDAR and 360 imaging.",
-      description: "Survey-grade vehicular mapping solution delivering road topography, clearance, and street inventory.",
-      outcomes: ["High-accuracy GNSS/INS integration", "Spherical high-res imagery", "Rapid mounting on standard vehicles", "Automated calibration routine"],
+      subcategory: "Mobile Mapping Systems",
+      brand: "Trimble",
+      brandUrl: "https://geospatial.trimble.com/en/products/hardware/trimble-mx50",
+      intro: "Vehicle-mounted mobile LiDAR scanning and 360-degree high-resolution imaging system.",
+      description: "Practical mobile mapping solution combining LiDAR profiling with high-resolution imagery for asset management, road inspection, and corridor engineering.",
+      outcomes: ["Dual-laser LiDAR sensor technology", "360-degree panoramic camera system", "Trimble AP-20 GNSS-inertial system", "Survey-grade road surface point clouds"],
       images: [
-        { src: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85", alt: "Mobile Mapping", caption: "Highway-speed infrastructure capture" }
+        { src: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85", alt: "Trimble MX50", caption: "Highway-speed mobile spatial capture" }
       ]
     },
     {
-      title: "Survey Accessories",
+      title: "Seco Carbon-Fiber Geodetic Survey Kit",
       group: "Survey Equipment",
-      intro: "Carbon-fiber tripods, tribrachs, prisms, survey poles, and solar battery systems.",
-      description: "Heavy-duty accessories engineered to maintain stable geometry under windy and harsh field conditions.",
-      outcomes: ["Heavy-duty wooden & carbon tripods", "Optical plummet tribrachs", "360-degree copper coated prisms", "Field-swappable lithium batteries"],
+      subcategory: "Survey Accessories",
+      brand: "Seco",
+      brandUrl: "https://surveying.com",
+      intro: "Heavy-duty carbon-fiber rover rods, tribrachs with optical plumet, and all-weather bipods.",
+      description: "Rigorous field survey accessories designed to keep instrumentation stable and accurately leveled across steep and windy terrain.",
+      outcomes: ["Carbon-fiber snap-lock rover rods", "Heavy-duty wooden & fiberglass tripods", "Precision optical plummet tribrachs", "360-degree copper coated survey prisms"],
       images: [
-        { src: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1800&q=85", alt: "Accessories", caption: "Professional field hardware" }
+        { src: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1800&q=85", alt: "Seco Survey Accessories", caption: "Professional field survey accessories" }
       ]
     },
     {
-      title: "Trimble Business Center & Access",
+      title: "Trimble Business Center (TBC)",
       group: "Software",
-      intro: "Survey office and field software connecting total stations, GNSS, and scanning.",
-      description: "Unified geodetic processing, network adjustment, corridor design, and CAD deliverable generation.",
-      outcomes: ["Complete geodetic network adjustments", "Direct CAD and GIS export formats", "Surface modeling & volume analysis", "Field-to-finish workflow sync"],
+      subcategory: "Trimble Business Center & Access",
+      brand: "Trimble",
+      brandUrl: "https://geospatial.trimble.com/en/products/software/trimble-business-center",
+      intro: "Complete field-to-finish office software package for geodetic control, CAD, and corridor design.",
+      description: "Combines geodetic network adjustments, photogrammetry, point clouds, and corridor design into a single software environment for surveyors and civil engineers.",
+      outcomes: ["Rigorous least squares network adjustments", "Direct CAD and GIS integration", "Automated feature code processing", "Full UAV and terrestrial point cloud support"],
       images: [
-        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Trimble Software", caption: "The industry standard for geodetic control" }
+        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "Trimble Business Center", caption: "Comprehensive geodetic survey office software" }
       ]
     },
     {
-      title: "DJI Terra & Modify",
+      title: "DJI Terra Reconstruction Suite",
       group: "Software",
-      intro: "High-efficiency photogrammetry, LiDAR processing, and 3D mesh editing suite.",
-      description: "Accelerated reconstruction of 2D orthomosaics, 3D models, and point cloud colorization.",
-      outcomes: ["Fast multi-core GPU processing", "Automated ground classification", "Interactive 3D mesh smoothing & repair", "GCP auto-identification"],
+      subcategory: "DJI Terra & Modify",
+      brand: "DJI Enterprise",
+      brandUrl: "https://enterprise.dji.com/dji-terra",
+      intro: "High-throughput 2D and 3D photogrammetric reconstruction software with LiDAR point cloud processing.",
+      description: "Delivers rapid 2D multispectral maps, true orthophotos, high-density 3D textured meshes, and LiDAR point cloud colorization powered by CUDA GPU acceleration.",
+      outcomes: ["High-speed 2D and 3D modeling", "LiDAR point cloud POS trajectory fusion", "Multispectral radiometric index calculation", "Seamless DJI drone flight mission synchronization"],
       images: [
-        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "DJI Terra", caption: "Rapid drone mapping & mesh generation" }
+        { src: "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85", alt: "DJI Terra", caption: "2D and 3D drone reconstruction software" }
       ]
     },
     {
-      title: "LiDAR360 & LiGeoreference",
+      title: "GreenValley LiDAR360 Suite",
       group: "Software",
-      intro: "Comprehensive point cloud processing software for terrain, forestry, and power lines.",
-      description: "Advanced classification algorithms for power line clearance, tree segmentation, and digital elevation models.",
-      outcomes: ["Automated power line vegetation hazard analysis", "Single tree biomass & height extraction", "High-accuracy DTM stripping", "Batch cross-section generation"],
+      subcategory: "LiDAR360 & LiGeoreference",
+      brand: "GreenValley",
+      brandUrl: "https://greenvalleyintl.com/LiDAR360/",
+      intro: "Advanced point cloud post-processing software with modules for terrain, forestry, and power lines.",
+      description: "Comprehensive software suite capable of handling terabytes of LiDAR point cloud data with automated ground filtering, powerline clearance detection, and forest inventory.",
+      outcomes: ["Automated powerline danger tree analysis", "Individual tree segmentation (biomass & height)", "Machine learning ground classification", "Massive point cloud rendering and editing"],
       images: [
-        { src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85", alt: "LiDAR360", caption: "Point cloud analytics and forestry modeling" }
+        { src: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1800&q=85", alt: "LiDAR360 Suite", caption: "Point cloud processing & analytics" }
       ]
     },
     {
-      title: "Pix4D & Agisoft",
+      title: "Pix4Dmatic & Pix4Dsurvey",
       group: "Software",
-      intro: "Photogrammetric computer vision engines for drone and aerial mapping.",
-      description: "Dense 3D point cloud generation and multispectral index calculation from overlapping imagery.",
-      outcomes: ["True orthophoto generation", "Multispectral index maps (NDVI, NDRE)", "Dense 3D point clouds", "Detailed camera calibration reports"],
+      subcategory: "Pix4D & Agisoft",
+      brand: "Pix4D",
+      brandUrl: "https://www.pix4d.com",
+      intro: "Next-generation photogrammetry and LiDAR software for large-scale drone and terrestrial mapping.",
+      description: "Engineered to handle massive datasets with survey-grade accuracy, seamlessly integrating aerial photogrammetry with terrestrial LiDAR.",
+      outcomes: ["High-accuracy corridor and corridor orthomosaics", "Hybrid LiDAR and photogrammetry fusion", "Vectorization and CAD layer extraction", "Dense 3D point clouds with automated noise filtering"],
       images: [
-        { src: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85", alt: "Pix4D mapping", caption: "Computer vision photogrammetry" }
+        { src: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85", alt: "Pix4Dmatic", caption: "Survey-grade large-scale drone mapping" }
       ]
     },
     {
-      title: "PLS-CADD & eCognition",
+      title: "PLS-CADD Power Line System",
       group: "Software",
-      intro: "Structural transmission line design and object-based image analysis.",
-      description: "Advanced power line engineering modeling wire sag, clearance, structural loading, and automated feature extraction.",
-      outcomes: ["Transmission tower structural modeling", "Thermal sag & blowout clearances", "Automated land cover classification", "Object-based feature recognition"],
+      subcategory: "PLS-CADD & eCognition",
+      brand: "Power Line Systems",
+      brandUrl: "https://www.powline.com",
+      intro: "Worldwide industry standard in overhead transmission line design and conductor thermal rating.",
+      description: "Integrates terrain models from aerial LiDAR surveys with structural analysis and conductor sag-tension calculations for complete transmission line engineering.",
+      outcomes: ["Conductor clearance & thermal rating analysis", "Structural tower finite element analysis", "Plan and profile drawing automated generation", "Full LiDAR point cloud terrain modeling"],
       images: [
-        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "PLS CADD", caption: "Power line corridor engineering" }
+        { src: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=85", alt: "PLS-CADD", caption: "Transmission line design & engineering" }
       ]
     },
     {
-      title: "Satellite Imagery (Multispectral, SAR, DEM)",
+      title: "Maxar WorldView-3 VHR Satellite Tasking",
       group: "Satellite & Monitoring",
-      intro: "Very high resolution (VHR) commercial satellite tasking and archive access.",
-      description: "Sub-meter optical constellations, SAR imagery for all-weather penetration, and global digital surface models.",
-      outcomes: ["30cm - 50cm optical satellite imagery", "Interferometric SAR deformation data", "High-resolution satellite DEMs", "Stereo-pair 3D terrain models"],
+      subcategory: "Satellite Imagery (Multispectral, SAR, DEM)",
+      brand: "Maxar",
+      brandUrl: "https://www.maxar.com",
+      intro: "30 cm super-resolution commercial optical and shortwave infrared (SWIR) satellite imagery.",
+      description: "Provides commercial optical imagery at 30 cm resolution with 8 multispectral bands and 8 SWIR bands, enabling deep environmental and infrastructural insights from orbit.",
+      outcomes: ["30 cm native panchromatic resolution", "8-band multispectral + 8-band SWIR", "Stereo-pair Digital Surface Models (DSM)", "Archive query and dedicated orbital tasking"],
       images: [
-        { src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=85", alt: "Earth observation", caption: "Global satellite constellations" }
+        { src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=85", alt: "WorldView-3 Satellite", caption: "30 cm commercial Earth observation" }
       ]
     },
     {
-      title: "Geotechnical Monitoring Sensors",
+      title: "RST Instruments Wireless Inclinometer System",
       group: "Satellite & Monitoring",
-      intro: "Piezometers, inclinometers, crack gauges, and tiltmeters with wireless telemetry.",
-      description: "Continuous ground movement and pore water pressure tracking with automated alarming.",
-      outcomes: ["Vibrating wire piezometers", "Borehole in-place inclinometers (IPI)", "Wireless mesh telemetry nodes", "Real-time geotechnical cloud platform"],
+      subcategory: "Geotechnical Monitoring Sensors",
+      brand: "RST Instruments",
+      brandUrl: "https://rstinstruments.com",
+      intro: "Automated in-place inclinometer strings with wireless LoRa mesh telemetry for slope stability.",
+      description: "Continuous real-time tracking of lateral ground displacement in landslides, open pit mines, and dam embankments with automated alarms.",
+      outcomes: ["Biaxial MEMS in-place inclinometer string", "Long-range wireless LoRa mesh nodes", "Cloud dashboard with automated threshold alarms", "Sub-millimeter displacement detection"],
       images: [
-        { src: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85", alt: "Geotechnical sensor", caption: "Continuous ground risk detection" }
+        { src: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85", alt: "Geotechnical Inclinometer", caption: "Sub-surface geotechnical displacement monitoring" }
       ]
     },
     {
-      title: "Geospatial Optical Sensors",
+      title: "Phase One iXM-100 Geospatial Camera",
       group: "Satellite & Monitoring",
-      intro: "Autonomous solar-powered camera pods with edge AI object and displacement detection.",
-      description: "Rugged cameras capturing high-resolution timelapses for construction verification and remote landslide activity.",
-      outcomes: ["4K optical resolution", "Internal solar charging and 4G modem", "Edge AI crack detection", "Cloud-based visual dashboard"],
+      subcategory: "Geospatial Optical Sensors",
+      brand: "Phase One",
+      brandUrl: "https://geospatial.phaseone.com",
+      intro: "100 MP medium format metric camera engineered specifically for aerial inspection and mapping.",
+      description: "Features a backside-illuminated medium format sensor with high dynamic range and leaf shutter optics for high-resolution aerial mapping and infrastructure inspection.",
+      outcomes: ["100 MP medium format BSI sensor", "Leaf shutter with speeds up to 1/2500 s", "Metric calibration for photogrammetric rigor", "Dynamic range exceeding 83 dB"],
       images: [
-        { src: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1800&q=85", alt: "Optical Camera", caption: "Edge AI visual observation" }
+        { src: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1800&q=85", alt: "Phase One iXM-100", caption: "Medium format metric aerial sensor" }
       ]
     },
     {
-      title: "Hydro-Met Logging Sensors",
+      title: "Campbell Scientific CR1000X Hydro-Met Station",
       group: "Satellite & Monitoring",
-      intro: "Radar water level sensors, tipping bucket rain gauges, and river discharge meters.",
-      description: "Telemetry stations recording climatic data, river stages, and flood forecasts in remote basins.",
-      outcomes: ["Non-contact radar level sensors", "Automated weather stations (AWS)", "Satellite & cellular dual-telemetry", "Integrated data logger with battery backup"],
+      subcategory: "Hydro-Met Logging Sensors",
+      brand: "Campbell Scientific",
+      brandUrl: "https://www.campbellsci.com",
+      intro: "Rugged core data logger with non-contact radar water level sensor and telemetry for basins.",
+      description: "Industrial measurement and control data logger for severe environmental conditions, monitoring water levels, discharge, rainfall, and climate parameters.",
+      outcomes: ["Non-contact radar water level sensor (±2 mm)", "Tipping bucket rain gauge with pulse counter", "Cellular and Iridium satellite dual telemetry", "Low-power solar charging power supply"],
       images: [
-        { src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85", alt: "River sensor", caption: "Basin-scale hydrological telemetry" }
+        { src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85", alt: "Campbell Scientific Station", caption: "Automated hydrological & meteorological monitoring" }
       ]
     }
   ],

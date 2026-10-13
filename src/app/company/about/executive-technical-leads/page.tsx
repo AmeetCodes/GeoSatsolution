@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { TeamRevealGrid, type TeamRevealMember } from "@/components/ui/team-reveal-grid";
 import { getDynamicLeaders } from "@/app/company/_lib/company-content";
 
@@ -35,7 +36,7 @@ export default async function ExecutiveTechnicalLeadsPage() {
     <>
       <Navbar />
 
-      <main className="flex-1 bg-[#f8faf9] pt-24 sm:pt-28">
+      <PageTransition className="flex-1 bg-[#f8faf9] pt-24 sm:pt-28">
         <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pb-24 lg:px-10">
           {members.length > 0 ? (
             <TeamRevealGrid
@@ -56,7 +57,7 @@ export default async function ExecutiveTechnicalLeadsPage() {
             </section>
           )}
         </div>
-      </main>
+      </PageTransition>
 
       <Footer />
     </>

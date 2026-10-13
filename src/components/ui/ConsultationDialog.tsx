@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
 import {
   Dialog,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { launchConfetti } from "@/components/ui/confetti";
 import { SpecularButton } from "@/components/ui/SpecularButton";
+import { createConsultationSchema } from "@/lib/validations/consultation.schema";
 const DEFAULT_SOLUTIONS = [
   { title: "UAV LiDAR & Aerial Survey" },
   { title: "Drone Photogrammetry" },
@@ -81,6 +82,12 @@ function InputField({
 }
 
 export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionTitle: string; solutionGroup: string }) {
+  const [interestOptions, setInterestOptions] = useState<string[]>(() => {
+    const defaults = DEFAULT_SOLUTIONS.map((solution) => solution.title);
+    return solutionTitle && !defaults.includes(solutionTitle) ? [solutionTitle, ...defaults] : defaults;
+  });
+  const schema = useMemo(() => createConsultationSchema(interestOptions), [interestOptions]);
+
   const [fields, setFields] = useState<ConsultationFields>({
     name: "",
     organisation: "",
@@ -95,6 +102,33 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    let active = true;
+    fetch("/api/solutions", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json: { data?: Array<{ title?: string }> } | null) => {
+        if (!active) return;
+        const titles = (json?.data ?? [])
+          .map((solution) => solution.title?.trim() ?? "")
+          .filter(Boolean)
+          .filter((title, index, all) => all.indexOf(title) === index);
+        if (titles.length > 0) {
+          setInterestOptions(titles);
+          setFields((current) => ({
+            ...current,
+            interest: titles.includes(current.interest) ? current.interest : "",
+          }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) active = false;
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   function updateField(field: FieldName, value: string) {
     setFields((current) => ({ ...current, [field]: value }));
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
@@ -102,12 +136,27 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
   }
 
   function validate() {
+    const result = schema.safeParse({
+      name: fields.name.trim(),
+      organisation: fields.organisation.trim(),
+      email: fields.email.trim(),
+      phone: fields.phone.trim(),
+      interest: fields.interest,
+      otherInterest: fields.otherInterest.trim(),
+      details: fields.details.trim(),
+      website: "",
+    });
+
+    if (result.success) {
+      setErrors(INITIAL_ERRORS);
+      return INITIAL_ERRORS;
+    }
+
     const nextErrors: FieldErrors = {};
-    if (fields.name.trim().length < 2) nextErrors.name = "Enter your full name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim())) nextErrors.email = "Enter a valid email address.";
-    if (!fields.interest) nextErrors.interest = "Choose an area of interest.";
-    if (fields.interest === "Other" && fields.otherInterest.trim().length < 2) nextErrors.otherInterest = "Tell us what service you need.";
-    if (fields.details.trim().length < 12) nextErrors.details = "Add a few details so our team can prepare.";
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as FieldName | undefined;
+      if (field && !nextErrors[field]) nextErrors[field] = issue.message;
+    }
     setErrors(nextErrors);
     return nextErrors;
   }
@@ -228,7 +277,7 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
               required
               error={errors.name}
               onChange={(value) => updateField("name", value)}
-              onBlur={() => fields.name.trim().length < 2 && fields.name.length > 0 && setErrors((current) => ({ ...current, name: "Enter your full name." }))}
+              onBlur={() => undefined}
             />
             <InputField
               id="organisation"
@@ -245,7 +294,7 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
               required
               error={errors.email}
               onChange={(value) => updateField("email", value)}
-              onBlur={() => fields.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim()) && setErrors((current) => ({ ...current, email: "Enter a valid email address." }))}
+              onBlur={() => undefined}
             />
             <InputField
               id="phone"
@@ -270,7 +319,7 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
                 className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-ink shadow-sm outline-none transition focus:border-aqua focus:ring-2 focus:ring-aqua/15 aria-invalid:border-rose-500"
               >
                 <option value="" disabled>Select an area</option>
-                {DEFAULT_SOLUTIONS.map((solution) => <option key={solution.title} value={solution.title}>{solution.title}</option>)}
+                {interestOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                 <option value="Other">Other</option>
               </select>
               {errors.interest ? <p id="interest-error" className="mt-1 text-xs text-rose-700">{errors.interest}</p> : null}
@@ -284,7 +333,7 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
                   required
                   error={errors.otherInterest}
                   onChange={(value) => updateField("otherInterest", value)}
-                  onBlur={() => fields.otherInterest.trim().length < 2 && fields.otherInterest.length > 0 && setErrors((current) => ({ ...current, otherInterest: "Tell us what service you need." }))}
+                  onBlur={() => undefined}
                 />
               </div>
             ) : null}

@@ -2,7 +2,6 @@
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
 
 /**
  * The single motion vocabulary for the page: content rises 24px and fades in
@@ -55,39 +54,6 @@ export function Reveal({
           ? { staggerChildren: 0.075, delayChildren: 0.04 + delay }
           : { duration: 0.7, delay, ease: EASE }
       }
-    >
-      {children}
-    </Component>
-  );
-}
-
-/** Child of a `stagger` Reveal — inherits the parent's visible state. */
-export function RevealItem({
-  children,
-  className,
-  delay,
-  as: Tag = "div",
-}: {
-  children: ReactNode;
-  className?: string;
-  /** Overrides the inherited stagger position. */
-  delay?: number;
-  as?: "div" | "li" | "article";
-}) {
-  const reduced = useReducedMotion();
-
-  if (reduced) {
-    const Static = Tag;
-    return <Static className={className}>{children}</Static>;
-  }
-
-  const Component = motion[Tag];
-
-  return (
-    <Component
-      className={cn(className)}
-      variants={rise}
-      transition={{ duration: 0.7, delay, ease: EASE }}
     >
       {children}
     </Component>

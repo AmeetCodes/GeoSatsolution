@@ -262,6 +262,21 @@
   }
 }
 
+/* Route-change enter transition. Opacity only, so `position: fixed` chrome
+   (navbar, dialogs) is never captured by a transformed ancestor. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

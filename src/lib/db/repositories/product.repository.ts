@@ -7,6 +7,9 @@ export interface CreateProductDTO {
   title: string;
   slug?: string;
   group: string;
+  subcategory?: string;
+  brand?: string;
+  brandUrl?: string;
   intro?: string;
   description?: string;
   outcomes?: string[];
@@ -22,6 +25,9 @@ export interface UpdateProductDTO {
   title?: string;
   slug?: string;
   group?: string;
+  subcategory?: string;
+  brand?: string;
+  brandUrl?: string;
   intro?: string;
   description?: string;
   outcomes?: string[];
@@ -34,11 +40,13 @@ export interface UpdateProductDTO {
 }
 
 export class ProductRepository {
-  async findAll(filter: { isPublished?: boolean; group?: string } = {}): Promise<IProduct[]> {
+  async findAll(filter: { isPublished?: boolean; group?: string; subcategory?: string; brand?: string } = {}): Promise<IProduct[]> {
     await connectDB();
     const query: Record<string, unknown> = {};
     if (filter.isPublished !== undefined) query.isPublished = filter.isPublished;
     if (filter.group) query.group = filter.group;
+    if (filter.subcategory) query.subcategory = filter.subcategory;
+    if (filter.brand) query.brand = filter.brand;
 
     return Product.find(query).sort({ order: 1, createdAt: 1 }).lean().exec() as unknown as Promise<IProduct[]>;
   }

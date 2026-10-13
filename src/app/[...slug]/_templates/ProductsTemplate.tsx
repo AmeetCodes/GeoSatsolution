@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
+import { PageTransition } from "@/components/layout/PageTransition";
+import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton";
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 
@@ -17,7 +19,7 @@ export function ProductsTemplate({
   galleryImages,
 }: ProductsTemplateProps) {
   return (
-    <main className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+    <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         {/* Back link */}
         <Link
@@ -49,6 +51,25 @@ export function ProductsTemplate({
                 Request configuration and pricing for this product.
               </p>
             </div>
+
+            {item.resources && item.resources.length > 0 && (
+              <div className="mt-5">
+                <DownloadResourcesButton productTitle={item.title} resources={item.resources} />
+              </div>
+            )}
+
+            {item.brandUrl && (
+              <div className="mt-4">
+                <a
+                  href={item.brandUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-panel/40 px-3 py-1.5 text-xs font-semibold text-aqua transition-colors hover:bg-aqua/10"
+                >
+                  <span>Official {item.brand || "Manufacturer"} Website</span>
+                </a>
+              </div>
+            )}
 
             {item.description && (
               <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">
@@ -93,6 +114,6 @@ export function ProductsTemplate({
           </section>
         )}
       </div>
-    </main>
+    </PageTransition>
   );
 }

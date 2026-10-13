@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
@@ -100,7 +101,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
       />
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <Link
             href="/solutions"
@@ -156,7 +157,7 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
 
           <SolutionFaq solutionTitle={solution.title} deliverables={solution.outcomes} items={solution.faqs} />
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

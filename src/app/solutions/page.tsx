@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Layers } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { getDynamicSolutions, solutionPathSlug } from "./_lib/solutions";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default async function SolutionsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           {/* Header */}
           <div className="max-w-3xl">
@@ -138,7 +139,7 @@ export default async function SolutionsPage() {
             })}
           </div>
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { IndustryCards } from "./IndustryCards";
 import { getDynamicIndustries } from "./_lib/industries";
 
@@ -27,7 +28,7 @@ export default async function IndustriesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] text-ink sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] text-ink sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <header className="mb-10 max-w-3xl sm:mb-14">
             <p className="label text-aqua">Industries</p>
@@ -47,7 +48,7 @@ export default async function IndustriesPage() {
             </div>
           )}
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

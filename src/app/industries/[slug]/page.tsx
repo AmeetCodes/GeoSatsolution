@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import {
   industryPathSlug,
   getDynamicIndustryBySlug,
@@ -83,7 +84,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(industryJsonLd) }}
       />
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <Link
             href="/industries"
@@ -156,7 +157,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
             </div>
           </article>
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

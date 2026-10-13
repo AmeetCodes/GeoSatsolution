@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 
 interface IndustriesTemplateProps {
@@ -14,7 +15,7 @@ export function IndustriesTemplate({
   column,
 }: IndustriesTemplateProps) {
   return (
-    <main className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+    <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <Link
           href={`/${tab.slug}`}
@@ -80,6 +81,6 @@ export function IndustriesTemplate({
           </section>
         </article>
       </div>
-    </main>
+    </PageTransition>
   );
 }

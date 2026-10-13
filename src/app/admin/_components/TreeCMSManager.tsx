@@ -748,8 +748,8 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT MAIN TAB ================= */}
       {tabModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
               <h3 className="text-base font-semibold text-zinc-950">
                 {editingTab ? `Edit Tab: ${editingTab.label}` : "Add Main Navigation Tab"}
@@ -786,7 +786,7 @@ export function TreeCMSManager({
                   type="text"
                   value={tabForm.href}
                   onChange={(e) => setTabForm({ ...tabForm, href: e.target.value })}
-                  placeholder="e.g. #capabilities or /services"
+                  placeholder="e.g. /solutions or /services"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none font-mono text-xs"
                 />
               </div>
@@ -844,8 +844,8 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT COLUMN ================= */}
       {colModalOpen && editingCol && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
               <h3 className="text-base font-semibold text-zinc-950">
                 {editingCol.col ? `Rename Column: ${editingCol.col.title}` : "Add Column Header / Sub-Category"}

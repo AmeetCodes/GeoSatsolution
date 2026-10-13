@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import {
   getDynamicNewsItems,
   getDynamicNewsItemBySlug,
@@ -88,7 +89,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-4xl px-5 sm:px-8 lg:px-12">
           <Link
             href="/company/insights/news"
@@ -125,7 +126,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             </div>
           </article>
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

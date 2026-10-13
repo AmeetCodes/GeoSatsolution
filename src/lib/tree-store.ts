@@ -29,7 +29,7 @@ export interface NavTreeTab {
   id: string; // e.g. "solutions", "products", "industries", "company"
   label: string; // e.g. "Solutions", "Products", "Industries", "Company"
   slug: string;
-  href: string; // e.g. "#capabilities", "#equipment", "/industries", "#about"
+  href: string; // e.g. "/solutions", "/products", "/industries", "/company/about/geosat-partners"
   order: number;
   type?: "columns" | "cards";
   footerNote?: string;
@@ -58,7 +58,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
       id: "solutions",
       label: "Solutions",
       slug: "solutions",
-      href: "#capabilities",
+      href: "/solutions",
       order: 1,
       type: "columns",
       footerNote: "Every engagement is scoped against a tolerance, not a template.",
@@ -300,7 +300,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
       id: "products",
       label: "Products",
       slug: "products",
-      href: "#equipment",
+      href: "/products",
       order: 2,
       type: "columns",
       footerNote: "Equipment rental, licensing and operator training available.",
@@ -569,7 +569,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
       id: "company",
       label: "Company",
       slug: "company",
-      href: "#about",
+      href: "/company/about/geosat-partners",
       order: 4,
       type: "columns",
       footerNote: "Every engagement is scoped against a tolerance, not a template.",

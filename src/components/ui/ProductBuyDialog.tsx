@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { launchConfetti } from "@/components/ui/confetti";
 import { SpecularButton } from "@/components/ui/SpecularButton";
+import { productInquirySchema } from "@/lib/validations/product-inquiry.schema";
 
 type ProductFields = {
   name: string;
@@ -35,6 +36,8 @@ function InputField({
   required = false,
   type = "text",
   error,
+  maxLength,
+  inputMode,
   onChange,
 }: {
   id: FieldName;
@@ -43,6 +46,8 @@ function InputField({
   required?: boolean;
   type?: string;
   error?: string;
+  maxLength?: number;
+  inputMode?: "text" | "tel" | "numeric" | "email";
   onChange: (value: string) => void;
 }) {
   return (
@@ -57,6 +62,8 @@ function InputField({
         type={type}
         value={value}
         required={required}
+        maxLength={maxLength}
+        inputMode={inputMode}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
@@ -88,17 +95,33 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
   }
 
   function validate() {
+    const result = productInquirySchema.safeParse({
+      name: fields.name.trim(),
+      company: fields.company.trim(),
+      email: fields.email.trim(),
+      phone: fields.phone.trim(),
+      product: fields.product,
+      details: fields.details.trim(),
+      website: "",
+    });
+
+    if (result.success) {
+      setErrors(INITIAL_ERRORS);
+      return INITIAL_ERRORS;
+    }
+
     const nextErrors: FieldErrors = {};
-    if (fields.name.trim().length < 2) nextErrors.name = "Enter your full name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim())) nextErrors.email = "Enter a valid email address.";
-    if (!fields.product) nextErrors.product = "Choose a product.";
-    if (fields.details.trim().length < 12) nextErrors.details = "Add a few details so the team can prepare the quote.";
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as FieldName | undefined;
+      if (field && !nextErrors[field]) nextErrors[field] = issue.message;
+    }
     setErrors(nextErrors);
     return nextErrors;
   }
 
   async function submitRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
     const nextErrors = validate();
     const firstInvalidField = Object.keys(nextErrors)[0] as FieldName | undefined;
     if (firstInvalidField) {
@@ -110,11 +133,31 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
     setSubmitError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch("/api/buy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fields.name.trim(),
+          company: fields.company.trim(),
+          email: fields.email.trim(),
+          phone: fields.phone.trim(),
+          product: fields.product,
+          details: fields.details.trim(),
+          website: formData.get("website"),
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      if (!response.ok) {
+        setSubmitError(result?.error ?? "We couldn't send your request right now. Please try again shortly.");
+        return;
+      }
+
       setSubmitted(true);
       launchConfetti({ x: 0.5, y: 0.35 }, 1.6);
     } catch {
-      setSubmitError("We couldn't send your request right now. Please try again shortly.");
+      setSubmitError("We couldn't reach the request service. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -181,6 +224,10 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
           </div>
         ) : (
           <form noValidate onSubmit={submitRequest} className="px-6 pb-7 sm:px-8 sm:pb-8">
+            <div aria-hidden="true" className="absolute left-[-10000px] size-px overflow-hidden">
+              <label htmlFor="website">Leave this field empty</label>
+              <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
             <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
               <InputField
                 id="name"
@@ -210,6 +257,10 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
                 label="Phone"
                 type="tel"
                 value={fields.phone}
+                required
+                error={errors.phone}
+                maxLength={10}
+                inputMode="numeric"
                 onChange={(value) => updateField("phone", value)}
               />
               <div className="sm:col-span-2">

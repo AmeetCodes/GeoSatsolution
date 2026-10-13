@@ -9,9 +9,12 @@ export interface IProductImage {
 }
 
 export interface IProduct extends Document {
-  title: string;              // Product Name (e.g., "GNSS Receivers")
+  title: string;              // Product Name (e.g., "Trimble R12i GNSS Receiver")
   slug: string;
   group: string;              // Category (e.g., "Survey Equipment")
+  subcategory?: string;       // Subcategory / Class (e.g., "GNSS Receivers")
+  brand?: string;             // Brand/Manufacturer (e.g., "Trimble", "DJI")
+  brandUrl?: string;          // Official brand/product website URL
   intro: string;
   description: string;
   outcomes: string[];         // Specifications/Features list
@@ -30,6 +33,9 @@ const ProductSchema = new Schema<IProduct>(
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true, index: true },
     group: { type: String, required: true, trim: true, index: true },
+    subcategory: { type: String, default: "", trim: true, index: true },
+    brand: { type: String, default: "", trim: true },
+    brandUrl: { type: String, default: "", trim: true },
     intro: { type: String, default: "" },
     description: { type: String, default: "" },
     outcomes: { type: [String], default: [] },
@@ -59,7 +65,7 @@ const ProductSchema = new Schema<IProduct>(
 
 // Rebuild a stale dev-server model after schema changes so newly added resource
 // fields are not dropped by Mongoose strict mode during hot reloads.
-if (mongoose.models.Product && !mongoose.models.Product.schema.path("resources")) {
+if (mongoose.models.Product && (!mongoose.models.Product.schema.path("resources") || !mongoose.models.Product.schema.path("subcategory"))) {
   delete mongoose.models.Product;
 }
 

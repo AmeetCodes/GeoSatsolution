@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Briefcase, CheckCircle2, ChevronRight, FileText } from "lucide-react";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 
 interface CompanyTemplateProps {
@@ -19,7 +20,7 @@ export function CompanyTemplate({
       : FileText;
 
   return (
-    <main className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+    <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-ink-3">
@@ -91,6 +92,6 @@ export function CompanyTemplate({
           </div>
         </article>
       </div>
-    </main>
+    </PageTransition>
   );
 }

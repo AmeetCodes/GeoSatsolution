@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import CircularGallery from "@/components/ui/CircularGallery";
 import { Container } from "@/components/ui/Section";
-import { Capabilities } from "./_components/sections/Capabilities";
 import { ContactAssessment } from "./_components/sections/ContactAssessment";
-import { Equipment } from "./_components/sections/Equipment";
 import { Hero } from "./_components/sections/Hero";
-import { Industries } from "./_components/sections/Industries";
-import { Projects } from "./_components/sections/Projects";
 
 export const metadata: Metadata = {
   title: "GeoSAT — Geospatial Survey, LiDAR & Spatial Intelligence",
@@ -58,7 +55,7 @@ export default function Home() {
       />
 
       <a
-        href="#capabilities"
+        href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-aqua focus:px-5 focus:py-3 focus:text-sm focus:font-medium focus:text-abyss"
       >
         Skip to content
@@ -66,13 +63,9 @@ export default function Home() {
 
       <Navbar />
 
-      <main id="main" className="flex-1">
+      <PageTransition id="main" className="flex-1">
         <Hero />
-        <Capabilities />
-        <Equipment />
-        <Projects />
-        <Industries />
-      </main>
+      </PageTransition>
 
       <Container className="py-8 sm:py-10">
         <div className="relative h-[600px] w-full">

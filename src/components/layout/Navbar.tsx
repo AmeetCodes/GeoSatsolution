@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
@@ -24,7 +25,7 @@ type DynNavData = {
 // ---------- Logo ----------
 function Logo() {
   return (
-    <a
+    <Link
       href="/"
       aria-label="GeoSAT Solutions homepage"
       className="inline-flex items-center"
@@ -38,7 +39,7 @@ function Logo() {
         priority
         className="h-9 w-auto object-contain sm:h-10"
       />
-    </a>
+    </Link>
   );
 }
 
@@ -234,13 +235,13 @@ function IndustryCardMenu({ industries }: { industries: DynIndustry[] }) {
                   </span>
                 ))}
               </div>
-              <a
-                href={`/industries/${solutionSlug(industry.title)}`}
-                className="group/link mt-6 inline-flex items-center gap-2 text-sm font-medium text-aqua transition-colors duration-200 hover:text-aqua-bright"
-              >
-                Explore use cases
-                <ArrowRight className="size-3.5 transition-transform duration-200 group-hover/link:translate-x-1" />
-              </a>
+              <Link
+                        href={`/industries/${solutionSlug(industry.title)}`}
+                        className="group/link mt-6 inline-flex items-center gap-2 text-sm font-medium text-aqua transition-colors duration-200 hover:text-aqua-bright"
+                      >
+                        Explore use cases
+                        <ArrowRight className="size-3.5 transition-transform duration-200 group-hover/link:translate-x-1" />
+                      </Link>
             </div>
           </motion.div>
         );
@@ -287,20 +288,20 @@ function TreeGroupColumn({
 
           return (
             <li key={item.id || item.title}>
-              <a
-                href={href}
-                className="group inline-flex items-start gap-2 text-[#666666] transition-colors duration-200 hover:text-[#000000]"
-                style={{
-                  ...DROPDOWN_ITEM_STYLE,
-                  padding: "8px 0px",
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  className="mt-[0.5em] size-1 shrink-0 rounded-full bg-[#000000]/40 transition-colors duration-200 group-hover:bg-[#000000]"
-                />
-                {item.title}
-              </a>
+              <Link
+            href={href}
+            className="group inline-flex items-start gap-2 text-[#666666] transition-colors duration-200 hover:text-[#000000]"
+            style={{
+              ...DROPDOWN_ITEM_STYLE,
+              padding: "8px 0px",
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="mt-[0.5em] size-1 shrink-0 rounded-full bg-[#000000]/40 transition-colors duration-200 group-hover:bg-[#000000]"
+            />
+            {item.title}
+          </Link>
             </li>
           );
         })}
@@ -458,7 +459,7 @@ export function Navbar() {
                         />
                       </button>
                     ) : (
-                      <a
+                      <Link
                         href={isIndustriesLink ? "/industries" : item.href || `/${item.slug}`}
                         className={cn(
                           "relative inline-flex items-center rounded-full text-[#212223] transition-colors duration-200 hover:text-[#000000]",
@@ -473,7 +474,7 @@ export function Navbar() {
                             transition={reduced ? { duration: 0 } : { duration: 0.35 }}
                           />
                         ) : null}
-                      </a>
+                      </Link>
                     )}
                   </div>
                 );
@@ -481,13 +482,13 @@ export function Navbar() {
             </nav>
 
             <div className="flex items-center gap-2">
-              <a
+              <Link
                 href="#contact"
                 className="hidden items-center justify-center whitespace-nowrap text-center transition-[transform,background-color] duration-200 hover:-translate-y-0.5 sm:inline-flex"
                 style={CTA_BUTTON_STYLE}
               >
                 Request assessment
-              </a>
+              </Link>
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
@@ -533,11 +534,11 @@ export function Navbar() {
                           <p className="max-w-md text-sm text-ink-3">
                             Mission-critical data, mapped to the way each sector actually works.
                           </p>
-                          <a href="/industries" className="group inline-flex items-center gap-2 text-sm text-aqua">
+                          <Link href="/industries" className="group inline-flex items-center gap-2 text-sm text-aqua">
                             <span className="border-b border-aqua/30 pb-0.5 transition-colors duration-200 group-hover:border-aqua">
                               View all industries
                             </span>
-                          </a>
+                          </Link>
                         </div>
                       </>
                     ) : (
@@ -564,11 +565,11 @@ export function Navbar() {
                                 ? "Equipment rental, licensing and operator training available."
                                 : "Every engagement is scoped against a tolerance, not a template.")}
                           </p>
-                          <a href="#contact" className="group inline-flex items-center gap-2 text-sm text-aqua">
+                          <Link href="#contact" className="group inline-flex items-center gap-2 text-sm text-aqua">
                             <span className="border-b border-aqua/30 pb-0.5 transition-colors duration-200 group-hover:border-aqua">
                               {item.catalogueCta || `Request the full ${item.label.toLowerCase()} catalogue`}
                             </span>
-                          </a>
+                          </Link>
                         </div>
                       </>
                     )}
@@ -628,13 +629,13 @@ export function Navbar() {
                       if (!hasColumns) {
                         return (
                           <li key={item.id || item.label}>
-                            <a
+                            <Link
                               href={isIndustriesLink ? "/industries" : item.href || `/${item.slug}`}
                               onClick={() => setDrawerOpen(false)}
                               className="flex items-center justify-between py-4 font-display text-xl text-ink"
                             >
                               {item.label}
-                            </a>
+                            </Link>
                           </li>
                         );
                       }
@@ -668,7 +669,7 @@ export function Navbar() {
                                 {item.label === "Industries" ? (
                                   <div className="space-y-3 pb-6">
                                     {(dynData?.industries ?? []).map((industry, index) => (
-                                      <a
+                                      <Link
                                         key={industry.title}
                                         href={`/industries/${solutionSlug(industry.title)}`}
                                         onClick={() => setDrawerOpen(false)}
@@ -696,7 +697,7 @@ export function Navbar() {
                                             </span>
                                           ))}
                                         </div>
-                                      </a>
+                                      </Link>
                                     ))}
                                   </div>
                                 ) : (
@@ -719,14 +720,14 @@ export function Navbar() {
                   </ul>
                 </nav>
 
-                <a
+                <Link
                   href="#contact"
                   onClick={() => setDrawerOpen(false)}
                   className="mt-8 flex h-12 items-center justify-center rounded-full font-medium"
                   style={CTA_BUTTON_STYLE}
                 >
                   Request assessment
-                </a>
+                </Link>
               </div>
             </motion.div>
           </motion.div>

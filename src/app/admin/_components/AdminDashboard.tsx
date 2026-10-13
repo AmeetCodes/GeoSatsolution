@@ -199,7 +199,7 @@ export function AdminDashboard({
       <div className="border-b border-zinc-800 bg-[#f1ece5] px-6 lg:px-8 py-3 flex items-center gap-3">
         <span className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">Admin</span>
         <span className="text-zinc-700">/</span>
-        <span className="text-[11px] text-[#f1ece5] font-medium">{tabLabels[activeTab]}</span>
+        <span className="text-[11px] text-zinc-700 font-medium">{tabLabels[activeTab]}</span>
         <div className="ml-auto flex items-center gap-2">
           {isSaving && (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-medium animate-pulse">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import AccordionGallery, { type AccordionGalleryItem } from "@/components/ui/AccordionGallery";
 import { getDynamicPartners, getDynamicClients } from "@/app/company/_lib/company-content";
 
@@ -61,7 +62,7 @@ export default async function GeoSatPartnersPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 bg-[#f4f7f6] pb-20 pt-28">
+      <PageTransition className="flex-1 bg-[#f4f7f6] pb-20 pt-28">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
           <header className="mb-14 max-w-3xl">
             <p className="label text-aqua">Company</p>
@@ -119,7 +120,7 @@ export default async function GeoSatPartnersPage() {
             )}
           </section>
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

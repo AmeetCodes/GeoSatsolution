@@ -42,38 +42,3 @@ export function Section({ id, className, children, rule = true, compact = false 
     </section>
   );
 }
-
-type SectionHeaderProps = {
-  /** Two-digit instrument index, e.g. "01". */
-  index: string;
-  label: string;
-  title: ReactNode;
-  lede?: ReactNode;
-  className?: string;
-  compact?: boolean;
-};
-
-export function SectionHeader({
-  index,
-  label,
-  title,
-  lede,
-  className,
-  compact = false,
-}: SectionHeaderProps) {
-  return (
-    <div className={cn("max-w-3xl", className)}>
-      <div className="flex items-center gap-3">
-        <span className="label text-aqua/70">{index}</span>
-        <span aria-hidden="true" className="h-px w-8 bg-line-strong" />
-        <span className="label">{label}</span>
-      </div>
-      <h2 className={cn(compact ? "mt-4" : "mt-6", "text-[clamp(2rem,4.2vw,3.375rem)] text-balance")}>{title}</h2>
-      {lede ? (
-        <p className={cn(compact ? "mt-4" : "mt-6", "max-w-2xl text-[1.0625rem] leading-relaxed text-ink-2 sm:text-lg")}>
-          {lede}
-        </p>
-      ) : null}
-    </div>
-  );
-}

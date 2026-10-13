@@ -2,10 +2,9 @@
 
 import { Check, ChevronDown, LoaderCircle, MapPin, Mail, Phone } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { CONTACT, CAPABILITIES } from "@/lib/content";
+import { CONTACT } from "@/lib/content";
 import { Container, Section } from "@/components/ui/Section";
 
-const INTEREST_OPTIONS = CAPABILITIES.flatMap((capability) => capability.services);
 
 const EXPECTATIONS = [
   "A practical review of your site, corridor or asset requirements",
@@ -126,7 +125,6 @@ export function ContactAssessment() {
                 <span className="relative block">
                   <select className={`${fieldClass} appearance-none pr-11`} name="interest" required defaultValue="">
                     <option value="" disabled>Select a service</option>
-                    {INTEREST_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
                     <option value="Other">Other / not sure yet</option>
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#76828d]" aria-hidden="true" />

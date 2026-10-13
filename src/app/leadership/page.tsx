@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import AccordionGallery from "@/components/ui/AccordionGallery";
 import { Container } from "@/components/ui/Section";
 import { getDynamicLeaders } from "@/app/company/_lib/company-content";
@@ -26,7 +27,7 @@ export default async function LeadershipPage() {
     <>
       <Navbar />
 
-      <main className="flex-1">
+      <PageTransition className="flex-1">
         <section className="relative bg-abyss py-16 sm:py-20 lg:py-24">
           <div className="pointer-events-none absolute inset-0 blueprint opacity-40" aria-hidden="true" />
 
@@ -62,7 +63,7 @@ export default async function LeadershipPage() {
             </div>
           </Container>
         </section>
-      </main>
+      </PageTransition>
 
       <Footer />
     </>

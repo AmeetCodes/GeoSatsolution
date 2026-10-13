@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { getDynamicResources } from "@/app/company/_lib/company-content";
 import { ResourceMorphingGallery } from "@/components/ui/resource-morphing-gallery";
 
@@ -25,7 +26,7 @@ export default async function DownloadsTechnicalResourcesPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <header className="max-w-3xl">
             <p className="label text-aqua">Insights</p>
@@ -41,7 +42,7 @@ export default async function DownloadsTechnicalResourcesPage() {
             <ResourceMorphingGallery items={resources} />
           </div>
         </div>
-      </main>
+      </PageTransition>
       <Footer />
     </>
   );

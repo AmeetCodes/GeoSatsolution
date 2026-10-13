@@ -13,7 +13,7 @@ export function Hero() {
   return (
  <section
   id="top"
-  className="relative isolate min-h-[min(48rem,88svh)] overflow-hidden pb-12 pt-[calc(var(--nav-h)+2rem)]"
+  className="relative isolate flex min-h-[calc(100svh-var(--nav-h))] flex-col overflow-hidden pt-[calc(var(--nav-h)+2rem)]"
 >
   {/* Engineering grid, faded out toward the bottom of the viewport. */}
   <div
@@ -21,14 +21,14 @@ export function Hero() {
     className="pointer-events-none absolute inset-0 blueprint [mask-image:linear-gradient(to_bottom,black,transparent_78%)]"
   />
 
-  <div className="pointer-events-none absolute inset-y-0 right-[-4%] z-0 hidden w-[58vw] items-center justify-center lg:flex">
-    <div className="w-full max-w-5xl [&_canvas]:!pointer-events-auto">
+  <div className="pointer-events-none absolute inset-y-0 right-[-4%] z-0 hidden w-[60vw] items-center justify-center lg:flex">
+    <div className="w-full max-w-6xl [&_canvas]:!pointer-events-auto">
       <Globe3DDemo />
     </div>
   </div>
 
-  <Container className="relative flex flex-col justify-center">
-    <div className="max-w-[36rem] lg:max-w-[34rem]">
+  <Container className="relative flex flex-1 flex-col pb-12">
+    <div className="flex flex-1 flex-col justify-center max-w-[36rem] lg:max-w-[35rem]">
       {/* Eyebrow Label */}
       <Reveal>
         <p className="label inline-flex items-center gap-2.5 text-[#16264A]">
@@ -41,7 +41,7 @@ export function Hero() {
       </Reveal>
 
       <Reveal delay={0.06}>
-  <h1 className="font-['Mona_Sans',sans-serif] text-[28px] md:text-[64px] lg:text-[76px] font-[800] leading-[36px] md:leading-[1.08] tracking-tight border-0 border-none">
+  <h1 className="font-['Mona_Sans',sans-serif] text-[34px] md:text-[70px] lg:text-[86px] font-[800] leading-[1.06] tracking-tight border-0 border-none">
     <span className="block">
       <Text3DFlip
         className="bg-transparent"
@@ -97,7 +97,7 @@ export function Hero() {
           <Button href="#contact" size="lg" trailingIcon>
             {HERO.primaryCta}
           </Button>
-          <Button href="#equipment" variant="secondary" size="lg">
+          <Button href="/solutions" variant="secondary" size="lg">
             {HERO.secondaryCta}
           </Button>
         </div>
@@ -116,16 +116,16 @@ export function Hero() {
     </div>
 
     {/* Scroll Link */}
-    <Reveal className="mt-10" delay={0.3}>
+    <Reveal className="mt-8" delay={0.3}>
       <a
-        href="#capabilities"
-        className="group mb-10 inline-flex items-center gap-2 py-1.5 text-xs text-[#16264A] transition-colors duration-200 hover:opacity-80 lg:mb-0"
+        href="#contact"
+        className="group inline-flex items-center gap-2 py-1.5 text-xs text-[#16264A] transition-colors duration-200 hover:opacity-80"
       >
         <ArrowDown
           className="size-3.5 transition-transform duration-300 group-hover:translate-y-0.5"
           aria-hidden="true"
         />
-        Scroll to capabilities
+        Scroll to contact
       </a>
     </Reveal>
   </Container>

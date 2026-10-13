@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CONTACT, FOOTER_COLUMNS } from "@/lib/content";
@@ -96,7 +97,7 @@ export function Footer() {
       <Container className="py-16 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-8">
           <div>
-            <a
+            <Link
               href="/"
               aria-label="GeoSAT Solutions homepage"
               className="inline-flex items-center"
@@ -113,7 +114,7 @@ export function Footer() {
                 height={64}
                 className="h-10 w-auto object-contain"
               />
-            </a>
+            </Link>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-ink-2">
               Survey-grade geospatial intelligence for infrastructure, government and natural
               resources — captured in the field, processed in house, handed over ready to use.
@@ -157,12 +158,12 @@ export function Footer() {
               <ul className="space-y-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
                       className="inline-block py-1 text-sm text-ink-2 transition-colors duration-200 hover:text-aqua"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

@@ -12,6 +12,7 @@ import {
 } from "./content.schema";
 import { parsePayload } from "./utils";
 import { createConsultationSchema } from "./consultation.schema";
+import { productInquirySchema } from "./product-inquiry.schema";
 import { articleSchema } from "./article.schema";
 import { industryItemSchema } from "./industry.schema";
 import { productItemSchema } from "./product.schema";
@@ -342,6 +343,55 @@ describe("consultation requests", () => {
   it("accepts a honeypot payload shaped like the client form sends it", () => {
     assert.equal(schema.safeParse({ ...valid, website: null }).success, true);
     assert.equal(schema.safeParse({ ...valid, website: {} }).success, true);
+  });
+});
+
+describe("product inquiry requests", () => {
+  const valid = {
+    name: "Ameet Tester",
+    company: "GeoSAT",
+    email: "ameet@example.com",
+    phone: "9000000000",
+    product: "GeoSAT LiDAR Sensor",
+    details: "We need a quote for two units with calibration.",
+    website: "",
+  };
+
+  it("accepts a complete submission", () => {
+    const result = productInquirySchema.safeParse(valid);
+    assert.equal(result.success, true);
+    assert.equal(result.success && result.data.phone, "9000000000");
+  });
+
+  it("requires a name, email, phone and details with actionable messages", () => {
+    const cases: Array<[Record<string, unknown>, RegExp]> = [
+      [{ ...valid, name: "A" }, /Enter your full name\./],
+      [{ ...valid, email: "not-an-email" }, /Enter a valid email address\./],
+      [{ ...valid, email: "a@b.com\nbcc:x@y.com" }, /Enter a valid email address\./],
+      [{ ...valid, phone: "" }, /Enter your phone number\./],
+      [{ ...valid, phone: "12345" }, /Enter a valid 10-digit phone number starting with 6-9\./],
+      [{ ...valid, phone: "90000000000" }, /Enter a valid 10-digit phone number starting with 6-9\./],
+      [{ ...valid, phone: "90000 00000" }, /Enter a valid 10-digit phone number starting with 6-9\./],
+      [{ ...valid, phone: "900000000a" }, /Enter a valid 10-digit phone number starting with 6-9\./],
+      [{ ...valid, product: "" }, /Choose a product\./],
+      [{ ...valid, details: "too short" }, /Add a few details so the team can prepare the quote\./],
+    ];
+
+    for (const [payload, expected] of cases) {
+      const result = productInquirySchema.safeParse(payload);
+      assert.equal(result.success, false, `${JSON.stringify(payload)} should be rejected`);
+      assert.match(
+        result.success ? "" : result.error.issues[0].message,
+        expected,
+        `${JSON.stringify(payload)} should report ${expected}`,
+      );
+    }
+  });
+
+  it("allows an optional company and ignores honeypot values", () => {
+    assert.equal(productInquirySchema.safeParse({ ...valid, company: "" }).success, true);
+    assert.equal(productInquirySchema.safeParse({ ...valid, website: null }).success, true);
+    assert.equal(productInquirySchema.safeParse({ ...valid, website: {} }).success, true);
   });
 });
 

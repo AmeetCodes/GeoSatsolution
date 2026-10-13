@@ -11,12 +11,19 @@ export function slugify(text: string): string {
 }
 
 export class ProductService {
-  async getAllPublished(): Promise<IProduct[]> {
-    return productRepository.findAll({ isPublished: true });
+  async getAllPublished(filter?: { group?: string; subcategory?: string; brand?: string }): Promise<IProduct[]> {
+    return productRepository.findAll({ isPublished: true, ...filter });
   }
 
-  async getAllForAdmin(group?: string): Promise<IProduct[]> {
-    return productRepository.findAll(group ? { group } : {});
+  async getAllForAdmin(group?: string, subcategory?: string): Promise<IProduct[]> {
+    return productRepository.findAll({ ...(group ? { group } : {}), ...(subcategory ? { subcategory } : {}) });
+  }
+
+  async getBySubcategory(subcategory: string, requirePublished = true): Promise<IProduct[]> {
+    return productRepository.findAll({
+      subcategory,
+      ...(requirePublished ? { isPublished: true } : {}),
+    });
   }
 
   async getBySlug(slug: string, requirePublished = false): Promise<IProduct | null> {

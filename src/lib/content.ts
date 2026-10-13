@@ -13,7 +13,7 @@ export type NavGroup = {
 export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
   {
     label: "Solutions",
-    href: "#capabilities",
+    href: "/solutions",
     groups: [
       {
         title: "Survey & Mapping",
@@ -56,7 +56,7 @@ export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
   },
   {
     label: "Products",
-    href: "#equipment",
+    href: "/products",
     groups: [
       {
         title: "UAV & Payloads",
@@ -103,7 +103,7 @@ export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
   },
   {
     label: "Company",
-    href: "#about",
+    href: "/company/about/geosat-partners",
     groups: [
       {
         title: "About",
@@ -136,77 +136,6 @@ export const CREDENTIALS = [
   "FIG member organisation",
   "ISPRS contributing member",
   "Calibration-traceable instruments",
-];
-
-export const SECTION_HEADERS = {
-  capabilities: {
-    index: "01",
-    label: "Capabilities",
-    title: "Four disciplines, one coordinate system.",
-    lede: "Most projects fail in the gaps between contractors. We keep capture, processing, data engineering and monitoring under one roof, on one datum, so nothing has to be reconciled twice.",
-  },
-  equipment: {
-    index: "02",
-    label: "Platform",
-    title: "Instruments that hold their calibration.",
-    lede: "Capture, positioning, processing and analysis — maintained, traceable and checked before and after every mobilisation.",
-  },
-  projects: {
-    index: "03",
-    label: "Selected work",
-    title: "Sites where a guess was not an option.",
-    lede: "A cross-section of recent engagements, delivered as data the client's own engineers work from directly.",
-  },
-  industries: {
-    index: "04",
-    label: "Industries",
-    title: "Measured in the units your discipline uses.",
-    lede: "The same accuracy, reported the way each sector already reasons about ground — volumes, slopes, corridors, baselines or change.",
-  },
-} as const;
-
-
-export type Capability = {
-  index: string;
-  title: string;
-  summary: string;
-  detail: string;
-  services: string[];
-};
-
-export const CAPABILITIES: Capability[] = [
-  {
-    index: "01",
-    title: "Survey & Mapping",
-    summary: "Ground truth for sites that refuse to be flat.",
-    detail:
-      "UAV LiDAR, photogrammetry and survey-grade GNSS combined into one deliverable set — contours, volumes, as-built geometry and control — captured in a single mobilisation.",
-    services: ["UAV LiDAR Survey", "Drone Photogrammetry", "Engineering Survey", "GNSS & Total Station Survey", "Mobile Mapping", "Hydrographic Survey"],
-  },
-  {
-    index: "02",
-    title: "GIS & Data",
-    summary: "Raw coordinates become decisions.",
-    detail:
-      "Spatial databases, enterprise GIS deployment and remote sensing analysis — structured so your engineers query the asset directly, not a consultant.",
-    services: ["Spatial Database & GIS Solutions", "Enterprise GIS Deployment", "Remote Sensing & Analytics", "Spatial Data Processing"],
-  },
-  {
-    index: "03",
-    title: "Monitoring",
-    summary: "The asset never stops moving.",
-    detail:
-      "Geotechnical displacement, geospatial optical and hydro-meteorological sensing feeding dashboards and alerting, so change is observed the day it happens.",
-    services: ["Geotechnical Displacement Monitoring", "Geospatial Optical Monitoring", "Hydrological & Meteorological Sensors"],
-  },
-  {
-    index: "04",
-    title: "Professional Services",
-    summary: "Extend the team, keep the work moving.",
-    detail:
-      "Survey-grade equipment rental, bespoke spatial software, capacity building for your field teams, and calibration that keeps instruments in specification.",
-    services: ["Equipment Rental", "Software Development", "Capacity Building", "Calibration & Maintenance"],
-  },
 ];
 
 

@@ -1,4 +1,9 @@
-import nodemailer from "nodemailer";
+import {
+  buildNotificationContent,
+  createGmailTransporter,
+  getEmailAccount,
+  sendCustomerConfirmation,
+} from "@/lib/email";
 import { solutionService } from "@/lib/db/services/solution.service";
 import connectDB from "@/lib/db/connection";
 import { Consultation } from "@/lib/models/Consultation";
@@ -14,19 +19,6 @@ type ConsultationPayload = {
 
 function asText(value: unknown, maximumLength: number) {
   return typeof value === "string" ? value.trim().slice(0, maximumLength) : "";
-}
-
-function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => {
-    const entities: Record<string, string> = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-    };
-    return entities[character];
-  });
 }
 
 function invalidRequest(message: string, status = 400) {
@@ -88,52 +80,49 @@ export async function POST(request: Request) {
     console.error("Error saving consultation to MongoDB:", dbErr);
   }
 
-  const recipient = process.env.GMAIL_CONSULT_USER;
-  const password = process.env.GMAIL_CONSULT_APP_PASSWORD?.replace(/\s/g, "");
-  if (!recipient || !password) {
+  const account = getEmailAccount("GMAIL_CONSULT_USER", "GMAIL_CONSULT_APP_PASSWORD");
+  if (!account) {
     return invalidRequest("Consultation email is temporarily unavailable. Please try again later.", 503);
   }
 
-  const safeName = escapeHtml(name);
-  const safeOrganisation = escapeHtml(organisation || "Not provided");
-  const safeEmail = escapeHtml(email);
-  const safePhone = escapeHtml(phone || "Not provided");
-  const safeInterest = escapeHtml(interestLabel);
-  const safeDetails = escapeHtml(details).replace(/\n/g, "<br>");
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: recipient, pass: password },
-    connectionTimeout: 10_000,
-    greetingTimeout: 10_000,
-    socketTimeout: 20_000,
-  });
+  const transporter = createGmailTransporter(account);
 
   try {
-    await transporter.sendMail({
-      from: { name: "GeoSAT Website Consultations", address: recipient },
-      to: recipient,
-      replyTo: { name, address: email },
-      subject: `Website consultation: ${interestLabel}`,
-      text: [
-        "New consultation request",
-        "",
-        `Name: ${name}`,
-        `Organisation: ${organisation || "Not provided"}`,
-        `Email: ${email}`,
-        `Phone: ${phone || "Not provided"}`,
-        `Area of interest: ${interestLabel}`,
-        "",
-        "Project details:",
-        details,
-      ].join("\n"),
-      html: `<h1>New consultation request</h1><dl><dt>Name</dt><dd>${safeName}</dd><dt>Organisation</dt><dd>${safeOrganisation}</dd><dt>Email</dt><dd>${safeEmail}</dd><dt>Phone</dt><dd>${safePhone}</dd><dt>Area of interest</dt><dd>${safeInterest}</dd></dl><h2>Project details</h2><p>${safeDetails}</p>`,
+    const content = buildNotificationContent({
+      heading: "New solution consultation request",
+      messageLabel: "Project details",
+      fields: [
+        { label: "Inquiry type", value: "Solution consultation" },
+        { label: "Area of interest", value: interestLabel },
+        { label: "Customer name", value: name },
+        { label: "Organisation", value: organisation },
+        { label: "Email", value: email },
+        { label: "Phone", value: phone },
+      ],
+      message: details,
     });
 
-    return Response.json({ ok: true });
+    await transporter.sendMail({
+      from: { name: "GeoSAT Website Consultations", address: account.user },
+      to: account.user,
+      replyTo: { name, address: email },
+      subject: `Solution consultation: ${interestLabel}`,
+      text: content.text,
+      html: content.html,
+    });
   } catch {
     console.error("Consultation email could not be delivered.");
+    transporter.close();
     return invalidRequest("We couldn't send your request just now. Please try again shortly.", 502);
+  }
+
+  try {
+    await sendCustomerConfirmation(transporter, account, email, name);
+  } catch {
+    console.error("Consultation confirmation email could not be delivered.");
   } finally {
     transporter.close();
   }
+
+  return Response.json({ ok: true });
 }
