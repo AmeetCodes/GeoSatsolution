@@ -3,7 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, CheckCircle2, Layers, MapPin, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  Award,
+  CheckCircle2,
+  FolderCheck,
+  Layers,
+  Map,
+  MapPin,
+  X,
+} from "lucide-react";
 import nepalGeoJson from "@/lib/data/nepal-districts.geo.json";
 import { PROVINCE_NAMES } from "@/lib/data/nepal-districts";
 import type {
@@ -177,7 +186,7 @@ export function NepalProjectMap({
       {/* Subtle grid overlay behind the map */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-70"
+        className="pointer-events-none absolute inset-0 opacity-20"
         style={{
           backgroundImage:
             "radial-gradient(circle at 1px 1px, rgba(15,23,42,0.07) 1px, transparent 0)",
@@ -185,17 +194,23 @@ export function NepalProjectMap({
         }}
       />
 
+      {/* Soft radial glow grounding the header */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-blue-50/50 via-transparent to-transparent"
+      />
+
       <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-12 lg:py-24">
         {heading ? (
-          <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
-              <MapPin className="size-3.5" aria-hidden="true" />
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-blue-200/60 bg-blue-50 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-blue-700 shadow-sm">
+              <MapPin className="h-3.5 w-3.5 text-blue-600" aria-hidden="true" />
               Nationwide coverage
             </p>
-            <h2 className="mt-5 font-serif text-3xl font-bold text-slate-900 md:text-4xl">
+            <h2 className="mb-3 mt-4 font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
               Our Footprint Across Nepal
             </h2>
-            <p className="mt-3 text-sm text-slate-600 md:text-base">
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base">
               Hover over or click any district to explore completed surveying, mapping, and
               monitoring projects.
             </p>
@@ -204,29 +219,42 @@ export function NepalProjectMap({
 
         {/* Summary stats */}
         {summary ? (
-          <dl className="mt-8 grid grid-cols-3 gap-4 sm:max-w-xl">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Projects
+          <dl className="mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-blue-300 hover:shadow-md md:p-5">
+              <dt className="flex flex-col items-start">
+                <FolderCheck className="mb-2 h-5 w-5 text-blue-600" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase leading-tight tracking-wider text-slate-400 md:text-xs">
+                  Projects completed
+                </span>
               </dt>
-              <dd className="mt-1 text-2xl font-bold text-slate-900">{summary.totalProjects}</dd>
+              <dd className="mt-1 text-2xl font-extrabold text-slate-900 md:text-3xl">
+                {summary.totalProjects}
+              </dd>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Districts
+            <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-blue-300 hover:shadow-md md:p-5">
+              <dt className="flex flex-col items-start">
+                <Map className="mb-2 h-5 w-5 text-emerald-600" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase leading-tight tracking-wider text-slate-400 md:text-xs">
+                  Districts covered
+                </span>
               </dt>
-              <dd className="mt-1 text-2xl font-bold text-slate-900">
-                {summary.districtsCovered}
-                <span className="text-base font-medium text-slate-400">
-                  /{summary.totalDistricts}
+              <dd className="mt-1 text-slate-900">
+                <span className="text-2xl font-extrabold md:text-3xl">
+                  {summary.districtsCovered}
+                </span>{" "}
+                <span className="text-sm font-semibold text-slate-400">
+                  / {summary.totalDistricts}
                 </span>
               </dd>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Top province
+            <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-blue-300 hover:shadow-md md:p-5">
+              <dt className="flex flex-col items-start">
+                <Award className="mb-2 h-5 w-5 text-amber-500" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase leading-tight tracking-wider text-slate-400 md:text-xs">
+                  Top province
+                </span>
               </dt>
-              <dd className="mt-1 truncate text-lg font-bold text-slate-900">
+              <dd className="mt-1 truncate text-xl font-bold text-slate-900 md:text-2xl">
                 {summary.mostActiveProvince?.name ?? "—"}
               </dd>
             </div>

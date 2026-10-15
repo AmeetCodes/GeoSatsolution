@@ -45,6 +45,8 @@ export interface Globe3DConfig {
   minDistance?: number;
   /** Max zoom distance */
   maxDistance?: number;
+  /** Initial camera distance as a multiple of the globe radius (lower = closer/ bigger globe) */
+  cameraDistanceFactor?: number;
   /** Initial rotation */
   initialRotation?: { x: number; y: number };
   /** Marker default size */
@@ -294,9 +296,9 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
   const { camera } = useThree();
 
   React.useEffect(() => {
-    camera.position.set(0, 0, config.radius * 3.5);
+    camera.position.set(0, 0, config.radius * config.cameraDistanceFactor);
     camera.lookAt(0, 0, 0);
-  }, [camera, config.radius]);
+  }, [camera, config.radius, config.cameraDistanceFactor]);
 
   return (
     <>
@@ -330,7 +332,7 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
 
       <OrbitControls
         makeDefault
-        enableRotate
+        enableRotate={config.enableRotate}
         enablePan={config.enablePan}
         enableZoom={config.enableZoom}
         minPolarAngle={Math.PI / 3}
@@ -338,10 +340,11 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
         minDistance={config.minDistance}
         maxDistance={config.maxDistance}
         rotateSpeed={0.6}
+        zoomSpeed={0.8}
         autoRotate
         autoRotateSpeed={config.autoRotateSpeed}
         enableDamping
-        dampingFactor={0.1}
+        dampingFactor={0.05}
       />
     </>
   );
@@ -352,7 +355,7 @@ function LoadingFallback() {
 }
 
 const defaultConfig: Required<Globe3DConfig> = {
-  radius: 2,
+  radius: 2.6,
   globeColor: "#1a1a2e",
   textureUrl: DEFAULT_EARTH_TEXTURE,
   bumpMapUrl: DEFAULT_BUMP_TEXTURE,
@@ -365,8 +368,9 @@ const defaultConfig: Required<Globe3DConfig> = {
   enableZoom: false,
   enableRotate: true,
   enablePan: false,
-  minDistance: 5,
-  maxDistance: 15,
+  minDistance: 3.6,
+  maxDistance: 11,
+  cameraDistanceFactor: 2.9,
   initialRotation: { x: 0, y: 0 },
   markerSize: 0.06,
   showWireframe: false,
@@ -400,7 +404,7 @@ export function Globe3D({
           fov: 45,
           near: 0.1,
           far: 1000,
-          position: [0, 0, mergedConfig.radius * 3.5],
+          position: [0, 0, mergedConfig.radius * mergedConfig.cameraDistanceFactor],
         }}
         style={{
           background: mergedConfig.backgroundColor || "transparent",

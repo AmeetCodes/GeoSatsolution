@@ -87,7 +87,7 @@ export function Globe3DDemo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative mx-auto aspect-square w-full max-w-[600px] max-h-[600px] overflow-visible bg-transparent",
+        "relative mx-auto flex aspect-square h-auto w-full max-w-[600px] items-center justify-center overflow-hidden rounded-full bg-transparent lg:max-w-[700px]",
         className,
       )}
     >
@@ -96,13 +96,16 @@ export function Globe3DDemo({ className }: { className?: string }) {
           className="h-full w-full max-w-none"
           markers={sampleMarkers}
           config={{
-            radius: 2,
+            radius: 2.6,
+            cameraDistanceFactor: 2.9,
             showAtmosphere: false,
             bumpScale: 1,
             autoRotateSpeed: 0.18,
             enableRotate: true,
-            enableZoom: false,
+            enableZoom: true,
             enablePan: false,
+            minDistance: 4,
+            maxDistance: 11,
             backgroundColor: "transparent",
             ambientIntensity: 0.9,
             pointLightIntensity: 1.2,

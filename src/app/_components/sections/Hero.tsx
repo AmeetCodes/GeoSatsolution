@@ -20,7 +20,7 @@ export function Hero() {
       <div className="relative mx-auto flex min-h-[calc(100vh-var(--nav-h))] w-full max-w-[1440px] flex-col justify-center px-6 py-8 sm:px-8 md:px-10 lg:px-12 lg:py-12">
         <div className="grid w-full grid-cols-1 items-center justify-between gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Text column */}
-          <div className="flex flex-col items-start justify-center text-left lg:col-span-7">
+          <div className="flex flex-col items-start justify-center text-left lg:col-span-6">
             {/* Eyebrow Label */}
             <Reveal>
               <p className="label mb-4 inline-flex items-center gap-2.5 text-xs font-bold tracking-widest text-slate-500 uppercase sm:text-sm">
@@ -132,8 +132,8 @@ export function Hero() {
           </div>
 
           {/* Globe column */}
-          <div className="flex items-center justify-center lg:col-span-5 lg:justify-end">
-            <Globe3DDemo className="w-[420px] max-w-full lg:w-[540px]" />
+          <div className="flex items-center justify-center lg:col-span-6 lg:justify-end">
+            <Globe3DDemo />
           </div>
         </div>
       </div>

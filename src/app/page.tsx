@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
-import CircularGallery from "@/components/ui/CircularGallery";
-import { Container } from "@/components/ui/Section";
+import { PhotoCardGallery } from "@/components/ui/PhotoCardGallery";
 import { Hero } from "./_components/sections/Hero";
 import { PartnersClients } from "./_components/sections/PartnersClients";
 import { ServicesGrid } from "./_components/sections/ServicesGrid";
@@ -75,19 +74,29 @@ export default function Home() {
 
       <NepalProjectMap />
 
-      <Container className="py-8 sm:py-10">
-        <div className="relative h-[600px] w-full">
-          <CircularGallery
-            bend={1}
-            textColor="#111827"
-            borderRadius={0.05}
-            scrollEase={0.05}
-            fontUrl=""
-            font="bold 30px Orbitron"
-            scrollSpeed={2}
-          />
+      <section
+        aria-labelledby="field-gallery-heading"
+        className="mx-auto my-16 max-w-7xl px-6 lg:px-12"
+      >
+        <div className="rounded-3xl border border-slate-200/80 bg-slate-50/80 p-8 shadow-sm md:p-12 lg:p-16">
+          <div className="mb-10 text-center">
+            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-300/50 bg-slate-200/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-700">
+              Field Gallery
+            </span>
+            <h2
+              id="field-gallery-heading"
+              className="font-serif text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"
+            >
+              Captured in the Field
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-600 md:text-base">
+              Real-world imagery from our surveying, mapping, and monitoring missions across Nepal.
+            </p>
+          </div>
+
+          <PhotoCardGallery />
         </div>
-      </Container>
+      </section>
 
       <Footer />
     </>
