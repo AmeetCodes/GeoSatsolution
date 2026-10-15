@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { productService } from "@/lib/db/services/product.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { productItemSchema } from "@/lib/validations/product.schema";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +18,9 @@ export async function GET(req: Request) {
       : await productService.getAllPublished();
 
     return NextResponse.json({ success: true, data: products });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch products" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch products") },
       { status: 500 }
     );
   }
@@ -43,9 +44,9 @@ export async function POST(req: Request) {
 
     const created = await productService.create(parsed.data);
     return NextResponse.json({ success: true, data: created }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to create product" },
+      { success: false, message: getErrorMessage(error, "Failed to create product") },
       { status: 500 }
     );
   }

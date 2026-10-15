@@ -10,18 +10,18 @@ import {
   Plus,
   ArrowRight,
   Globe,
-  BookOpen,
   Briefcase,
-  Handshake,
-  TrendingUp,
   Zap,
 } from "lucide-react";
 import TableComponent from "./AdminPaymentsTable";
+import type { AdminTab } from "./AdminHeader";
 import type { SiteContentData } from "@/lib/data-store";
+
+type LucideIconLike = React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
 
 interface AdminOverviewProps {
   content: SiteContentData;
-  onNavigateTab: (tab: any) => void;
+  onNavigateTab: (tab: AdminTab) => void;
   onOpenAddModal: (type: "solution" | "product") => void;
 }
 
@@ -38,7 +38,16 @@ export function AdminOverview({
   const totalLeaders = content?.Company?.Leadership?.length || 0;
   const totalCompany = totalInsights + totalPartners + totalLeaders;
 
-  const stats = [
+  const stats: {
+    title: string;
+    count: number;
+    sub: string;
+    icon: LucideIconLike;
+    accent: string;
+    bg: string;
+    border: string;
+    tab: AdminTab;
+  }[] = [
     {
       title: "Solutions",
       count: totalSolutions,
@@ -81,7 +90,12 @@ export function AdminOverview({
     },
   ];
 
-  const quickLinks = [
+  const quickLinks: {
+    label: string;
+    icon: LucideIconLike;
+    color: string;
+    action: () => void;
+  }[] = [
     { label: "Add Solution", icon: Layers, color: "#22d3ee", action: () => onOpenAddModal("solution") },
     { label: "Add Product", icon: Box, color: "#818cf8", action: () => onOpenAddModal("product") },
     { label: "Manage Projects", icon: Briefcase, color: "#fb923c", action: () => onNavigateTab("projects") },
@@ -91,7 +105,12 @@ export function AdminOverview({
     { label: "Live Preview", icon: Globe, color: "#a78bfa", action: () => onNavigateTab("preview") },
   ];
 
-  const breakdowns = [
+  const breakdowns: {
+    label: string;
+    items: { name: string; count: number }[];
+    color: string;
+    icon: LucideIconLike;
+  }[] = [
     {
       label: "Solutions",
       items: (() => {

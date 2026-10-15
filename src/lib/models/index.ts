@@ -9,6 +9,7 @@ export * from "./equipment";
 export * from "./Resource";
 export * from "./ContentMigration";
 export * from "./project";
+export * from "./district-project";
 export * from "./Navigation";
 export * from "./Admin";
 export * from "./Consultation";

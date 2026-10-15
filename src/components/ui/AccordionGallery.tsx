@@ -247,6 +247,7 @@ export default function AccordionGallery({
                   mediaRefs.current[i] = el;
                 }}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element -- gallery images are content-provided URLs */}
                 {item.image ? <img src={item.image} alt={item.alt || item.label || ""} draggable="false" /> : null}
               </span>
               <span className="ag-panel__overlay" aria-hidden="true" />

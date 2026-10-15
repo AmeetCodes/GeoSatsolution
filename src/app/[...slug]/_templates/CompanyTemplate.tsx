@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Briefcase, CheckCircle2, ChevronRight, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, FileText } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
+import type { NavTreeColumn, NavTreeTab, PageItem } from "./types";
 
 interface CompanyTemplateProps {
-  item: any;
-  tab: any;
-  column: any;
+  item: PageItem;
+  tab: NavTreeTab;
+  column: NavTreeColumn;
 }
 
 export function CompanyTemplate({

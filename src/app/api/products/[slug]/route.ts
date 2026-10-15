@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { productService } from "@/lib/db/services/product.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +20,9 @@ export async function GET(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, data: product });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch product" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch product") },
       { status: 500 }
     );
   }
@@ -39,9 +40,9 @@ export async function PUT(req: Request, { params }: RouteProps) {
     const updated = await productService.update(slug, body);
 
     return NextResponse.json({ success: true, data: updated });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to update product" },
+      { success: false, message: getErrorMessage(error, "Failed to update product") },
       { status: 500 }
     );
   }
@@ -62,9 +63,9 @@ export async function DELETE(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, message: "Product deleted" });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to delete product" },
+      { success: false, message: getErrorMessage(error, "Failed to delete product") },
       { status: 500 }
     );
   }

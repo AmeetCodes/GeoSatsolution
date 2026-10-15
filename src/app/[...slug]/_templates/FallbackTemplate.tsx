@@ -4,12 +4,13 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import { SectionBadge } from "./SectionBadge";
+import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
 interface FallbackTemplateProps {
-  item: any;
-  tab: any;
-  column: any;
-  galleryImages: { src: string; alt: string; caption: string }[];
+  item: PageItem;
+  tab?: NavTreeTab;
+  column?: NavTreeColumn;
+  galleryImages: PageGalleryImage[];
 }
 
 export function FallbackTemplate({

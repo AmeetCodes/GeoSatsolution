@@ -5,14 +5,11 @@ import {
   Users,
   Award,
   BookOpen,
-  Briefcase,
   Plus,
   Edit2,
   Trash2,
   Building,
   Calendar,
-  MapPin,
-  CheckCircle2,
 } from "lucide-react";
 import type {
   LeaderItem,

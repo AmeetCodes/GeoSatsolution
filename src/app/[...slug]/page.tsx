@@ -24,13 +24,25 @@ type PageProps = {
   params: Promise<{ slug: string[] }>;
 };
 
+type DbContentItem = {
+  title?: string;
+  intro?: string;
+  description?: string;
+  outcomes?: string[];
+  images?: { src: string; alt?: string; caption?: string }[];
+  metaTitle?: string;
+  metaDescription?: string;
+};
+
+type ContentImage = { src: string; alt: string; caption: string };
+
 // ─── DB-backed content enrichment ────────────────────────────────────────────
 
 const getCachedDbContent = cache(async (
   tabId: string,
   explicitSlug: string,
   slugifiedTitle: string,
-): Promise<any | null> => {
+): Promise<DbContentItem | null> => {
   try {
     if (tabId === "solutions") {
       return (explicitSlug ? await solutionService.getBySlug(explicitSlug) : null)
@@ -53,7 +65,7 @@ async function getDbContentForTreeItem(match: {
   tab: NavTreeTab;
   column?: NavTreeColumn;
   item: NavTreeItem;
-} | null): Promise<any | null> {
+} | null): Promise<DbContentItem | null> {
   if (!match?.item.title) return null;
   const { tab, item } = match;
   const explicitSlug = item.slug || item.href?.split("/").filter(Boolean).at(-1) || "";
@@ -194,20 +206,28 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
     routeLeaf === "our-work" || item.slug === "our-work" || item.title?.trim().toLowerCase() === "our work"
   );
 
+  const resolvedTitle = dbManagedSection ? (dbContent?.title ?? item.title ?? "Untitled page") : (item.title || dbContent?.title || "Untitled page");
+  const rawImages = dbManagedSection
+    ? (dbContent?.images || [])
+    : (item.images?.length ? item.images : (dbContent?.images || []));
+  const resolvedImages: ContentImage[] = rawImages.map((image) => ({
+    src: image.src,
+    alt: image.alt || resolvedTitle,
+    caption: image.caption || "",
+  }));
+
   const resolvedItem = {
     ...item,
-    title: dbManagedSection ? (dbContent?.title ?? item.title ?? "Untitled page") : (item.title || dbContent?.title || "Untitled page"),
+    title: resolvedTitle,
     intro: dbManagedSection ? (dbContent?.intro ?? item.intro ?? "") : (item.intro || dbContent?.intro || ""),
     description: dbManagedSection ? (dbContent?.description ?? item.description ?? "") : (item.description || dbContent?.description || ""),
     outcomes: dbManagedSection ? (dbContent?.outcomes ?? item.outcomes ?? []) : (item.outcomes || dbContent?.outcomes || []),
-    images: dbManagedSection
-      ? (dbContent?.images || [])
-      : (item.images?.length ? item.images : (dbContent?.images || [])),
+    images: resolvedImages,
   };
 
-  const galleryImages = dbManagedSection
-    ? resolvedItem.images
-    : (resolvedItem.images.length > 0 ? resolvedItem.images : DEFAULT_IMAGES);
+  const galleryImages: ContentImage[] = dbManagedSection
+    ? resolvedImages
+    : (resolvedImages.length > 0 ? resolvedImages : DEFAULT_IMAGES);
 
   let projectRecords: Awaited<ReturnType<typeof contentService.getProjects>> = [];
   if (isOurWork) {
@@ -222,7 +242,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
   const canonicalUrl = `https://geosat.co/${pagePath}`;
 
-  let jsonLd: Record<string, any> | null = null;
+  let jsonLd: Record<string, unknown> | null = null;
   if (tab.id === "products") {
     jsonLd = {
       "@context": "https://schema.org",
@@ -292,11 +312,11 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       )}
       <Navbar />
       {tab.id === "products" ? (
-        <ProductsTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
+        <ProductsTemplate item={resolvedItem} tab={tab} column={column!} galleryImages={galleryImages} />
       ) : tab.id === "industries" ? (
-        <IndustriesTemplate item={resolvedItem} tab={tab} column={column} />
+        <IndustriesTemplate item={resolvedItem} tab={tab} column={column!} />
       ) : tab.id === "company" ? (
-        isOurWork ? <OurWorkTemplate item={resolvedItem} tab={tab} column={column} projects={projectRecords.map((project) => ({
+        isOurWork ? <OurWorkTemplate item={resolvedItem} tab={tab} column={column!} projects={projectRecords.map((project) => ({
           code: project.code,
           title: project.title,
           sector: project.sector,
@@ -304,9 +324,9 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
           tags: project.tags || [],
           images: (project.images || []).map((image) => ({ src: image.src, alt: image.alt || project.title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })),
           isPublished: project.isPublished !== false,
-        }))} /> : <CompanyTemplate item={resolvedItem} tab={tab} column={column} />
+        }))} /> : <CompanyTemplate item={resolvedItem} tab={tab} column={column!} />
       ) : tab.id === "solutions" ? (
-        <SolutionsTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
+        <SolutionsTemplate item={resolvedItem} tab={tab} column={column!} galleryImages={galleryImages} />
       ) : (
         <FallbackTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       )}

@@ -3,8 +3,16 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import type { ProjectItem } from "@/lib/data/project-content";
 import DomeGallery, { type DomeGalleryImage } from "@/components/ui/DomeGallery";
+import type { NavTreeColumn, NavTreeTab, PageItem } from "./types";
 
-export function OurWorkTemplate({ item, tab, column, projects }: { item: any; tab: any; column: any; projects: ProjectItem[] }) {
+type OurWorkTemplateProps = {
+  item: Partial<PageItem>;
+  tab: Partial<NavTreeTab>;
+  column: Partial<NavTreeColumn>;
+  projects: ProjectItem[];
+};
+
+export function OurWorkTemplate({ item, tab, column, projects }: OurWorkTemplateProps) {
   const images: DomeGalleryImage[] = projects
     .filter((project) => project.isPublished !== false)
     .flatMap((project) => (project.images || []).map((image) => ({

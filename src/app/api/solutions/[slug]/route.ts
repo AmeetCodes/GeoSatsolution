@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { solutionService } from "@/lib/db/services/solution.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +20,9 @@ export async function GET(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, data: solution });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch solution" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch solution") },
       { status: 500 }
     );
   }
@@ -39,9 +40,9 @@ export async function PUT(req: Request, { params }: RouteProps) {
     const updated = await solutionService.update(slug, body);
 
     return NextResponse.json({ success: true, data: updated });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to update solution" },
+      { success: false, message: getErrorMessage(error, "Failed to update solution") },
       { status: 500 }
     );
   }
@@ -62,9 +63,9 @@ export async function DELETE(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, message: "Solution deleted" });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to delete solution" },
+      { success: false, message: getErrorMessage(error, "Failed to delete solution") },
       { status: 500 }
     );
   }

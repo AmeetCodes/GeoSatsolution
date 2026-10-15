@@ -2,16 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  Layers,
-  Box,
-  Building2,
-  Users,
-  Check,
-  ChevronRight,
-  ArrowRight,
-} from "lucide-react";
+import { ExternalLink, Check } from "lucide-react";
 import type { SiteContentData, SolutionItem, ProductItem } from "@/lib/data-store";
 
 interface LivePreviewProps {
@@ -165,6 +156,7 @@ export function LivePreview({ content }: LivePreviewProps) {
               {/* Gallery Image */}
               <div className="lg:col-span-5 space-y-3">
                 <div className="rounded-xl overflow-hidden border border-zinc-800 bg-[#f1ece5] aspect-video relative group">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- preview renders CMS-provided image URLs */}
                   <img
                     src={
                       activeSolution.images?.[0]?.src ||
@@ -242,6 +234,7 @@ export function LivePreview({ content }: LivePreviewProps) {
 
               <div className="lg:col-span-5 space-y-3">
                 <div className="rounded-xl overflow-hidden border border-zinc-800 bg-[#f1ece5] aspect-video relative group">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- preview renders CMS-provided image URLs */}
                   <img
                     src={
                       activeProduct.images?.[0]?.src ||

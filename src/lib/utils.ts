@@ -15,3 +15,7 @@ export function slugify(text: string): string {
 }
 
 export const solutionSlug = slugify;
+
+export function getErrorMessage(error: unknown, fallback = "Internal server error"): string {
+  return error instanceof Error ? error.message : fallback;
+}

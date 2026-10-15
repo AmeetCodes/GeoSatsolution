@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { siteContentService } from "@/lib/db/services/site-content.service";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET() {
         company: content.Company,
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: getErrorMessage(error) }, { status: 500 });
   }
 }

@@ -8,6 +8,7 @@ import {
   siteContentSectionPayloadSchemas,
 } from "@/lib/validations/content.schema";
 import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +19,10 @@ export async function GET(req: Request) {
     const content = await siteContentService.getFullSiteContent();
 
     if (section && section in content) {
+      const key = section as keyof typeof content;
       return NextResponse.json({
         success: true,
-        data: (content as any)[section],
+        data: content[key],
       });
     }
 
@@ -28,9 +30,9 @@ export async function GET(req: Request) {
       success: true,
       data: content,
     });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to load content" },
+      { success: false, message: getErrorMessage(error, "Failed to load content") },
       { status: 500 }
     );
   }
@@ -117,9 +119,9 @@ export async function POST(req: Request) {
       message: `${section} updated successfully in database`,
       data: refreshed[section],
     });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to update content" },
+      { success: false, message: getErrorMessage(error, "Failed to update content") },
       { status: 500 }
     );
   }

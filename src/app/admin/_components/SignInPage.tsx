@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { getErrorMessage } from '@/lib/utils'
 
 export interface LoginPageProps {
   onSuccess?: () => void;
@@ -68,8 +69,8 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
         // Refresh to update server-side session
         router.refresh()
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please verify credentials.')
+    } catch (err) {
+      setError(getErrorMessage(err, 'Login failed. Please verify credentials.'))
     } finally {
       setLoading(false)
     }
@@ -92,6 +93,7 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
         </div>
 
         <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element -- full-bleed decorative background */}
           <img
             src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=85"
             alt="GeoSAT Satellite & Geospatial Operations"

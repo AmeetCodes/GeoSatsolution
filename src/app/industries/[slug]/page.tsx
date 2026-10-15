@@ -106,12 +106,12 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
               <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">{industry.description}</p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a
-                  href="#contact"
+                <Link
+                  href="/request-assessment"
                   className="inline-flex h-12 items-center justify-center rounded-full bg-aqua px-5 text-sm font-medium text-abyss shadow-[0_12px_30px_-18px_rgba(60,227,214,0.9)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-aqua-bright"
                 >
                   Talk to our sector team
-                </a>
+                </Link>
                 <Link
                   href="/industries"
                   className="inline-flex h-12 items-center justify-center rounded-full border border-line px-5 text-sm font-medium text-ink transition-colors duration-200 hover:border-line-strong hover:bg-white/[0.04]"

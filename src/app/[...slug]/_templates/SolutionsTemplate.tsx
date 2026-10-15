@@ -4,12 +4,13 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import { SectionBadge } from "./SectionBadge";
+import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
 interface SolutionsTemplateProps {
-  item: any;
-  tab: any;
-  column: any;
-  galleryImages: { src: string; alt: string; caption: string }[];
+  item: PageItem;
+  tab: NavTreeTab;
+  column: NavTreeColumn;
+  galleryImages: PageGalleryImage[];
 }
 
 export function SolutionsTemplate({
@@ -76,12 +77,12 @@ export function SolutionsTemplate({
                 solutionTitle={item.title}
                 solutionGroup={column.title}
               />
-              <a
-                href="#contact"
+              <Link
+                href="/request-assessment"
                 className="rounded-full border border-line px-6 py-3 text-sm font-medium text-ink-2 hover:border-line-strong hover:text-ink transition-colors"
               >
                 Contact engineering team
-              </a>
+              </Link>
             </div>
           </header>
 

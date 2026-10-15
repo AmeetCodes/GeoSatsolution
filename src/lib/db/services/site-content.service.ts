@@ -78,18 +78,18 @@ export class SiteContentService {
     };
   }
 
-  async updateSection(section: string, data: any) {
+  async updateSection(section: string, data: unknown) {
     if (section === "Solutions") {
-      return solutionService.replaceAll(data);
+      return solutionService.replaceAll(data as Parameters<typeof solutionService.replaceAll>[0]);
     }
     if (section === "Products") {
-      return productService.replaceAll(data);
+      return productService.replaceAll(data as Parameters<typeof productService.replaceAll>[0]);
     }
     if (section === "Industries") {
-      return industryService.replaceAll(data);
+      return industryService.replaceAll(data as Parameters<typeof industryService.replaceAll>[0]);
     }
     if (section === "Company") {
-      return companyService.updateCompany(data);
+      return companyService.updateCompany(data as Parameters<typeof companyService.updateCompany>[0]);
     }
     throw new Error(`Unknown content section: ${section}`);
   }

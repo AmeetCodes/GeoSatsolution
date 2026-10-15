@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import type { NavTreeColumn, NavTreeItem, NavTreeTab } from "./tree-store";
 
 export interface SolutionItem {
   id?: string;
@@ -133,6 +134,9 @@ export interface SiteContentData {
     Resources: ResourceItem[];
   };
 }
+
+export type SiteSectionKey = "Solutions" | "Products" | "Industries";
+export type SiteSectionItem = SolutionItem | ProductItem | IndustryItem;
 
 export const DEFAULT_RESOURCES: ResourceItem[] = [
   { slug: "uav-lidar-workflow", title: "UAV LiDAR Survey Workflow Guide", category: "Operations", description: "Step-by-step field procedures for planning, executing, and processing UAV LiDAR survey missions including pre-flight checks, GCP placement, and trajectory post-processing.", fileUrl: "", updated: "2026-08-15", isPublished: true },
@@ -704,14 +708,14 @@ export function getPageContentForTreeItem(match: {
     outcomes?: string[];
     images?: { src: string; alt: string; caption: string }[];
   };
-} | null): any | null {
+} | null): SiteSectionItem | null {
   if (!match) {
     return null;
   }
 
   const content = getSiteContent();
   const tabId = match.tab?.id;
-  const sectionKey =
+  const sectionKey: SiteSectionKey | null =
     tabId === "solutions"
       ? "Solutions"
       : tabId === "products"
@@ -724,7 +728,8 @@ export function getPageContentForTreeItem(match: {
     return null;
   }
 
-  const sectionData = (content as any)[sectionKey];
+  const sections = content as unknown as Record<SiteSectionKey, SiteSectionItem[]>;
+  const sectionData = sections[sectionKey];
   if (!Array.isArray(sectionData)) {
     return null;
   }
@@ -733,7 +738,7 @@ export function getPageContentForTreeItem(match: {
   const slug = match.item.slug || "";
   const href = match.item.href || "";
 
-  const matchedEntry = sectionData.find((entry: any) => {
+  const matchedEntry = sectionData.find((entry) => {
     const entryTitle = entry?.title || "";
     const entrySlug = normalizeContentSlug(entryTitle);
     const itemSlug = normalizeContentSlug(title || slug || "");
@@ -751,12 +756,12 @@ export function getPageContentForTreeItem(match: {
 }
 
 export function syncTreeItemWithSiteContent(
-  tab: any,
-  column: any,
-  item: any,
+  tab: NavTreeTab,
+  column: NavTreeColumn,
+  item: NavTreeItem,
 ): boolean {
   const content = getSiteContent();
-  const sectionKey =
+  const sectionKey: SiteSectionKey | null =
     tab.id === "solutions"
       ? "Solutions"
       : tab.id === "products"
@@ -769,10 +774,13 @@ export function syncTreeItemWithSiteContent(
     return false;
   }
 
-  const sectionData = Array.isArray((content as any)[sectionKey]) ? (content as any)[sectionKey] : [];
+  const sections = content as unknown as Record<SiteSectionKey, SiteSectionItem[]>;
+  const sectionData: SiteSectionItem[] = Array.isArray(sections[sectionKey])
+    ? sections[sectionKey]
+    : [];
   const targetTitle = item.title || "";
   const targetSlug = item.slug || normalizeContentSlug(targetTitle);
-  const entryIndex = sectionData.findIndex((entry: any) => {
+  const entryIndex = sectionData.findIndex((entry) => {
     const entryTitle = entry?.title || "";
     return (
       entryTitle === targetTitle ||
@@ -781,7 +789,7 @@ export function syncTreeItemWithSiteContent(
     );
   });
 
-  const nextEntry = {
+  const nextEntry: SolutionItem = {
     title: targetTitle || tab.label || column.title || "Untitled page",
     group: column.title || tab.label || "General",
     intro: item.intro || "",
@@ -796,7 +804,7 @@ export function syncTreeItemWithSiteContent(
     sectionData.push(nextEntry);
   }
 
-  (content as any)[sectionKey] = sectionData;
+  sections[sectionKey] = sectionData;
   return saveSiteContent(content);
 }
 
@@ -805,7 +813,7 @@ export function removeTreeItemFromSiteContent(
   item: { title?: string; slug?: string },
 ): boolean {
   const content = getSiteContent();
-  const sectionKey =
+  const sectionKey: SiteSectionKey | null =
     tabId === "solutions"
       ? "Solutions"
       : tabId === "products"
@@ -814,13 +822,15 @@ export function removeTreeItemFromSiteContent(
           ? "Industries"
           : null;
 
-  if (!sectionKey || !Array.isArray((content as any)[sectionKey])) {
+  const sections = content as unknown as Record<SiteSectionKey, SiteSectionItem[]>;
+
+  if (!sectionKey || !Array.isArray(sections[sectionKey])) {
     return false;
   }
 
   const targetTitle = item.title || "";
   const targetSlug = item.slug || normalizeContentSlug(targetTitle);
-  const filtered = (content as any)[sectionKey].filter((entry: any) => {
+  const filtered = sections[sectionKey].filter((entry) => {
     const entryTitle = entry?.title || "";
     return !(
       entryTitle === targetTitle ||
@@ -829,7 +839,7 @@ export function removeTreeItemFromSiteContent(
     );
   });
 
-  (content as any)[sectionKey] = filtered;
+  sections[sectionKey] = filtered;
   return saveSiteContent(content);
 }
 

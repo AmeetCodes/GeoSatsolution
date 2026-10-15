@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { navigationService } from "@/lib/db/services/navigation.service";
 import { siteContentService } from "@/lib/db/services/site-content.service";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,7 @@ export async function GET() {
   try {
     const data = await getCachedNavigationPayload();
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: getErrorMessage(error) }, { status: 500 });
   }
 }

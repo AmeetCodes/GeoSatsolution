@@ -4,12 +4,13 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton";
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
 interface ProductsTemplateProps {
-  item: any;
-  tab: any;
-  column: any;
-  galleryImages: { src: string; alt: string; caption: string }[];
+  item: PageItem;
+  tab: NavTreeTab;
+  column: NavTreeColumn;
+  galleryImages: PageGalleryImage[];
 }
 
 export function ProductsTemplate({

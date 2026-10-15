@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Fraunces } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
 
 const geist = localFont({
   src: [{ path: "./fonts/geist-var-100-900-latin.woff2", weight: "100 900", style: "normal" }],
@@ -89,7 +96,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", spaceGrotesk.variable, inter.variable, jetbrainsMono.variable, "font-sans", geist.variable, ibmPlexSans.variable, openSans.variable)}
+      className={cn("h-full", "antialiased", spaceGrotesk.variable, inter.variable, jetbrainsMono.variable, "font-sans", geist.variable, ibmPlexSans.variable, openSans.variable, fraunces.variable)}
     >
       <body className="min-h-full flex flex-col bg-abyss text-ink">{children}</body>
     </html>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { industryService } from "@/lib/db/services/industry.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { industryItemSchema } from "@/lib/validations/industry.schema";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +21,9 @@ export async function GET(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, data: industry });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch industry" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch industry") },
       { status: 500 }
     );
   }
@@ -48,9 +49,9 @@ export async function PUT(req: Request, { params }: RouteProps) {
     const updated = await industryService.update(slug, parsed.data);
 
     return NextResponse.json({ success: true, data: updated });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to update industry" },
+      { success: false, message: getErrorMessage(error, "Failed to update industry") },
       { status: 500 }
     );
   }
@@ -71,9 +72,9 @@ export async function DELETE(req: Request, { params }: RouteProps) {
     }
 
     return NextResponse.json({ success: true, message: "Industry sector deleted" });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to delete industry" },
+      { success: false, message: getErrorMessage(error, "Failed to delete industry") },
       { status: 500 }
     );
   }

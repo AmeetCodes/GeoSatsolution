@@ -78,7 +78,6 @@ export function MorphingDialogTitle({ children, className, ...props }: HTMLAttri
 }
 
 export function MorphingDialogSubtitle({ children, className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  const { open } = useDialog();
   return <p {...props} className={className}>{children}</p>;
 }
 
@@ -90,7 +89,8 @@ export function MorphingDialogDescription({ children, className, variants, ...pr
 }
 
 export function MorphingDialogImage({ className, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
-  return <img {...props} className={className} />;
+  // eslint-disable-next-line @next/next/no-img-element -- passthrough wrapper for arbitrary caller-supplied images
+  return <img alt="" {...props} className={className} />;
 }
 
 export function MorphingDialogClose({ className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {

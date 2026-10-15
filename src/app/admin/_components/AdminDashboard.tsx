@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AdminHeader, type AdminTab } from "./AdminHeader";
 import { AdminOverview } from "./AdminOverview";
@@ -8,6 +8,7 @@ import { TreeCMSManager } from "./TreeCMSManager";
 import { SolutionsManager } from "./SolutionsManager";
 import { ProductsManager } from "./ProductsManager";
 import { ProjectsManager } from "./ProjectsManager";
+import { DistrictProjectsManager } from "./DistrictProjectsManager";
 import { IndustriesManager } from "./IndustriesManager";
 import { CompanyManager } from "./CompanyManager";
 import { LivePreview } from "./LivePreview";
@@ -16,7 +17,9 @@ import SwipeToast from "@/components/ui/SwipeToast";
 import type { SiteContentData } from "@/lib/data-store";
 import type { NavigationTree } from "@/lib/tree-store";
 import type { ProjectItem } from "@/lib/data/project-content";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import type { DistrictProjectRecord } from "@/lib/nepal-map-types";
+import { getErrorMessage } from "@/lib/utils";
+import { CheckCircle2 } from "lucide-react";
 
 interface ToastState {
   id: string;
@@ -30,6 +33,7 @@ interface AdminDashboardProps {
   initialContent: SiteContentData;
   initialTree?: NavigationTree;
   initialProjects: ProjectItem[];
+  initialDistrictProjects?: DistrictProjectRecord[];
   userEmail?: string;
 }
 
@@ -37,6 +41,7 @@ export function AdminDashboard({
   initialContent,
   initialTree,
   initialProjects,
+  initialDistrictProjects = [],
   userEmail = "",
 }: AdminDashboardProps) {
   const router = useRouter();
@@ -65,7 +70,10 @@ export function AdminDashboard({
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleSaveSection = async (section: keyof SiteContentData, data: any) => {
+  const handleSaveSection = async (
+    section: keyof SiteContentData,
+    data: SiteContentData[keyof SiteContentData],
+  ) => {
     setIsSaving(true);
     setSavedRecently(false);
     try {
@@ -81,8 +89,8 @@ export function AdminDashboard({
       setSavedRecently(true);
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
-    } catch (err: any) {
-      addToast("Save Failed", err.message || "Could not persist to server");
+    } catch (err) {
+      addToast("Save Failed", getErrorMessage(err, "Could not persist to server"));
       throw err;
     } finally {
       setIsSaving(false);
@@ -153,8 +161,8 @@ export function AdminDashboard({
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
       addToast("Defaults Restored", "All content & navigation tree reset to factory template.");
-    } catch (err: any) {
-      addToast("Reset Failed", err.message);
+    } catch (err) {
+      addToast("Reset Failed", getErrorMessage(err));
     } finally {
       setIsSaving(false);
     }
@@ -166,7 +174,7 @@ export function AdminDashboard({
       router.push("/admin/login");
       router.refresh();
     } catch {
-      window.location.href = "/admin/login";
+      router.push("/admin/login");
     }
   };
 
@@ -177,6 +185,7 @@ export function AdminDashboard({
     solutions: "Solutions Manager",
     products: "Products Manager",
     projects: "Projects Manager",
+    district: "District Project Map",
     industries: "Industries Manager",
     company: "Company Manager",
     transactions: "Orders & Requests",
@@ -257,6 +266,13 @@ export function AdminDashboard({
           <ProjectsManager
             projects={projects}
             onSaveProjects={handleSaveProjects}
+            onTriggerToast={addToast}
+          />
+        )}
+
+        {activeTab === "district" && (
+          <DistrictProjectsManager
+            initialProjects={initialDistrictProjects}
             onTriggerToast={addToast}
           />
         )}

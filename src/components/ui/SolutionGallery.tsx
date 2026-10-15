@@ -57,6 +57,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
           aria-label={activeImage.alt}
           className="relative aspect-4/3 overflow-hidden bg-slate-200 sm:aspect-[1.18/1]"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element -- gallery images are content-provided URLs */}
           <img
             src={activeImage.src}
             alt={activeImage.alt}

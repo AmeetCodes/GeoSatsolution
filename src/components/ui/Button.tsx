@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -69,14 +70,19 @@ export function Button(props: ButtonProps) {
 
   if (props.href !== undefined) {
     const { href, external } = props;
+
+    if (external) {
+      return (
+        <a href={href} className={classes} target="_blank" rel="noreferrer noopener">
+          {content}
+        </a>
+      );
+    }
+
     return (
-      <a
-        href={href}
-        className={classes}
-        {...(external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
-      >
+      <Link href={href} className={classes}>
         {content}
-      </a>
+      </Link>
     );
   }
 

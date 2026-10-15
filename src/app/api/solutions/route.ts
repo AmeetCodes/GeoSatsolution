@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { solutionService } from "@/lib/db/services/solution.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { solutionItemSchema } from "@/lib/validations/solution.schema";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +18,9 @@ export async function GET(req: Request) {
       : await solutionService.getAllPublished();
 
     return NextResponse.json({ success: true, data: solutions });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch solutions" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch solutions") },
       { status: 500 }
     );
   }
@@ -43,9 +44,9 @@ export async function POST(req: Request) {
 
     const created = await solutionService.create(parsed.data);
     return NextResponse.json({ success: true, data: created }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to create solution" },
+      { success: false, message: getErrorMessage(error, "Failed to create solution") },
       { status: 500 }
     );
   }

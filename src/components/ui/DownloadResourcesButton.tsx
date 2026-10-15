@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { ArrowDownToLine, FileText, X } from "lucide-react";
 import type { ProductDownloadItem } from "@/lib/data-store";
@@ -22,13 +22,15 @@ export function DownloadResourcesButton({
   ...buttonProps
 }: DownloadResourcesButtonProps) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const triggerElement = useRef<HTMLElement | null>(null);
   const savedScrollY = useRef(0);
   const savedBodyStyles = useRef<{ position: string; top: string; left: string; right: string; width: string; overflow: string; htmlOverflow: string } | null>(null);
   const availableResources = resources.filter((resource) => resource.fileUrl);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const openDialog = () => {
     triggerElement.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;

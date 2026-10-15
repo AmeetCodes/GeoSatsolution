@@ -4,8 +4,10 @@ import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import CircularGallery from "@/components/ui/CircularGallery";
 import { Container } from "@/components/ui/Section";
-import { ContactAssessment } from "./_components/sections/ContactAssessment";
 import { Hero } from "./_components/sections/Hero";
+import { PartnersClients } from "./_components/sections/PartnersClients";
+import { ServicesGrid } from "./_components/sections/ServicesGrid";
+import { NepalProjectMap } from "@/components/ui/NepalProjectMap";
 
 export const metadata: Metadata = {
   title: "GeoSAT — Geospatial Survey, LiDAR & Spatial Intelligence",
@@ -67,6 +69,12 @@ export default function Home() {
         <Hero />
       </PageTransition>
 
+      <ServicesGrid />
+
+      <PartnersClients />
+
+      <NepalProjectMap />
+
       <Container className="py-8 sm:py-10">
         <div className="relative h-[600px] w-full">
           <CircularGallery
@@ -80,8 +88,6 @@ export default function Home() {
           />
         </div>
       </Container>
-
-      <ContactAssessment />
 
       <Footer />
     </>

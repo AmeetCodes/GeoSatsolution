@@ -7,7 +7,6 @@ import {
   NavTreeTab,
   NavTreeColumn,
   NavTreeItem,
-  slugify,
 } from "../../tree-store";
 
 const getTreeForRequest = cache(async (): Promise<NavigationTree> => {

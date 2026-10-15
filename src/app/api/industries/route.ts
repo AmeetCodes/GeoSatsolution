@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { industryService } from "@/lib/db/services/industry.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { industryItemSchema } from "@/lib/validations/industry.schema";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,9 @@ export async function GET(req: Request) {
       : await industryService.getAllPublished();
 
     return NextResponse.json({ success: true, data: industries });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch industries" },
+      { success: false, message: getErrorMessage(error, "Failed to fetch industries") },
       { status: 500 }
     );
   }
@@ -42,9 +43,9 @@ export async function POST(req: Request) {
 
     const created = await industryService.create(parsed.data);
     return NextResponse.json({ success: true, data: created }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to create industry" },
+      { success: false, message: getErrorMessage(error, "Failed to create industry") },
       { status: 500 }
     );
   }

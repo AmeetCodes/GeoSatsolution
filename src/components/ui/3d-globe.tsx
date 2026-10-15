@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useMemo, useState, useCallback, Suspense } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
@@ -173,17 +173,19 @@ interface RotatingGlobeProps {
 function RotatingGlobe({ config, markers, onMarkerClick, onMarkerHover }: RotatingGlobeProps) {
   const groupRef = useRef<THREE.Group>(null);
 
-  const [earthTexture, bumpTexture] = useTexture([config.textureUrl, config.bumpMapUrl]);
-
-  useMemo(() => {
-    if (earthTexture) {
-      earthTexture.colorSpace = THREE.SRGBColorSpace;
-      earthTexture.anisotropy = 16;
-    }
-    if (bumpTexture) {
-      bumpTexture.anisotropy = 8;
-    }
-  }, [earthTexture, bumpTexture]);
+  const [earthTexture, bumpTexture] = useTexture(
+    [config.textureUrl, config.bumpMapUrl],
+    (textures) => {
+      const [earth, bump] = textures;
+      if (earth) {
+        earth.colorSpace = THREE.SRGBColorSpace;
+        earth.anisotropy = 16;
+      }
+      if (bump) {
+        bump.anisotropy = 8;
+      }
+    },
+  );
 
   const geometry = useMemo(() => {
     return new THREE.SphereGeometry(config.radius, 64, 64);

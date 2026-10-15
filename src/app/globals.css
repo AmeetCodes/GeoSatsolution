@@ -40,6 +40,11 @@
   /* --- type ----------------------------------------------------------- */
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  /* Circular is a licensed Lineto typeface. Declare the family so a licensed
+     "Circular-Medium.woff2" (via next/font/local or @font-face) takes effect;
+     until then it gracefully falls back to Inter. */
+  --font-circular: "Circular Medium", "Circular", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 
   /* --- radii ---------------------------------------------------------- */
@@ -84,9 +89,15 @@
     @apply bg-background text-foreground;
   }
 
+  /* Site-wide Text Selection Highlight */
   ::selection {
-    background-color: rgba(60, 227, 214, 0.28);
-    color: #ffffff;
+    background-color: #2563eb !important; /* Royal / Electric Blue */
+    color: #ffffff !important; /* Pure White Text */
+  }
+
+  ::-moz-selection {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
   }
 
   :focus-visible {
@@ -201,6 +212,13 @@
 
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Circular Medium — card topic titles. Falls back gracefully when the
+     licensed font file is not installed. */
+  .font-circular-medium {
+    font-family: var(--font-circular);
+    font-weight: 500;
   }
 }
 

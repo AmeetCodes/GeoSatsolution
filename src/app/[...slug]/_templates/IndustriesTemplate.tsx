@@ -2,11 +2,12 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
+import type { NavTreeColumn, NavTreeTab, PageItem } from "./types";
 
 interface IndustriesTemplateProps {
-  item: any;
-  tab: any;
-  column: any;
+  item: PageItem;
+  tab: NavTreeTab;
+  column: NavTreeColumn;
 }
 
 export function IndustriesTemplate({

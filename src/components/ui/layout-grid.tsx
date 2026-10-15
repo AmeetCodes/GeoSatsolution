@@ -1,5 +1,5 @@
 "use client";
-import { type KeyboardEvent, type ReactNode, useEffect, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -20,10 +20,10 @@ export const LayoutGrid = ({ cards, id = "layout-grid" }: { cards: Card[]; id?: 
     setSelected(card);
   };
 
-  const handleOutsideClick = () => {
+  const handleOutsideClick = useCallback(() => {
     setLastSelected(selected);
     setSelected(null);
-  };
+  }, [selected]);
 
   useEffect(() => {
     if (!selected) return;
@@ -34,7 +34,7 @@ export const LayoutGrid = ({ cards, id = "layout-grid" }: { cards: Card[]; id?: 
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selected]);
+  }, [selected, handleOutsideClick]);
 
   const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>, card: Card) => {
     if (event.key === "Enter" || event.key === " ") {

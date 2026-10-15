@@ -1,5 +1,6 @@
 "use client";
 import { Globe3D, type GlobeMarker } from "@/components/ui/3d-globe";
+import { cn } from "@/lib/utils";
 
 const sampleMarkers: GlobeMarker[] = [
   {
@@ -82,12 +83,17 @@ const sampleMarkers: GlobeMarker[] = [
   },
 ];
 
-export function Globe3DDemo() {
+export function Globe3DDemo({ className }: { className?: string }) {
   return (
-    <div className="relative flex min-h-[520px] w-full items-center justify-center overflow-visible bg-transparent py-6">
-      <div className="pointer-events-auto relative flex h-[500px] w-full max-w-4xl cursor-grab items-center justify-center active:cursor-grabbing">
+    <div
+      className={cn(
+        "relative mx-auto aspect-square w-full max-w-[600px] max-h-[600px] overflow-visible bg-transparent",
+        className,
+      )}
+    >
+      <div className="pointer-events-auto relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing">
         <Globe3D
-          className="pointer-events-auto h-[500px] w-full max-w-4xl"
+          className="h-full w-full max-w-none"
           markers={sampleMarkers}
           config={{
             radius: 2,

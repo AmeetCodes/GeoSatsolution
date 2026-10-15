@@ -23,6 +23,7 @@ import {
   treeRequestSchema,
 } from "@/lib/validations/navigation.schema";
 import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
+import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -121,8 +122,8 @@ export async function GET() {
   try {
     const tree = await navigationService.getTree();
     return NextResponse.json({ success: true, data: tree });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -433,7 +434,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: false, message: "Unknown action" }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error?.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: getErrorMessage(error) }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
+import { motion, useMotionValue, PanInfo } from "framer-motion";
 
 export interface SwipeAction {
   id: string;
@@ -48,10 +48,7 @@ export function SwipeRow({
   radius = 14,
   actionWidth = 80,
   direction = "left",
-  snapBounce = 0.2,
   resistance = 0.55,
-  collapseMs = 200,
-  commitAt = 0.6,
   fullSwipe = true,
   style = {},
   className = "",
@@ -60,7 +57,7 @@ export function SwipeRow({
   const totalActionsWidth = actions.length * actionWidth;
   const x = useMotionValue(0);
 
-  const handleDragEnd = (_: any, info: PanInfo) => {
+  const handleDragEnd = (_event: unknown, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 

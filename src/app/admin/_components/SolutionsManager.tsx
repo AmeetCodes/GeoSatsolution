@@ -7,9 +7,7 @@ import {
   Edit2,
   Trash2,
   Check,
-  Image as ImageIcon,
   Layers,
-  ArrowRight,
   Filter,
 } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -41,7 +39,7 @@ export function SolutionsManager({
   const [searchQuery, setSearchQuery] = useState("");
   const [editingItem, setEditingItem] = useState<SolutionItem | null>(null);
   const [isNew, setIsNew] = useState(false);
-  const [deletedCache, setDeletedCache] = useState<{ index: number; item: SolutionItem } | null>(null);
+  const [, setDeletedCache] = useState<{ index: number; item: SolutionItem } | null>(null);
 
   // Form states for modal
   const [formTitle, setFormTitle] = useState("");

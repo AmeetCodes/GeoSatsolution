@@ -8,6 +8,7 @@ import {
   Layers,
   Box,
   Briefcase,
+  MapPinned,
   Building2,
   Users,
   ClipboardList,
@@ -26,6 +27,7 @@ export type AdminTab =
   | "solutions"
   | "products"
   | "projects"
+  | "district"
   | "industries"
   | "company"
   | "transactions"
@@ -56,6 +58,7 @@ export function AdminHeader({
     { id: "solutions",     label: "Solutions",         icon: Layers,           description: "Manage services" },
     { id: "products",      label: "Products",          icon: Box,              description: "Manage catalog" },
     { id: "projects",      label: "Projects",          icon: Briefcase,        description: "Featured work" },
+    { id: "district",      label: "District Map",      icon: MapPinned,        description: "Nepal coverage" },
     { id: "industries",    label: "Industries",        icon: Building2,        description: "Sector pages" },
     { id: "company",       label: "Company",           icon: Users,            description: "Team & partners" },
     { id: "transactions",  label: "Orders",            icon: ClipboardList,    description: "Client requests" },

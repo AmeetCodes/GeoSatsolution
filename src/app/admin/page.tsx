@@ -4,6 +4,7 @@ import { getAdminSessionServer } from "./_lib/admin-auth";
 import { siteContentService } from "@/lib/db/services/site-content.service";
 import { navigationService } from "@/lib/db/services/navigation.service";
 import { contentService } from "@/lib/db/services/content.service";
+import { districtProjectService } from "@/lib/db/services/district-project.service";
 import { AdminDashboard } from "./_components/AdminDashboard";
 
 export const metadata: Metadata = {
@@ -24,10 +25,11 @@ export default async function AdminPage() {
   }
 
   // When logged in, provide full access to admin dashboard backed by MongoDB
-  const [content, tree, projects] = await Promise.all([
+  const [content, tree, projects, districtProjects] = await Promise.all([
     siteContentService.getFullSiteContent(),
     navigationService.getTree(),
     contentService.getProjects(),
+    districtProjectService.listRecords(),
   ]);
 
   return (
@@ -35,6 +37,7 @@ export default async function AdminPage() {
       initialContent={content}
       initialTree={tree}
       initialProjects={projects.map(({ code, title, sector, body, tags, images, isPublished }) => ({ code, title, sector, body, tags, images: (images || []).map((image) => ({ src: image.src, alt: image.alt || title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })), isPublished: isPublished !== false }))}
+      initialDistrictProjects={districtProjects}
       userEmail={session.email}
     />
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
 export interface SwipeToastProps {
@@ -52,8 +52,6 @@ export function SwipeToast({
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(100);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
-  const remainingTimeRef = useRef<number>(duration);
 
   useEffect(() => {
     if (!open || duration <= 0) return;

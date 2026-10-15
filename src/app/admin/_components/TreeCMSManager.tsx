@@ -11,17 +11,11 @@ import {
   Trash2,
   MoveUp,
   MoveDown,
-  ArrowRight,
-  ExternalLink,
-  ChevronRight,
   Settings,
   FolderPlus,
   FileText,
   CheckCircle2,
   X,
-  Search,
-  HelpCircle,
-  Sparkles,
 } from "lucide-react";
 import type {
   NavTreeTab,
@@ -29,6 +23,7 @@ import type {
   NavTreeItem,
   NavigationTree,
 } from "@/lib/tree-store";
+import { getErrorMessage } from "@/lib/utils";
 
 interface TreeCMSManagerProps {
   initialTree: NavigationTree;
@@ -50,7 +45,6 @@ export function TreeCMSManager({
   const [activeTabId, setActiveTabId] = useState<string>(
     initialTree.tabs[0]?.id || "solutions",
   );
-  const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // Modals state
@@ -87,7 +81,7 @@ export function TreeCMSManager({
   const activeTab = tree.tabs.find((t) => t.id === activeTabId) || tree.tabs[0];
 
   // Helper to send tree API requests
-  const apiCall = async (body: any) => {
+  const apiCall = async (body: Record<string, unknown>) => {
     setIsSaving(true);
     try {
       const res = await fetch("/api/admin/tree", {
@@ -104,8 +98,8 @@ export function TreeCMSManager({
         onTreeUpdated?.(data.data);
       }
       return data;
-    } catch (err: any) {
-      onTriggerToast("Operation Failed", err.message);
+    } catch (err) {
+      onTriggerToast("Operation Failed", getErrorMessage(err));
       throw err;
     } finally {
       setIsSaving(false);

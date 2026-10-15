@@ -8,7 +8,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
 import { cn, solutionSlug } from "@/lib/utils";
-import type { NavTreeTab, NavTreeColumn, NavTreeItem, NavigationTree } from "@/lib/tree-store";
+import type { NavTreeTab, NavTreeColumn, NavigationTree } from "@/lib/tree-store";
 
 // ---------- types ----------
 type DynIndustry = { title: string; intro?: string; description?: string; items: string[] };
@@ -408,7 +408,7 @@ export function Navbar() {
         )}
         style={{ border: "none" }}
       >
-        <div className="mx-auto w-full max-w-none px-8 sm:px-8 lg:px-[130.5px]">
+        <div className="mx-auto w-full max-w-[1440px] px-6 sm:px-8 md:px-10 lg:px-12">
           <div className="flex h-[var(--nav-h)] items-center justify-between gap-6">
             <div className="text-[#000000] transition-opacity duration-200 hover:opacity-90">
               <Logo />
@@ -483,7 +483,7 @@ export function Navbar() {
 
             <div className="flex items-center gap-2">
               <Link
-                href="#contact"
+                href="/request-assessment"
                 className="hidden items-center justify-center whitespace-nowrap text-center transition-[transform,background-color] duration-200 hover:-translate-y-0.5 sm:inline-flex"
                 style={CTA_BUTTON_STYLE}
               >
@@ -565,7 +565,7 @@ export function Navbar() {
                                 ? "Equipment rental, licensing and operator training available."
                                 : "Every engagement is scoped against a tolerance, not a template.")}
                           </p>
-                          <Link href="#contact" className="group inline-flex items-center gap-2 text-sm text-aqua">
+                          <Link href="/request-assessment" className="group inline-flex items-center gap-2 text-sm text-aqua">
                             <span className="border-b border-aqua/30 pb-0.5 transition-colors duration-200 group-hover:border-aqua">
                               {item.catalogueCta || `Request the full ${item.label.toLowerCase()} catalogue`}
                             </span>
@@ -721,7 +721,7 @@ export function Navbar() {
                 </nav>
 
                 <Link
-                  href="#contact"
+                  href="/request-assessment"
                   onClick={() => setDrawerOpen(false)}
                   className="mt-8 flex h-12 items-center justify-center rounded-full font-medium"
                   style={CTA_BUTTON_STYLE}
