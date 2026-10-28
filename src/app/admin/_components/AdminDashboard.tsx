@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AdminHeader, type AdminTab } from "./AdminHeader";
 import { AdminOverview } from "./AdminOverview";
@@ -12,14 +12,22 @@ import { DistrictProjectsManager } from "./DistrictProjectsManager";
 import { IndustriesManager } from "./IndustriesManager";
 import { CompanyManager } from "./CompanyManager";
 import { LivePreview } from "./LivePreview";
-import TableComponent from "./AdminPaymentsTable";
+import { InquiryTable } from "./InquiryTable";
+import { InquiryDrawer } from "./InquiryDrawer";
+import { INQUIRY_STATUS_META } from "./inquiry-status";
 import SwipeToast from "@/components/ui/SwipeToast";
 import type { SiteContentData } from "@/lib/data-store";
 import type { NavigationTree } from "@/lib/tree-store";
 import type { ProjectItem } from "@/lib/data/project-content";
 import type { DistrictProjectRecord } from "@/lib/nepal-map-types";
+import {
+  computeInquiryCounts,
+  type InquiryRecord,
+  type InquiryStatus,
+  type InquiryStatusCounts,
+} from "@/lib/inquiry-types";
 import { getErrorMessage } from "@/lib/utils";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Inbox, RefreshCw } from "lucide-react";
 
 interface ToastState {
   id: string;
@@ -34,6 +42,8 @@ interface AdminDashboardProps {
   initialTree?: NavigationTree;
   initialProjects: ProjectItem[];
   initialDistrictProjects?: DistrictProjectRecord[];
+  initialInquiries?: InquiryRecord[];
+  initialInquiryCounts?: InquiryStatusCounts;
   userEmail?: string;
 }
 
@@ -42,14 +52,22 @@ export function AdminDashboard({
   initialTree,
   initialProjects,
   initialDistrictProjects = [],
+  initialInquiries = [],
+  initialInquiryCounts,
   userEmail = "",
 }: AdminDashboardProps) {
   const router = useRouter();
   const [content, setContent] = useState<SiteContentData>(initialContent);
-  const [tree, setTree] = useState<NavigationTree>(
-    initialTree || { tabs: [] },
-  );
+  const [tree, setTree] = useState<NavigationTree>(initialTree || { tabs: [] });
   const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
+  const [inquiries, setInquiries] = useState<InquiryRecord[]>(initialInquiries);
+  const [inquiryCounts, setInquiryCounts] = useState<InquiryStatusCounts>(
+    initialInquiryCounts ?? computeInquiryCounts(initialInquiries),
+  );
+  const [inquiryFilter, setInquiryFilter] = useState<InquiryStatus | "all">("all");
+  const [selectedInquiry, setSelectedInquiry] = useState<InquiryRecord | null>(null);
+  const [updatingInquiryId, setUpdatingInquiryId] = useState<string | null>(null);
+  const [isRefreshingInquiries, setIsRefreshingInquiries] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [isSaving, setIsSaving] = useState(false);
   const [savedRecently, setSavedRecently] = useState(false);
@@ -122,49 +140,79 @@ export function AdminDashboard({
     }
   };
 
-  const handleResetDefaults = async () => {
-    if (!confirm("Reset ALL site content to factory defaults? This cannot be undone.")) return;
-    setIsSaving(true);
+  const handleInquiryStatusChange = async (id: string, status: InquiryStatus) => {
+    const name = inquiries.find((inquiry) => inquiry.id === id)?.name ?? "Inquiry";
+    const previous = inquiries;
+    const optimistic = inquiries.map((inquiry) =>
+      inquiry.id === id ? { ...inquiry, status } : inquiry,
+    );
+
+    setInquiries(optimistic);
+    setInquiryCounts(computeInquiryCounts(optimistic));
+    setSelectedInquiry((prev) => (prev && prev.id === id ? { ...prev, status } : prev));
+    setUpdatingInquiryId(id);
+
     try {
-      // 1. Reset site-content
-      const res = await fetch("/api/admin/content", {
-        method: "POST",
+      const res = await fetch("/api/admin/inquiries", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reset" }),
+        body: JSON.stringify({ id, status }),
       });
-      const resData = await res.json();
-      if (res.ok && resData.data) {
-        setContent(resData.data);
+      const result = await res.json().catch(() => null);
+      if (!res.ok || !result?.success) {
+        throw new Error(result?.message || "Failed to update inquiry status");
       }
 
-      // 2. Reset navigation tree
-      const treeRes = await fetch("/api/admin/tree", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reset" }),
-      });
-      const treeData = await treeRes.json();
-      if (treeRes.ok && treeData.data) {
-        setTree(treeData.data);
+      const saved: InquiryRecord | undefined = result.data;
+      const next = saved
+        ? optimistic.map((inquiry) => (inquiry.id === id ? saved : inquiry))
+        : optimistic;
+      setInquiries(next);
+      setInquiryCounts(computeInquiryCounts(next));
+      if (saved) {
+        setSelectedInquiry((prev) => (prev && prev.id === id ? saved : prev));
       }
-
-      const projectsRes = await fetch("/api/admin/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reset" }),
-      });
-      const projectsData = await projectsRes.json();
-      if (!projectsRes.ok) throw new Error(projectsData?.message || "Could not reset projects");
-      setProjects(projectsData.data);
-
-      setSavedRecently(true);
-      if (savedTimer.current) clearTimeout(savedTimer.current);
-      savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
-      addToast("Defaults Restored", "All content & navigation tree reset to factory template.");
+      addToast("Status updated", `${name} marked as ${INQUIRY_STATUS_META[status].label}.`);
     } catch (err) {
-      addToast("Reset Failed", getErrorMessage(err));
+      setInquiries(previous);
+      setInquiryCounts(computeInquiryCounts(previous));
+      setSelectedInquiry((prev) =>
+        prev && prev.id === id
+          ? previous.find((inquiry) => inquiry.id === id) ?? prev
+          : prev,
+      );
+      addToast("Update Failed", getErrorMessage(err, "Could not update the inquiry status."));
     } finally {
-      setIsSaving(false);
+      setUpdatingInquiryId(null);
+    }
+  };
+
+  const handleRefreshInquiries = async () => {
+    if (isRefreshingInquiries) return;
+    setIsRefreshingInquiries(true);
+    try {
+      const res = await fetch("/api/admin/inquiries", { cache: "no-store" });
+      const result = (await res.json().catch(() => null)) as {
+        success?: boolean;
+        message?: string;
+        data?: InquiryRecord[];
+        counts?: InquiryStatusCounts;
+      } | null;
+      if (!res.ok || !result?.success || !result.data) {
+        throw new Error(result?.message || "Could not refresh inquiries");
+      }
+
+      const next = result.data;
+      setInquiries(next);
+      setInquiryCounts(result.counts ?? computeInquiryCounts(next));
+      setSelectedInquiry((prev) =>
+        prev ? next.find((inquiry) => inquiry.id === prev.id) ?? null : prev,
+      );
+      addToast("Inquiries refreshed", `${next.length} total request${next.length === 1 ? "" : "s"}.`);
+    } catch (err) {
+      addToast("Refresh Failed", getErrorMessage(err, "Could not refresh inquiries."));
+    } finally {
+      setIsRefreshingInquiries(false);
     }
   };
 
@@ -178,7 +226,14 @@ export function AdminDashboard({
     }
   };
 
-  // Breadcrumb label for current tab
+  const filteredInquiries = useMemo(
+    () =>
+      inquiryFilter === "all"
+        ? inquiries
+        : inquiries.filter((inquiry) => inquiry.status === inquiryFilter),
+    [inquiries, inquiryFilter],
+  );
+
   const tabLabels: Record<AdminTab, string> = {
     overview: "Dashboard Overview",
     tree: "Mega-Menu & Hierarchy CMS",
@@ -192,33 +247,40 @@ export function AdminDashboard({
     preview: "Live Site Preview",
   };
 
+  const filterOptions: { value: InquiryStatus | "all"; label: string; count: number }[] = [
+    { value: "all", label: "All", count: inquiryCounts.total },
+    { value: "pending", label: "New", count: inquiryCounts.pending },
+    { value: "contacted", label: "Contacted", count: inquiryCounts.contacted },
+    { value: "completed", label: "Resolved", count: inquiryCounts.completed },
+    { value: "archived", label: "Archived", count: inquiryCounts.archived },
+  ];
+
   return (
-    <div className="admin-dashboard min-h-screen bg-[#f1ece5] text-zinc-950 flex flex-col font-sans">
+    <div className="admin-dashboard flex min-h-screen flex-col bg-slate-50 text-slate-700">
       <AdminHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onLogout={handleLogout}
-        onResetDefaults={handleResetDefaults}
         userEmail={userEmail}
         isSaving={isSaving}
         savedRecently={savedRecently}
       />
 
       {/* Page header breadcrumb */}
-      <div className="border-b border-zinc-800 bg-[#f1ece5] px-6 lg:px-8 py-3 flex items-center gap-3">
-        <span className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">Admin</span>
-        <span className="text-zinc-700">/</span>
-        <span className="text-[11px] text-zinc-700 font-medium">{tabLabels[activeTab]}</span>
+      <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
+        <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">Admin</span>
+        <span className="text-slate-300">/</span>
+        <span className="text-[11px] font-semibold text-slate-700">{tabLabels[activeTab]}</span>
         <div className="ml-auto flex items-center gap-2">
           {isSaving && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-medium animate-pulse">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
               Saving changes…
             </span>
           )}
           {savedRecently && !isSaving && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-              <CheckCircle2 className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
+              <CheckCircle2 className="h-3 w-3" />
               Changes live on site
             </span>
           )}
@@ -226,15 +288,20 @@ export function AdminDashboard({
       </div>
 
       {/* Main workspace */}
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-[#f1ece5]">
+      <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         {activeTab === "overview" && (
           <AdminOverview
             content={content}
+            inquiries={inquiries}
+            inquiryCounts={inquiryCounts}
             onNavigateTab={(tab) => setActiveTab(tab)}
             onOpenAddModal={(type) => {
               if (type === "solution") setActiveTab("solutions");
               if (type === "product") setActiveTab("products");
             }}
+            onSelectInquiry={setSelectedInquiry}
+            onStatusChange={handleInquiryStatusChange}
+            updatingInquiryId={updatingInquiryId}
           />
         )}
 
@@ -295,18 +362,60 @@ export function AdminDashboard({
 
         {activeTab === "transactions" && (
           <div className="space-y-5">
-            <div className="rounded-xl border border-white/[0.06] bg-[#f1ece5]/60 p-5 sm:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-[15px] font-semibold text-zinc-950">Client Orders & Requests</h2>
-                  <p className="text-[12px] text-zinc-500 mt-1">
-                    Service contracts, equipment rentals, and software subscription records.
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <Inbox className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg font-semibold text-slate-900">Orders &amp; Requests</h2>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Real consultation, assessment and product quote inquiries submitted from the public site.
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleRefreshInquiries}
+                  disabled={isRefreshingInquiries}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${isRefreshingInquiries ? "animate-spin" : ""}`} />
+                  Refresh
+                </button>
               </div>
             </div>
-            <div className="rounded-xl border border-white/[0.06] bg-[#f1ece5]/60 p-4 sm:p-6 overflow-x-auto">
-              <TableComponent />
+
+            <div className="flex flex-wrap items-center gap-2">
+              {filterOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setInquiryFilter(option.value)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    inquiryFilter === option.value
+                      ? "border-emerald-600 bg-emerald-600 text-white"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {option.label}
+                  <span
+                    className={`rounded-full px-1.5 text-[10px] ${
+                      inquiryFilter === option.value ? "bg-white/20" : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {option.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <InquiryTable
+                inquiries={filteredInquiries}
+                onSelect={setSelectedInquiry}
+                onStatusChange={handleInquiryStatusChange}
+                updatingId={updatingInquiryId}
+              />
             </div>
           </div>
         )}
@@ -314,8 +423,15 @@ export function AdminDashboard({
         {activeTab === "preview" && <LivePreview content={content} />}
       </main>
 
+      <InquiryDrawer
+        inquiry={selectedInquiry}
+        onClose={() => setSelectedInquiry(null)}
+        onStatusChange={handleInquiryStatusChange}
+        updatingId={updatingInquiryId}
+      />
+
       {/* Toast stack */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         {toasts.map((toast) => (
           <div key={toast.id} className="pointer-events-auto">
             <SwipeToast
@@ -326,9 +442,9 @@ export function AdminDashboard({
               onClose={() => removeToast(toast.id)}
               duration={3500}
               fuse="bottom"
-              fuseColor="#f1ece5"
-              background="#18181b"
-              color="#f1ece5"
+              fuseColor="#f8fafc"
+              background="#ffffff"
+              color="#0f172a"
               inline
             />
           </div>

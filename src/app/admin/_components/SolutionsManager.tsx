@@ -165,31 +165,31 @@ export function SolutionsManager({
   return (
     <div className="space-y-6">
       {/* Controls & Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4">
+      <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+        <div className="relative max-w-md flex-1">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search solutions by title, intro, or discipline..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
           />
         </div>
 
         {/* Group selector */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          <Filter className="w-3.5 h-3.5 text-zinc-500 mr-1 shrink-0 hidden sm:block" />
+        <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto">
+          <Filter className="mr-1 hidden h-3.5 w-3.5 shrink-0 text-slate-400 sm:block" />
           {GROUPS.map((grp) => (
             <button
               key={grp}
               type="button"
               onClick={() => setSelectedGroup(grp)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+              className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors ${
                 selectedGroup === grp
-                  ? "bg-cyan-500 text-zinc-950 font-semibold"
-                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                  ? "bg-emerald-600 font-semibold text-white"
+                  : "border border-slate-200 bg-white font-medium text-slate-600 hover:bg-slate-100"
               }`}
             >
               {grp}
@@ -201,7 +201,7 @@ export function SolutionsManager({
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold shrink-0 transition-colors"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Solution</span>
@@ -211,16 +211,16 @@ export function SolutionsManager({
       {/* Solutions List with SwipeRow & Detailed Cards */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="text-center py-16 rounded-xl border border-dashed border-zinc-800 bg-[#f1ece5]/30">
-            <Layers className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
-            <p className="text-sm text-zinc-400 font-medium">No solutions match your filter</p>
-            <p className="text-xs text-zinc-500 mt-1">Try another search keyword or add a new solution.</p>
+          <div className="rounded-xl border border-dashed border-slate-300 bg-white/60 py-16 text-center">
+            <Layers className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+            <p className="text-sm font-semibold text-slate-700">No solutions match your filter</p>
+            <p className="mt-1 text-xs text-slate-500">Try another search keyword or add a new solution.</p>
           </div>
         ) : (
           filtered.map((item) => (
             <div
               key={item.title}
-              className="rounded-xl border border-zinc-800/80 bg-[#f1ece5]/50 hover:border-zinc-700 transition-all p-4"
+              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-slate-300 hover:shadow"
             >
               {/* SwipeRow wrapper enabling gesture actions */}
               <SwipeRow
@@ -229,14 +229,14 @@ export function SolutionsManager({
                     id: "delete",
                     label: "Delete",
                     icon: <HugeiconsIcon icon={Delete02Icon} size={18} />,
-                    color: "#dc2626",
+                    color: "#e11d48",
                     dismiss: true,
                   },
                   {
                     id: "archive",
                     label: "Archive",
                     icon: <HugeiconsIcon icon={Archive02Icon} size={18} />,
-                    color: "#475569",
+                    color: "#64748b",
                     dismiss: true,
                   },
                 ]}
@@ -249,39 +249,40 @@ export function SolutionsManager({
                 onCommit={(act) => {
                   if (act.id === "delete") handleDelete(item.title);
                 }}
-                height={70}
-                rowColor="#18181b"
-                drawerColor="#09090b"
+                height={64}
+                radius={12}
+                rowColor="#ffffff"
+                drawerColor="#f1f5f9"
                 actionWidth={80}
               >
-                <div className="w-full flex items-center justify-between gap-4">
+                <div className="flex w-full items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-600">
                       <Layers className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-zinc-950 tracking-tight">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold tracking-tight text-slate-900">
                           {item.title}
                         </span>
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/50">
+                        <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs text-slate-700">
                           {item.group}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
+                      <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
                         {item.intro}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-zinc-500 hidden sm:inline mr-2">
+                    <span className="mr-2 hidden text-[11px] text-slate-400 sm:inline">
                       ← Swipe left to delete
                     </span>
                     <button
                       type="button"
                       onClick={() => openEditModal(item)}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 flex items-center gap-1.5 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       <span>Edit</span>
@@ -289,7 +290,7 @@ export function SolutionsManager({
                     <button
                       type="button"
                       onClick={() => handleDelete(item.title)}
-                      className="p-1.5 text-xs font-medium rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/40 transition-colors"
+                      className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-600 transition-colors hover:bg-rose-100"
                       title="Delete solution"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -299,16 +300,16 @@ export function SolutionsManager({
               </SwipeRow>
 
               {/* Sub-details (Deliverables & description preview) */}
-              <div className="mt-3 pt-3 border-t border-zinc-800/60 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-xs sm:grid-cols-2">
                 <div>
-                  <span className="text-zinc-500 font-medium">Deliverables / Outcomes:</span>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
+                  <span className="font-medium text-slate-500">Deliverables / Outcomes:</span>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
                     {item.outcomes.map((out, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-300 text-[11px]"
+                        className="inline-flex items-center gap-1 rounded-full border border-emerald-200/60 bg-emerald-50 px-2 py-0.5 text-[11px] text-emerald-800"
                       >
-                        <Check className="w-3 h-3 text-cyan-400" />
+                        <Check className="w-3 h-3 text-emerald-600" />
                         {out}
                       </span>
                     ))}
@@ -316,8 +317,8 @@ export function SolutionsManager({
                 </div>
 
                 <div>
-                  <span className="text-zinc-500 font-medium">Description:</span>
-                  <p className="text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
+                  <span className="font-medium text-slate-500">Description:</span>
+                  <p className="mt-1 line-clamp-2 leading-relaxed text-slate-600">
                     {item.description}
                   </p>
                 </div>
@@ -329,18 +330,18 @@ export function SolutionsManager({
 
       {/* Edit / Add Modal */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl text-white my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold text-zinc-950 mb-1">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center">
+          <div className="relative my-8 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-2xl">
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">
               {isNew ? "Add New Solution" : `Edit "${editingItem.title}"`}
             </h3>
-            <p className="text-xs text-zinc-400 mb-6">
+            <p className="mb-6 text-xs text-slate-500">
               Configure parameters, deliverables, and gallery images for this solution.
             </p>
 
             <form onSubmit={handleSaveModal} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Solution Title
                 </label>
                 <input
@@ -348,29 +349,29 @@ export function SolutionsManager({
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="e.g. UAV LiDAR Survey"
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">Page slug</label>
-                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="uav-lidar-survey" className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white" />
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">Page slug</label>
+                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="uav-lidar-survey" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" />
               </div>
-              <label className="flex items-center gap-2 text-xs text-zinc-300"><input type="checkbox" checked={formPublished} onChange={(e) => setFormPublished(e.target.checked)} /> Published</label>
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={formPublished} onChange={(e) => setFormPublished(e.target.checked)} /> Published</label>
               <section className="space-y-2">
-                <div className="flex items-center justify-between"><label className="text-xs font-medium text-zinc-300">Frequently asked questions</label><button type="button" onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])} className="text-xs text-cyan-400">Add FAQ</button></div>
-                {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-zinc-800 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded bg-[#f1ece5] p-2 text-xs text-white" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs text-red-400">Remove FAQ</button></div>)}
+                <div className="flex items-center justify-between"><label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Frequently asked questions</label><button type="button" onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">Add FAQ</button></div>
+                {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs font-medium text-rose-600 hover:text-rose-700">Remove FAQ</button></div>)}
               </section>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Discipline / Group
                 </label>
                 <select
                   value={formGroup}
                   onChange={(e) => setFormGroup(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 >
                   <option value="Survey & Mapping">Survey & Mapping</option>
                   <option value="GIS & Data">GIS & Data</option>
@@ -380,7 +381,7 @@ export function SolutionsManager({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Summary / Intro Hook
                 </label>
                 <textarea
@@ -388,13 +389,13 @@ export function SolutionsManager({
                   value={formIntro}
                   onChange={(e) => setFormIntro(e.target.value)}
                   placeholder="High-level introductory pitch rendered at the top of the solution page..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Full Technical Description
                 </label>
                 <textarea
@@ -402,21 +403,21 @@ export function SolutionsManager({
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="Detailed explanation of methodology, sensors, and capabilities..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   required
                 />
               </div>
 
               {/* Outcomes / Deliverables */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-medium text-zinc-300">
+                <div className="mb-1.5 flex items-center justify-between">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Deliverables & Handover Items
                   </label>
                   <button
                     type="button"
                     onClick={() => setFormOutcomes([...formOutcomes, ""])}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-medium"
+                    className="flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700"
                   >
                     <Plus className="w-3 h-3" /> Add Outcome
                   </button>
@@ -433,7 +434,7 @@ export function SolutionsManager({
                           setFormOutcomes(updated);
                         }}
                         placeholder={`Deliverable ${idx + 1}`}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#f1ece5] border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                       />
                       <button
                         type="button"
@@ -441,7 +442,7 @@ export function SolutionsManager({
                           const updated = formOutcomes.filter((_, i) => i !== idx);
                           setFormOutcomes(updated.length > 0 ? updated : [""]);
                         }}
-                        className="p-1.5 text-zinc-400 hover:text-red-400"
+                        className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -452,7 +453,7 @@ export function SolutionsManager({
 
               {/* Images */}
               <div>
-                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-zinc-900">Solution images</label><p className="mt-0.5 text-xs text-zinc-500">Upload images to store them in the database, or use an external image URL.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])} className="text-xs font-semibold text-cyan-700 disabled:opacity-50">Add image</button></div>
+                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-slate-900">Solution images</label><p className="mt-0.5 text-xs text-slate-500">Upload images to store them in the database, or use an external image URL.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50">Add image</button></div>
                 {formImages.map((img, idx) => (
                   <ImageMediaEditor
                     key={idx}
@@ -464,17 +465,17 @@ export function SolutionsManager({
                 ))}
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg text-zinc-400 hover:text-[#f1ece5] hover:bg-zinc-800 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
                 >
                   Save Changes
                 </button>

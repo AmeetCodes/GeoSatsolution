@@ -23,7 +23,7 @@ const DEFAULT_ITEMS: PhotoCardItem[] = [
 ];
 
 const TILTS = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2"] as const;
-const CARD_GAP = 24;
+const FALLBACK_GAP = 24;
 
 function subscribeToScroll(element: HTMLDivElement | null, onChange: () => void) {
   if (!element) return () => {};
@@ -64,7 +64,9 @@ export function PhotoCardGallery({ items = DEFAULT_ITEMS, className }: PhotoCard
     const element = scrollRef.current;
     if (!element) return;
     const card = element.querySelector<HTMLElement>("[data-photo-card]");
-    const step = card ? card.offsetWidth + CARD_GAP : element.clientWidth * 0.8;
+    const styles = getComputedStyle(element);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || FALLBACK_GAP;
+    const step = card ? card.offsetWidth + gap : element.clientWidth * 0.8;
     element.scrollBy({ left: direction * step, behavior: "smooth" });
   }, []);
 
@@ -98,29 +100,34 @@ export function PhotoCardGallery({ items = DEFAULT_ITEMS, className }: PhotoCard
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        className="flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto overflow-y-hidden px-2 py-8 select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+        data-photo-track
+        className="flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto overflow-y-visible py-6 select-none [-ms-overflow-style:none] [scrollbar-width:none] lg:gap-8 active:cursor-grabbing [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, index) => (
           <figure
             key={`${item.caption}-${index}`}
             data-photo-card
             className={cn(
-              "relative w-[220px] shrink-0 snap-center rounded-2xl border border-slate-200/90 bg-white p-3 shadow-lg shadow-slate-900/5 transition-all duration-300 ease-out sm:w-[260px]",
+              "group relative flex h-[340px] w-[205px] shrink-0 snap-center cursor-grab flex-col rounded-2xl border border-slate-200/90 bg-white p-3 shadow-md shadow-slate-900/5 transition-all duration-300 ease-out sm:h-[350px] sm:w-[225px] lg:h-[360px] lg:w-[240px]",
               TILTS[index % TILTS.length],
-              "hover:z-10 hover:rotate-0 hover:scale-105 hover:border-slate-400 hover:shadow-2xl",
+              "hover:z-20 hover:-translate-y-2 hover:rotate-0 hover:border-slate-400 hover:shadow-2xl hover:shadow-slate-900/15 active:cursor-grabbing",
             )}
           >
-            <div className="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100">
+            <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-xl border border-slate-200/80 bg-slate-100 ring-1 ring-inset ring-white/40">
               {/* eslint-disable-next-line @next/next/no-img-element -- external placeholder photography */}
               <img
                 src={item.image}
                 alt={item.caption}
                 draggable={false}
                 loading="lazy"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900/25 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
             </div>
-            <figcaption className="mt-3 text-center font-serif text-base font-semibold text-slate-800">
+            <figcaption className="mt-3 text-center font-serif text-sm font-semibold text-slate-800">
               {item.caption}
             </figcaption>
           </figure>
@@ -133,7 +140,7 @@ export function PhotoCardGallery({ items = DEFAULT_ITEMS, className }: PhotoCard
           onClick={() => scrollByCard(-1)}
           disabled={!canScrollPrev}
           aria-label="Previous photos"
-          className="inline-flex size-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex size-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-sm transition-all hover:border-slate-900 hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronLeft className="size-5" aria-hidden="true" />
         </button>
@@ -142,7 +149,7 @@ export function PhotoCardGallery({ items = DEFAULT_ITEMS, className }: PhotoCard
           onClick={() => scrollByCard(1)}
           disabled={!canScrollNext}
           aria-label="Next photos"
-          className="inline-flex size-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex size-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-sm transition-all hover:border-slate-900 hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronRight className="size-5" aria-hidden="true" />
         </button>

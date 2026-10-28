@@ -95,22 +95,22 @@ export function ProjectsManager({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-3 rounded-xl border border-zinc-800 bg-[#f1ece5]/80 p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search projects"
             aria-label="Search projects"
-            className="w-full rounded-lg border border-zinc-700 bg-[#f1ece5] py-2 pl-9 pr-3 text-sm text-zinc-950 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            className="w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
           />
         </div>
         <button
           type="button"
           onClick={openAdd}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-cyan-500 px-3.5 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-cyan-400"
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
         >
           <Plus className="size-4" />
           Add Project
@@ -118,9 +118,9 @@ export function ProjectsManager({
       </div>
 
       {filteredProjects.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-700 py-14 text-center">
-          <Briefcase className="mx-auto mb-3 size-7 text-zinc-500" />
-          <p className="text-sm font-medium text-zinc-300">
+        <div className="text-center py-16 rounded-xl border border-dashed border-slate-300 bg-white/60">
+          <Briefcase className="mx-auto mb-3 size-7 text-slate-300" />
+          <p className="text-sm font-semibold text-slate-700">
             {projects.length ? "No projects match your search" : "No projects yet"}
           </p>
         </div>
@@ -129,24 +129,24 @@ export function ProjectsManager({
           {filteredProjects.map((project) => (
             <article
               key={project.code}
-              className="rounded-xl border border-zinc-800 bg-[#f1ece5]/50 p-4 sm:p-5"
+              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="font-mono text-xs font-semibold text-cyan-400">{project.code}</span>
-                    <span className="text-xs text-zinc-500">{project.sector}</span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <h2 className="text-base font-semibold text-slate-900">{project.title}</h2>
+                    <span className="font-mono bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md">{project.code}</span>
+                    <span className="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md">{project.sector}</span>
                   </div>
-                  <h2 className="mt-2 text-base font-semibold text-zinc-100">{project.title}</h2>
                   {project.images?.[0]?.src && <div className="mt-3 flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={project.images[0].src} alt={project.images[0].alt || ""} className="size-16 rounded-lg object-cover" />
-                    <span className="text-xs text-zinc-500">{project.images.length} gallery {project.images.length === 1 ? "image" : "images"}</span>
+                    <img src={project.images[0].src} alt={project.images[0].alt || ""} className="size-16 rounded-lg border border-slate-200 object-cover" />
+                    <span className="text-xs text-slate-500">{project.images.length} gallery {project.images.length === 1 ? "image" : "images"}</span>
                   </div>}
-                  <p className="mt-2 max-w-4xl text-sm leading-relaxed text-zinc-400">{project.body}</p>
+                  <p className="mt-2 max-w-4xl text-xs text-slate-600 leading-relaxed line-clamp-2">{project.body}</p>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
-                      <span key={tag} className="rounded-md border border-zinc-700 px-2 py-1 text-[11px] text-zinc-300">
+                      <span key={tag} className="bg-emerald-50 text-emerald-800 text-xs px-2 py-0.5 rounded-full border border-emerald-200/60">
                         {tag}
                       </span>
                     ))}
@@ -157,7 +157,7 @@ export function ProjectsManager({
                     type="button"
                     onClick={() => openEdit(project)}
                     aria-label={`Edit ${project.title}`}
-                    className="inline-flex size-9 items-center justify-center rounded-lg border border-zinc-700 text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
+                    className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                   >
                     <Edit2 className="size-4" />
                   </button>
@@ -165,7 +165,7 @@ export function ProjectsManager({
                     type="button"
                     onClick={() => handleDelete(project)}
                     aria-label={`Delete ${project.title}`}
-                    className="inline-flex size-9 items-center justify-center rounded-lg border border-red-900/70 text-red-400 transition-colors hover:bg-red-950/50"
+                    className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -177,43 +177,43 @@ export function ProjectsManager({
       )}
 
       {editingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/75 p-4">
-          <div className="my-auto w-full max-w-2xl rounded-xl border border-zinc-700 bg-zinc-950 p-5 text-zinc-100 shadow-2xl sm:p-6">
-            <h2 className="text-lg font-semibold">{isNew ? "Add Project" : "Edit Project"}</h2>
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-semibold text-slate-900">{isNew ? "Add Project" : "Edit Project"}</h2>
             <form onSubmit={handleSave} className="mt-5 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-1.5 text-xs font-medium text-zinc-300">
+                <label className="space-y-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Project code
                   <input
                     required
                     maxLength={40}
                     value={form.code}
                     onChange={(event) => setForm({ ...form, code: event.target.value })}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
                 </label>
-                <label className="space-y-1.5 text-xs font-medium text-zinc-300">
+                <label className="space-y-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Sector
                   <input
                     required
                     maxLength={160}
                     value={form.sector}
                     onChange={(event) => setForm({ ...form, sector: event.target.value })}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
                 </label>
               </div>
-              <label className="block space-y-1.5 text-xs font-medium text-zinc-300">
+              <label className="block space-y-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Project title
                 <input
                   required
                   maxLength={180}
                   value={form.title}
                   onChange={(event) => setForm({ ...form, title: event.target.value })}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </label>
-              <label className="block space-y-1.5 text-xs font-medium text-zinc-300">
+              <label className="block space-y-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Description
                 <textarea
                   required
@@ -221,24 +221,24 @@ export function ProjectsManager({
                   rows={5}
                   value={form.body}
                   onChange={(event) => setForm({ ...form, body: event.target.value })}
-                  className="w-full resize-y rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm leading-relaxed text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                  className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </label>
-              <label className="block space-y-1.5 text-xs font-medium text-zinc-300">
-                Tags <span className="font-normal text-zinc-500">Separate with commas</span>
+              <label className="block space-y-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Tags <span className="font-normal text-slate-500">Separate with commas</span>
                 <textarea
                   rows={2}
                   value={tagText}
                   onChange={(event) => setTagText(event.target.value)}
-                  className="w-full resize-y rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                  className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </label>
               <section className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-semibold text-zinc-100">Gallery images</h3>
-                  <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), { src: "", alt: "", caption: "", source: "upload" }] })} className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-900">Add image</button>
+                  <h3 className="text-sm font-semibold text-slate-900">Gallery images</h3>
+                  <button type="button" onClick={() => setForm({ ...form, images: [...(form.images || []), { src: "", alt: "", caption: "", source: "upload" }] })} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100">Add image</button>
                 </div>
-                {(form.images || []).length === 0 && <p className="rounded-lg border border-dashed border-zinc-700 p-4 text-xs text-zinc-500">Add images here. Uploaded files are stored in MongoDB and displayed on the Our Work gallery.</p>}
+                {(form.images || []).length === 0 && <p className="rounded-lg border border-dashed border-slate-300 p-4 text-xs text-slate-500">Add images here. Uploaded files are stored in MongoDB and displayed on the Our Work gallery.</p>}
                 {(form.images || []).map((image, index) => <ImageMediaEditor
                   key={`${image.mediaId || image.src || "new"}-${index}`}
                   image={image}
@@ -249,19 +249,19 @@ export function ProjectsManager({
                   onUploadingChange={setIsUploadingImage}
                 />)}
               </section>
-              <label className="flex items-center gap-2 text-xs font-medium text-zinc-300"><input type="checkbox" checked={form.isPublished !== false} onChange={(event) => setForm({ ...form, isPublished: event.target.checked })} /> Show this project in the public gallery</label>
-              <div className="flex justify-end gap-2 border-t border-zinc-800 pt-4">
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={form.isPublished !== false} onChange={(event) => setForm({ ...form, isPublished: event.target.checked })} /> Show this project in the public gallery</label>
+              <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
                 <button
                   type="button"
                   onClick={() => setEditingProject(null)}
-                  className="rounded-lg border border-zinc-700 px-3.5 py-2 text-sm text-zinc-300 hover:bg-zinc-900"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUploadingImage}
-                  className="rounded-lg bg-cyan-500 px-3.5 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-400"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   {isUploadingImage ? "Uploading image…" : "Save Project"}
                 </button>

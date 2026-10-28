@@ -54,15 +54,15 @@ export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption
   };
 
   return (
-    <fieldset className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-      <legend className="px-1 text-sm font-semibold text-zinc-900">{title}</legend>
+    <fieldset className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <legend className="px-1 text-sm font-semibold text-slate-900">{title}</legend>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-zinc-200 bg-zinc-50 p-1" aria-label={`Image ${index + 1} source`}>
+        <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1" aria-label={`Image ${index + 1} source`}>
           <button
             type="button"
             onClick={() => changeMode("upload")}
             aria-pressed={mode === "upload"}
-            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium ${mode === "upload" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"}`}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium ${mode === "upload" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"}`}
           >
             <Upload className="size-3.5" /> Upload image
           </button>
@@ -70,7 +70,7 @@ export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption
             type="button"
             onClick={() => changeMode("url")}
             aria-pressed={mode === "url"}
-            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium ${mode === "url" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"}`}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium ${mode === "url" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"}`}
           >
             <Link2 className="size-3.5" /> External URL
           </button>
@@ -87,52 +87,52 @@ export function ImageMediaEditor({ image, index, onChange, onRemove, showCaption
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
             onChange={(event) => void uploadImage(event.target.files?.[0])}
-            className="block w-full text-sm text-zinc-700 file:mr-3 file:rounded-md file:border-0 file:bg-[#517357] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#426349]"
+            className="block w-full text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-700"
           />
-          <p className="text-xs text-zinc-500">JPEG, PNG, WebP, GIF, or AVIF · up to 5 MB. Uploading stores the image in the database.</p>
-          {isUploading && <p className="inline-flex items-center gap-2 text-xs text-zinc-600"><LoaderCircle className="size-3.5 animate-spin" /> Uploading image…</p>}
+          <p className="text-xs text-slate-500">JPEG, PNG, WebP, GIF, or AVIF · up to 5 MB. Uploading stores the image in the database.</p>
+          {isUploading && <p className="inline-flex items-center gap-2 text-xs text-slate-600"><LoaderCircle className="size-3.5 animate-spin" /> Uploading image…</p>}
         </div>
       ) : (
-        <label className="block space-y-1.5 text-xs font-medium text-zinc-700">
-          Image URL <span className="font-normal text-zinc-500">(https:// or site-relative path)</span>
+        <label className="block space-y-1.5 text-xs font-medium text-slate-700">
+          Image URL <span className="font-normal text-slate-500">(https:// or site-relative path)</span>
           <input
             type="text"
             value={mode === "url" ? image.src : ""}
             onChange={(event) => onChange({ ...image, src: event.target.value, source: "url", mediaId: undefined })}
             placeholder="https://example.com/image.jpg"
-            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400"
           />
         </label>
       )}
 
       {image.src && (
-        <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-2.5">
+        <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image.src} alt="" className="size-14 rounded-md border border-zinc-200 object-cover" />
-          <span className="min-w-0 break-all text-xs text-zinc-600">{image.source === "upload" ? "Stored upload" : image.src}</span>
+          <img src={image.src} alt="" className="size-14 rounded-md border border-slate-200 object-cover" />
+          <span className="min-w-0 break-all text-xs text-slate-600">{image.source === "upload" ? "Stored upload" : image.src}</span>
         </div>
       )}
 
       <div className={`grid gap-3 ${showCaption ? "sm:grid-cols-2" : "grid-cols-1"}`}>
-        <label className="block space-y-1.5 text-xs font-medium text-zinc-700">
-          Alt text <span className="font-normal text-zinc-500">(describe the image)</span>
+        <label className="block space-y-1.5 text-xs font-medium text-slate-700">
+          Alt text <span className="font-normal text-slate-500">(describe the image)</span>
           <input
             type="text"
             value={image.alt}
             onChange={(event) => onChange({ ...image, alt: event.target.value })}
             placeholder="Aerial survey of a mountain valley"
-            className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400"
           />
         </label>
         {showCaption && (
-          <label className="block space-y-1.5 text-xs font-medium text-zinc-700">
-            Caption <span className="font-normal text-zinc-500">(optional)</span>
+          <label className="block space-y-1.5 text-xs font-medium text-slate-700">
+            Caption <span className="font-normal text-slate-500">(optional)</span>
             <input
               type="text"
               value={image.caption}
               onChange={(event) => onChange({ ...image, caption: event.target.value })}
               placeholder="Short caption shown with the image"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400"
             />
           </label>
         )}

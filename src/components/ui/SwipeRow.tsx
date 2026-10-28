@@ -41,9 +41,9 @@ export function SwipeRow({
   onAction,
   onCommit,
   actionColor = "#e5484d",
-  drawerColor = "#27272a",
-  rowColor = "#18181b",
-  textColor = "#f4f4f5",
+  drawerColor = "#f1f5f9",
+  rowColor = "#ffffff",
+  textColor = "#0f172a",
   height = 64,
   radius = 14,
   actionWidth = 80,
@@ -134,7 +134,7 @@ export function SwipeRow({
           borderRadius: `${radius}px`,
         }}
         onDragEnd={handleDragEnd}
-        className="relative z-10 w-full flex items-center px-5 cursor-grab active:cursor-grabbing border border-white/5"
+        className="relative z-10 w-full flex items-center px-5 cursor-grab active:cursor-grabbing border border-black/5"
       >
         {children}
       </motion.div>

@@ -231,30 +231,30 @@ export function DistrictProjectsManager({
     <div className="space-y-6">
       {/* Stats summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+          <p className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
             Total projects across Nepal
           </p>
-          <p className="mt-2 text-3xl font-bold text-zinc-900">{summary.totalProjects}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-900">{summary.totalProjects}</p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+          <p className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
             Districts covered
           </p>
-          <p className="mt-2 text-3xl font-bold text-zinc-900">
+          <p className="mt-2 text-3xl font-bold text-slate-900">
             {summary.districtsCovered}
-            <span className="text-lg font-medium text-zinc-400">/{summary.totalDistricts}</span>
+            <span className="text-lg font-medium text-slate-400">/{summary.totalDistricts}</span>
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+          <p className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
             Most active province
           </p>
-          <p className="mt-2 text-2xl font-bold text-zinc-900">
+          <p className="mt-2 text-2xl font-bold text-slate-900">
             {summary.mostActiveProvince?.name ?? "—"}
           </p>
           {summary.mostActiveProvince ? (
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-slate-500">
               {summary.mostActiveProvince.count}{" "}
               {summary.mostActiveProvince.count === 1 ? "project" : "projects"}
             </p>
@@ -265,11 +265,11 @@ export function DistrictProjectsManager({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         {/* Manager + form */}
         <div className="space-y-6">
-          <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-semibold text-zinc-900">Project & Location Manager</h2>
-                <p className="mt-1 text-xs text-zinc-500">
+                <h2 className="text-lg font-semibold text-slate-900">Project & Location Manager</h2>
+                <p className="mt-1 text-xs text-slate-500">
                   Assign projects to any of Nepal&apos;s 77 districts.
                 </p>
               </div>
@@ -279,7 +279,7 @@ export function DistrictProjectsManager({
                   setLoading(true);
                   void load();
                 }}
-                className="inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
                 aria-label="Refresh district projects"
               >
                 <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
@@ -288,9 +288,9 @@ export function DistrictProjectsManager({
 
             <form onSubmit={handleAdd} className="mt-5 space-y-4">
               <div className="relative">
-                <label className="text-xs font-semibold text-zinc-700">District</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">District</label>
                 <div className="relative mt-1.5">
-                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                   <input
                     value={districtQuery}
                     onChange={(event) => {
@@ -301,19 +301,19 @@ export function DistrictProjectsManager({
                     onFocus={() => setDistrictOpen(true)}
                     onBlur={() => window.setTimeout(() => setDistrictOpen(false), 150)}
                     placeholder="Search all 77 districts"
-                    className="w-full rounded-lg border border-zinc-300 bg-white py-2.5 pl-9 pr-9 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                    className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 </div>
 
                 {districtOpen ? (
-                  <div className="absolute z-30 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-zinc-200 bg-white py-1 shadow-xl">
+                  <div className="absolute z-30 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
                     {filteredDistricts.length === 0 ? (
-                      <p className="px-3 py-3 text-sm text-zinc-500">No districts match.</p>
+                      <p className="px-3 py-3 text-sm text-slate-500">No districts match.</p>
                     ) : (
                       filteredDistricts.map(([province, districts]) => (
                         <div key={province}>
-                          <p className="sticky top-0 bg-zinc-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                          <p className="sticky top-0 bg-slate-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                             Province {province} · {PROVINCE_NAMES[province]}
                           </p>
                           {districts.map((district) => (
@@ -324,14 +324,14 @@ export function DistrictProjectsManager({
                                 event.preventDefault();
                                 handleSelectDistrict(district.name);
                               }}
-                              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-cyan-50 ${
+                              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-emerald-50 ${
                                 selectedDistrict === district.name
-                                  ? "bg-cyan-50 font-semibold text-cyan-800"
-                                  : "text-zinc-700"
+                                  ? "bg-emerald-50 font-semibold text-emerald-800"
+                                  : "text-slate-700"
                               }`}
                             >
                               {district.name}
-                              <span className="text-[11px] text-zinc-400">
+                              <span className="text-[11px] text-slate-400">
                                 {counts.districts[district.name]?.count ?? 0} proj.
                               </span>
                             </button>
@@ -344,52 +344,52 @@ export function DistrictProjectsManager({
               </div>
 
               {selectedMeta ? (
-                <p className="flex items-center gap-1.5 text-xs text-zinc-500">
-                  <MapPin className="size-3.5 text-cyan-600" />
+                <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <MapPin className="size-3.5 text-emerald-600" />
                   Province {selectedMeta.province} · {PROVINCE_NAMES[selectedMeta.province]}
                 </p>
               ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-semibold text-zinc-700">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Project title
                   <input
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
                     maxLength={200}
                     placeholder="e.g. Jajarkot LiDAR corridor"
-                    className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                    className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
                 </label>
-                <label className="block text-xs font-semibold text-zinc-700">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Category
                   <input
                     value={category}
                     onChange={(event) => setCategory(event.target.value)}
                     maxLength={120}
                     placeholder="e.g. UAV LiDAR, Cadastral Survey"
-                    className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                    className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
                 </label>
               </div>
 
-              <label className="block text-xs font-semibold text-zinc-700">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Status
                 <select
                   value={status}
                   onChange={(event) => setStatus(event.target.value as DistrictProjectStatus)}
-                  className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                  className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 >
                   <option value="COMPLETED">COMPLETED</option>
                   <option value="ONGOING">ONGOING</option>
                 </select>
               </label>
 
-              <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4">
+              <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-cyan-400 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
                   Add project to district
@@ -398,7 +398,7 @@ export function DistrictProjectsManager({
                   type="button"
                   onClick={() => void handleIncrement()}
                   disabled={saving}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 disabled:opacity-60"
                 >
                   <Plus className="size-4" /> Increment
                 </button>
@@ -406,7 +406,7 @@ export function DistrictProjectsManager({
                   type="button"
                   onClick={() => void handleDecrement()}
                   disabled={saving}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 disabled:opacity-60"
                 >
                   <Minus className="size-4" /> Decrement
                 </button>
@@ -415,20 +415,20 @@ export function DistrictProjectsManager({
           </div>
 
           {/* Existing records */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-zinc-900">
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+            <h3 className="text-sm font-semibold text-slate-900">
               Recorded district projects{" "}
-              <span className="font-normal text-zinc-400">({projects.length})</span>
+              <span className="font-normal text-slate-400">({projects.length})</span>
             </h3>
 
             {loading && projects.length === 0 ? (
-              <p className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
+              <p className="mt-4 flex items-center gap-2 text-sm text-slate-500">
                 <Loader2 className="size-4 animate-spin" /> Loading…
               </p>
             ) : loadError ? (
-              <p className="mt-4 text-sm text-red-600">{loadError}</p>
+              <p className="mt-4 text-sm text-rose-600">{loadError}</p>
             ) : districtProjectList.length === 0 ? (
-              <p className="mt-4 rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+              <p className="mt-4 text-center py-16 rounded-xl border border-dashed border-slate-300 bg-white/60 text-sm text-slate-500">
                 No district projects recorded yet. Add one above.
               </p>
             ) : (
@@ -436,13 +436,13 @@ export function DistrictProjectsManager({
                 {districtProjectList.map((project) => (
                   <li
                     key={project.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2.5"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-zinc-900">
+                      <p className="truncate text-sm font-medium text-slate-900">
                         {project.title || "Field survey project"}
                       </p>
-                      <p className="truncate text-xs text-zinc-500">
+                      <p className="truncate text-xs text-slate-500">
                         {project.district} · {project.category || "Geospatial survey"} ·{" "}
                         {project.status === "ONGOING" ? "Ongoing" : "Completed"}
                       </p>
@@ -452,7 +452,7 @@ export function DistrictProjectsManager({
                       onClick={() => void handleDelete(project)}
                       disabled={saving}
                       aria-label={`Delete project in ${project.district}`}
-                      className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-500 transition-colors hover:bg-red-50 disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 disabled:opacity-60"
                     >
                       <Trash2 className="size-4" />
                     </button>
@@ -464,10 +464,10 @@ export function DistrictProjectsManager({
         </div>
 
         {/* Live preview */}
-        <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-          <div className="border-b border-zinc-100 px-5 py-4">
-            <h3 className="text-sm font-semibold text-zinc-900">Live map preview</h3>
-            <p className="mt-0.5 text-xs text-zinc-500">
+        <div className="overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm">
+          <div className="border-b border-slate-200 px-5 py-4">
+            <h3 className="text-sm font-semibold text-slate-900">Live map preview</h3>
+            <p className="mt-0.5 text-xs text-slate-500">
               Updates instantly as you add, increment, or remove district projects.
             </p>
           </div>

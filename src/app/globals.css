@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Acme&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -41,6 +43,10 @@
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  /* Metropolis is a licensed geometric sans. Declare the family so a licensed
+     "Metropolis" (via @font-face / next/font/local) takes effect; until then it
+     falls back to Plus Jakarta Sans / Inter for the UGREEN-style product cards. */
+  --font-metropolis: "Metropolis", "Plus Jakarta Sans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   /* Circular is a licensed Lineto typeface. Declare the family so a licensed
      "Circular-Medium.woff2" (via next/font/local or @font-face) takes effect;
      until then it gracefully falls back to Inter. */
@@ -310,66 +316,16 @@
 }
 
 .admin-dashboard {
-  --admin-background: #ffffff;
-  --admin-foreground: #404040;
-  --admin-border: rgba(36, 29, 21, 0.22);
-  --admin-accent: #517357;
-  --admin-ink: #030303;
-  --admin-earth: #241d15;
-  background-color: var(--admin-background);
-  color: var(--admin-foreground);
+  --admin-accent: #059669;
+  background-color: #f8fafc;
+  color: #334155;
   font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", sans-serif;
   font-size: 14px;
   line-height: 1.5;
 }
 
-.admin-dashboard :is([class*="bg-zinc-"], [class*="bg-[#f1ece5]"], [class*="bg-gradient-"]) {
-  background-color: #ffffff;
-  background-image: none;
-}
-
-.admin-dashboard :is([class*="text-[10px]"], [class*="text-\[11px\]"]) {
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.admin-dashboard :is(h1, h2, h3) {
-  color: #404040;
-  font-family: var(--font-space-grotesk), var(--font-ibm-plex-sans), sans-serif;
-  letter-spacing: -0.025em;
-}
-
-.admin-dashboard h1 {
-  font-size: 30px;
-  line-height: 38px;
-  font-weight: 700;
-}
-
-.admin-dashboard :is(h2, h3) {
-  font-weight: 600;
-}
-
-.admin-dashboard :is([class*="text-zinc-"], [class*="text-white"], [class*="text-[#f1ece5]"]) {
-  color: #404040;
-}
-
-.admin-dashboard code,
-.admin-dashboard [class*="font-mono"] {
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-}
-
 .admin-dashboard :is(input, textarea, select, button) {
-  font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", sans-serif;
-}
-
-.admin-dashboard :is(input, textarea, select) {
-  color: #404040;
-  background-color: #ffffff;
-  border-color: #404040;
-}
-
-.admin-dashboard :is(input, textarea, select)::placeholder {
-  color: #737373;
+  font-family: inherit;
 }
 
 .admin-dashboard :is(button, a) {
@@ -380,93 +336,14 @@
   outline-color: var(--admin-accent);
 }
 
-.admin-dashboard :is([class*="border-"]) {
-  border-color: var(--admin-border);
-}
-
-.admin-dashboard button[class*="bg-[#f1ece5]"],
-.admin-dashboard a[class*="bg-[#f1ece5]"] {
-  background-color: var(--admin-accent);
-  border-color: var(--admin-accent);
-  color: #ffffff;
-}
-
-.admin-dashboard header {
-  background-color: #ffffff;
-  border-color: var(--admin-border);
-  box-shadow: 0 2px 10px rgba(36, 29, 21, 0.04);
-}
-
-.admin-dashboard header nav button[class*="text-[#f1ece5]"] {
-  color: var(--admin-accent);
-}
-
-.admin-dashboard header nav button[class*="text-[#f1ece5]"]::after {
-  background-color: var(--admin-accent);
-}
-
-.admin-dashboard :is(input, textarea, select):focus {
-  border-color: var(--admin-accent);
-  outline: 2px solid color-mix(in srgb, var(--admin-accent) 18%, transparent);
-  outline-offset: 1px;
-}
-
-.admin-tree-cms > :first-child {
-  padding: 28px 30px;
-  border-color: var(--admin-border);
-  border-radius: 16px;
-  box-shadow: 0 4px 18px rgba(36, 29, 21, 0.045);
-}
-
-.admin-tree-cms > :first-child h2 {
-  font-size: 24px;
-  line-height: 32px;
-  letter-spacing: -0.02em;
-}
-
-.admin-tree-cms > :first-child p {
-  max-width: 720px;
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 22px;
-}
-
-.admin-tree-cms > :nth-child(2) {
-  padding-bottom: 10px;
-  border-color: #e5e5e5;
-}
-
-.admin-tree-cms > :nth-child(2) > div > div {
-  border-color: var(--admin-border);
-  border-radius: 10px;
-}
-
-.admin-tree-cms > :nth-child(2) > div > div:has(button[aria-current="true"]),
-.admin-tree-cms > :nth-child(2) > div > div:has(button[aria-pressed="true"]) {
-  border-color: var(--admin-accent);
+.admin-dashboard code,
+.admin-dashboard [class*="font-mono"] {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 .admin-tree-cms [style*="grid-template-columns"] {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)) !important;
   gap: 16px;
-}
-
-.admin-tree-cms [class*="rounded-2xl"] {
-  border-color: var(--admin-border);
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(36, 29, 21, 0.035);
-}
-
-.admin-tree-cms [class*="rounded-xl"] {
-  border-radius: 10px;
-}
-
-.admin-tree-cms :is(h2, h3) {
-  letter-spacing: -0.015em;
-}
-
-.admin-tree-cms button {
-  min-height: 36px;
 }
 
 @theme inline {

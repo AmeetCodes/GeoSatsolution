@@ -29,6 +29,7 @@ export function AssessmentForm() {
           interest: "Other",
           otherInterest: interest,
           details,
+          type: "ASSESSMENT",
           website: formData.get("website"),
         }),
       });

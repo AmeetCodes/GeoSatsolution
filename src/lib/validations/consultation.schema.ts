@@ -55,6 +55,7 @@ export function createConsultationSchema(interests: readonly string[]) {
         .max(160, "Service description is too long.")
         .optional()
         .default(""),
+      type: z.enum(["CONSULTATION", "ASSESSMENT"]).optional().default("CONSULTATION"),
       details: z
         .string({ error: "Add a few details so our team can prepare." })
         .trim()

@@ -1,5 +1,13 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export type ConsultationType = "CONSULTATION" | "ASSESSMENT" | "PRODUCT_BUY";
+
+export const CONSULTATION_TYPES: readonly ConsultationType[] = [
+  "CONSULTATION",
+  "ASSESSMENT",
+  "PRODUCT_BUY",
+];
+
 export interface IConsultation extends Document {
   name: string;
   organisation?: string;
@@ -8,6 +16,7 @@ export interface IConsultation extends Document {
   interest: string;
   otherInterest?: string;
   details: string;
+  type?: ConsultationType;
   status: "pending" | "contacted" | "completed" | "archived";
   createdAt: Date;
   updatedAt: Date;
@@ -22,6 +31,11 @@ const ConsultationSchema = new Schema<IConsultation>(
     interest: { type: String, required: true, trim: true },
     otherInterest: { type: String, trim: true },
     details: { type: String, required: true },
+    type: {
+      type: String,
+      enum: CONSULTATION_TYPES,
+      default: "CONSULTATION",
+    },
     status: {
       type: String,
       enum: ["pending", "contacted", "completed", "archived"],

@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     return invalidRequest(parsed.error.issues[0]?.message ?? "Please check the form and try again.");
   }
 
-  const { name, organisation, email, phone, interest, otherInterest, details } = parsed.data;
+  const { name, organisation, email, phone, interest, otherInterest, details, type } = parsed.data;
   const interestLabel = interest === "Other" ? otherInterest : interest;
 
   try {
@@ -74,6 +74,7 @@ export async function POST(request: Request) {
       interest: interestLabel,
       otherInterest: interest === "Other" ? otherInterest : undefined,
       details,
+      type,
       status: "pending",
     });
   } catch (dbErr) {

@@ -369,24 +369,23 @@ export function TreeCMSManager({
   return (
     <div className="admin-tree-cms space-y-7">
       {/* Top Banner / Explainer */}
-      <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-r from-cyan-950/20 via-zinc-900/40 to-slate-900/20 p-5 sm:p-6 backdrop-blur-xl">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 sm:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-semibold tracking-wider uppercase">
+              <span className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold tracking-wider uppercase">
                 Dynamic CMS &amp; Mega-Menu Engine
               </span>
-              <span className="text-zinc-500 text-xs"></span>
-              <span className="text-zinc-400 text-xs">Full N-Level Tree CRUD</span>
+              <span className="text-xs text-slate-500">Full N-Level Tree CRUD</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950">
+            <h2 className="text-xl font-semibold text-slate-900">
               Navigation Hierarchy &amp; Page CMS
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-3xl leading-relaxed">
+            <p className="text-sm text-slate-700 mt-1 max-w-3xl leading-relaxed">
               Manage all 3 levels of your site tree:{" "}
-              <span className="text-[#f1ece5] font-medium">Main Tabs (Level 1)</span>
-              <span className="text-[#f1ece5] font-medium">Column Headers (Level 2)</span>
-              <span className="text-cyan-300 font-medium">Nav Items &amp; Page Content (Level 3/4)</span>.
+              <span className="text-slate-900 font-medium">Main Tabs (Level 1)</span>,{" "}
+              <span className="text-slate-900 font-medium">Column Headers (Level 2)</span>, and{" "}
+              <span className="text-slate-900 font-medium">Nav Items &amp; Page Content (Level 3/4)</span>.
               Any addition, rename, reordering, or deletion syncs directly to the frontend mega-menu and dynamic routes.
             </p>
           </div>
@@ -395,7 +394,7 @@ export function TreeCMSManager({
           <button
             type="button"
             onClick={openAddTabModal}
-            className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-zinc-950 bg-[#f1ece5] hover:bg-[#e2dcce] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
           >
             <Plus className="w-4 h-4" />
             <span>Add Main Tab</span>
@@ -405,7 +404,7 @@ export function TreeCMSManager({
       </div>
 
       {/* Level 1: Main Tabs Bar */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-white/[0.06]">
+      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-slate-200">
         <div className="flex items-center gap-1.5 sm:gap-2">
           {tree.tabs.map((tab, idx) => {
             const Icon = getTabIcon(tab.id);
@@ -418,28 +417,28 @@ export function TreeCMSManager({
             return (
               <div
                 key={tab.id}
-                className={`group relative flex items-center rounded-xl transition-all ${
+                className={`group relative flex items-center rounded-lg transition-all ${
                   isActive
-                    ? "bg-[#f1ece5] text-zinc-950 border border-[#f1ece5]/40"
-                    : "bg-[#f1ece5]/80 text-zinc-400 hover:text-[#f1ece5] hover:bg-[#f1ece5] border border-zinc-800 hover:border-[#f1ece5]/30"
+                    ? "bg-white border border-slate-200 shadow-sm"
+                    : "bg-white border border-slate-200 hover:bg-slate-100"
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => setActiveTabId(tab.id)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs font-medium"
+                  className="flex items-center gap-2 px-3.5 py-2 text-xs"
                 >
                   <Icon
                     className={`w-3.5 h-3.5 ${
-                      isActive ? "text-cyan-400" : "text-zinc-500"
+                      isActive ? "text-emerald-600" : "text-slate-500"
                     }`}
                   />
-                  <span className="uppercase tracking-wider font-semibold">{tab.label}</span>
+                  <span className={`uppercase tracking-wider font-semibold ${isActive ? "text-slate-900" : "text-slate-700"}`}>{tab.label}</span>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] border ${
+                    className={`px-2.5 py-0.5 rounded-md text-[10px] ${
                       isActive
-                        ? "bg-[#f1ece5]/10 text-zinc-950 font-semibold border-zinc-950/20"
-                        : "bg-zinc-800/80 text-[#f1ece5] border-[#f1ece5]/20"
+                        ? "bg-slate-100 text-slate-700"
+                        : "bg-slate-100 text-slate-700"
                     }`}
                   >
                     {tab.columns.length} cols · {totalItems}
@@ -455,7 +454,7 @@ export function TreeCMSManager({
                         e.stopPropagation();
                         handleMoveTab(idx, "left");
                       }}
-                      className="p-1 hover:text-[#f1ece5] text-zinc-500 rounded"
+                      className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                       title="Move tab left"
                     >
                       <MoveUp className="w-3 h-3 rotate-[-90deg]" />
@@ -468,7 +467,7 @@ export function TreeCMSManager({
                         e.stopPropagation();
                         handleMoveTab(idx, "right");
                       }}
-                      className="p-1 hover:text-[#f1ece5] text-zinc-500 rounded"
+                      className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                       title="Move tab right"
                     >
                       <MoveDown className="w-3 h-3 rotate-[-90deg]" />
@@ -480,7 +479,7 @@ export function TreeCMSManager({
                       e.stopPropagation();
                       openEditTabModal(tab);
                     }}
-                    className="p-1 hover:text-[#f1ece5] text-zinc-500 rounded"
+                    className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                     title="Edit tab settings"
                   >
                     <Settings className="w-3 h-3" />
@@ -492,7 +491,7 @@ export function TreeCMSManager({
                         e.stopPropagation();
                         handleDeleteTab(tab);
                       }}
-                      className="p-1 hover:text-red-400 text-zinc-500 rounded"
+                      className="p-1 hover:bg-rose-100 text-rose-600 rounded"
                       title="Delete tab"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -509,26 +508,26 @@ export function TreeCMSManager({
       {activeTab && (
         <div className="space-y-6">
           {/* Active Tab Info & Add Column Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/[0.05] bg-[#f1ece5]/50">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm">
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 font-bold text-sm">
                 {activeTab.label.slice(0, 2).toUpperCase()}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-semibold text-zinc-950">
+                  <h3 className="text-lg font-semibold text-slate-900">
                     {activeTab.label} Columns &amp; Items
                   </h3>
-                  <span className="text-[11px] text-zinc-500">
+                  <span className="text-xs text-slate-500">
                     ({activeTab.columns.length} Column Headers)
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Route slug:{" "}
-                  <code className="bg-white/[0.05] px-1.5 py-0.5 rounded text-[11px] font-mono text-cyan-300">
+                  <code className="px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-800 bg-slate-100">
                     /{activeTab.slug}
                   </code>{" "}
-                  Href: <span className="text-zinc-300 font-mono text-[11px]">{activeTab.href}</span>
+                  Href: <span className="font-mono text-[11px] text-slate-800">{activeTab.href}</span>
                 </p>
               </div>
             </div>
@@ -536,7 +535,7 @@ export function TreeCMSManager({
             <button
               type="button"
               onClick={() => openAddColModal(activeTab.id)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#f1ece5]/80 hover:bg-[#f1ece5] border border-zinc-800 hover:border-[#f1ece5]/30 text-[#f1ece5] text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
             >
               <FolderPlus className="w-4 h-4" />
               <span>Add Column Header</span>
@@ -545,16 +544,16 @@ export function TreeCMSManager({
 
           {/* Columns Grid (Level 2 & Level 3) */}
           {activeTab.columns.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl border border-dashed border-zinc-800 bg-[#f1ece5]/20">
-              <FolderPlus className="w-10 h-10 mx-auto text-zinc-600 mb-3" />
-              <p className="text-sm text-zinc-300 font-medium">No column headers in this tab yet</p>
-              <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+            <div className="text-center py-16 rounded-xl border border-dashed border-slate-300 bg-white/60">
+              <FolderPlus className="w-10 h-10 mx-auto text-slate-400 mb-3" />
+              <p className="text-sm text-slate-700 font-medium">No column headers in this tab yet</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                 Click &quot;Add Column Header&quot; to create your first mega-menu column (e.g., &quot;Survey &amp; Mapping&quot;, &quot;About&quot;).
               </p>
                 <button
                   type="button"
                   onClick={() => openAddColModal(activeTab.id)}
-                  className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold transition-colors"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Column Header</span>
@@ -570,21 +569,21 @@ export function TreeCMSManager({
               {activeTab.columns.map((column, colIdx) => (
                 <div
                   key={column.id || column.title}
-                  className="rounded-2xl border border-zinc-800 bg-[#f1ece5]/80 overflow-hidden flex flex-col"
+                  className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col"
                 >
                   {/* Column Header (Level 2) */}
-                  <div className="border-b border-white/[0.06] bg-[#f1ece5]/60 p-4 flex items-center justify-between gap-2">
+                  <div className="border-b border-slate-200 p-4 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="flex size-6 items-center justify-center rounded-md bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold text-cyan-400 shrink-0">
+                      <span className="flex size-6 items-center justify-center rounded-md bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700 shrink-0">
                         {String(colIdx + 1).padStart(2, "0")}
                       </span>
                       <h4
-                        className="text-sm font-bold text-[#f1ece5] truncate uppercase tracking-wider"
+                        className="text-sm font-semibold uppercase tracking-wider text-slate-900 truncate"
                         title={column.title}
                       >
                         {column.title}
                       </h4>
-                      <span className="text-[10px] text-zinc-500 shrink-0">
+                      <span className="text-xs text-slate-500 shrink-0">
                         ({column.items.length})
                       </span>
                     </div>
@@ -595,7 +594,7 @@ export function TreeCMSManager({
                         <button
                           type="button"
                           onClick={() => handleMoveCol(activeTab.id, colIdx, "left")}
-                          className="p-1 hover:text-cyan-400 text-zinc-500 rounded hover:bg-white/[0.04]"
+                          className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                           title="Move column left"
                         >
                           <MoveUp className="w-3.5 h-3.5 rotate-[-90deg]" />
@@ -605,7 +604,7 @@ export function TreeCMSManager({
                         <button
                           type="button"
                           onClick={() => handleMoveCol(activeTab.id, colIdx, "right")}
-                          className="p-1 hover:text-cyan-400 text-zinc-500 rounded hover:bg-white/[0.04]"
+                          className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                           title="Move column right"
                         >
                           <MoveDown className="w-3.5 h-3.5 rotate-[-90deg]" />
@@ -614,7 +613,7 @@ export function TreeCMSManager({
                       <button
                         type="button"
                         onClick={() => openEditColModal(activeTab.id, column)}
-                        className="p-1 hover:text-[#f1ece5] text-zinc-500 rounded hover:bg-white/[0.04]"
+                        className="p-1 hover:bg-slate-100 text-slate-500 rounded"
                         title="Rename column"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -622,7 +621,7 @@ export function TreeCMSManager({
                       <button
                         type="button"
                         onClick={() => handleDeleteCol(activeTab.id, column)}
-                        className="p-1 hover:text-red-400 text-zinc-500 rounded hover:bg-white/[0.04]"
+                        className="p-1 hover:bg-rose-100 text-rose-600 rounded"
                         title="Delete column"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -633,23 +632,23 @@ export function TreeCMSManager({
                   {/* Level 3: Items in this Column */}
                   <div className="p-3 space-y-2 flex-1 min-h-[140px]">
                     {column.items.length === 0 ? (
-                      <div className="text-center py-8 text-zinc-500 text-xs">
+                      <div className="text-center py-8 text-xs text-slate-500">
                         No items under this column header.
                       </div>
                     ) : (
                       column.items.map((item, itemIdx) => (
                         <div
                           key={item.id || item.title}
-                          className="group relative rounded-xl border border-zinc-800 bg-[#f1ece5]/80 hover:bg-[#f1ece5] hover:border-[#f1ece5]/30 p-3 transition-all flex flex-col gap-2"
+                          className="group relative rounded-lg border border-slate-200 bg-white p-3 transition-all flex flex-col gap-2 hover:bg-slate-50"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex items-start gap-2 min-w-0">
-                              <span className="size-1.5 rounded-full bg-[#f1ece5]/80 mt-1.5 shrink-0" />
+                              <span className="size-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                               <div className="min-w-0">
-                                <span className="text-xs font-semibold text-zinc-200 block truncate leading-snug group-hover:text-zinc-950">
+                                <span className="text-xs font-semibold text-slate-900 block truncate leading-snug">
                                   {item.title}
                                 </span>
-                                <span className="text-[10px] text-zinc-500 font-mono block truncate mt-0.5">
+                                <span className="text-[10px] text-slate-500 font-mono block truncate mt-0.5">
                                   {item.href || `/${activeTab.slug}/${item.slug}`}
                                 </span>
                               </div>
@@ -663,7 +662,7 @@ export function TreeCMSManager({
                                   onClick={() =>
                                     handleMoveItem(activeTab.id, column, itemIdx, "up")
                                   }
-                                  className="p-1 text-zinc-500 hover:text-cyan-400 rounded"
+                                  className="p-1 text-slate-500 hover:bg-slate-100 rounded"
                                   title="Move up"
                                 >
                                   <MoveUp className="w-3 h-3" />
@@ -675,7 +674,7 @@ export function TreeCMSManager({
                                   onClick={() =>
                                     handleMoveItem(activeTab.id, column, itemIdx, "down")
                                   }
-                                  className="p-1 text-zinc-500 hover:text-cyan-400 rounded"
+                                  className="p-1 text-slate-500 hover:bg-slate-100 rounded"
                                   title="Move down"
                                 >
                                   <MoveDown className="w-3 h-3" />
@@ -686,7 +685,7 @@ export function TreeCMSManager({
                                 onClick={() =>
                                   openEditItemModal(activeTab.id, column.id, item)
                                 }
-                                className="p-1 text-zinc-400 hover:text-cyan-400 rounded hover:bg-white/[0.05]"
+                                className="p-1 text-slate-500 hover:bg-slate-100 rounded"
                                 title="Edit item & page content"
                               >
                                 <Edit2 className="w-3 h-3" />
@@ -696,7 +695,7 @@ export function TreeCMSManager({
                                 onClick={() =>
                                   handleDeleteItem(activeTab.id, column.id, item)
                                 }
-                                className="p-1 text-zinc-500 hover:text-red-400 rounded hover:bg-white/[0.05]"
+                                className="p-1 text-rose-600 hover:bg-rose-100 rounded"
                                 title="Delete item"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -706,14 +705,14 @@ export function TreeCMSManager({
 
                           {/* Quick details preview */}
                           {item.intro && (
-                            <p className="text-[11px] text-zinc-400 line-clamp-2 pl-3.5 leading-relaxed">
+                            <p className="text-[11px] text-slate-700 line-clamp-2 pl-3.5 leading-relaxed">
                               {item.intro}
                             </p>
                           )}
 
                           {item.outcomes && item.outcomes.length > 0 && (
-                            <div className="pl-3.5 flex items-center gap-1.5 text-[10px] text-cyan-400/80">
-                              <CheckCircle2 className="w-3 h-3 text-cyan-400 shrink-0" />
+                            <div className="pl-3.5 flex items-center gap-1.5 text-[10px] text-emerald-700">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
                               <span>{item.outcomes.length} deliverables specified</span>
                             </div>
                           )}
@@ -723,11 +722,11 @@ export function TreeCMSManager({
                   </div>
 
                   {/* Add Item to this column */}
-                  <div className="p-3 border-t border-white/[0.05] bg-white/[0.01]">
+                  <div className="p-3 border-t border-slate-200">
                     <button
                       type="button"
                       onClick={() => openAddItemModal(activeTab.id, column.id)}
-                      className="w-full py-2 px-3 rounded-xl border border-dashed border-zinc-700 hover:border-[#f1ece5]/40 hover:bg-[#f1ece5]/10 text-zinc-400 hover:text-[#f1ece5] text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                      className="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 text-slate-500 text-xs font-medium transition-colors hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center gap-1.5"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Item under &quot;{column.title}&quot;</span>
@@ -742,16 +741,16 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT MAIN TAB ================= */}
       {tabModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
-              <h3 className="text-base font-semibold text-zinc-950">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <h3 className="text-base font-semibold text-slate-900">
                 {editingTab ? `Edit Tab: ${editingTab.label}` : "Add Main Navigation Tab"}
               </h3>
               <button
                 type="button"
                 onClick={() => setTabModalOpen(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-950"
+                className="p-1 text-slate-500 hover:bg-slate-100 rounded"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -759,7 +758,7 @@ export function TreeCMSManager({
 
             <form onSubmit={handleSaveTab} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Tab Label *
                 </label>
                 <input
@@ -768,12 +767,12 @@ export function TreeCMSManager({
                   value={tabForm.label}
                   onChange={(e) => setTabForm({ ...tabForm, label: e.target.value })}
                   placeholder="e.g. Solutions, Products, Company, Services"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-[#f1ece5] text-sm text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-[#f1ece5]"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Navigation Href
                 </label>
                 <input
@@ -781,12 +780,12 @@ export function TreeCMSManager({
                   value={tabForm.href}
                   onChange={(e) => setTabForm({ ...tabForm, href: e.target.value })}
                   placeholder="e.g. /solutions or /services"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none font-mono text-xs"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-mono text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Mega-Menu Footer Note
                 </label>
                 <input
@@ -796,12 +795,12 @@ export function TreeCMSManager({
                     setTabForm({ ...tabForm, footerNote: e.target.value })
                   }
                   placeholder="e.g. Every engagement is scoped against a tolerance."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-[#f1ece5] text-sm text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-[#f1ece5] text-xs"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Mega-Menu Catalogue CTA Link Text
                 </label>
                 <input
@@ -811,22 +810,22 @@ export function TreeCMSManager({
                     setTabForm({ ...tabForm, catalogueCta: e.target.value })
                   }
                   placeholder="e.g. Request the full catalogue"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none text-xs"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setTabModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-zinc-950"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-lg shadow-cyan-600/20"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   {isSaving ? "Saving..." : editingTab ? "Save Changes" : "Create Tab"}
                 </button>
@@ -838,16 +837,16 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT COLUMN ================= */}
       {colModalOpen && editingCol && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#f1ece5] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
-              <h3 className="text-base font-semibold text-zinc-950">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <h3 className="text-base font-semibold text-slate-900">
                 {editingCol.col ? `Rename Column: ${editingCol.col.title}` : "Add Column Header / Sub-Category"}
               </h3>
               <button
                 type="button"
                 onClick={() => setColModalOpen(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-950"
+                className="p-1 text-slate-500 hover:bg-slate-100 rounded"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -855,7 +854,7 @@ export function TreeCMSManager({
 
             <form onSubmit={handleSaveCol} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Column Header Title *
                 </label>
                 <input
@@ -864,26 +863,26 @@ export function TreeCMSManager({
                   value={colTitle}
                   onChange={(e) => setColTitle(e.target.value)}
                   placeholder="e.g. Survey & Mapping, About, Insights"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   autoFocus
                 />
-                <p className="text-[11px] text-zinc-500 mt-1.5">
-                  This title appears as the uppercase teal header in the mega-menu dropdown.
+                <p className="text-xs text-slate-500 mt-1.5">
+                  This title appears in the mega-menu dropdown.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setColModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-zinc-950"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-lg shadow-cyan-600/20"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   {isSaving ? "Saving..." : editingCol.col ? "Save Column Title" : "Create Column"}
                 </button>
@@ -895,21 +894,21 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT ITEM (LEVEL 3 & 4 CMS) ================= */}
       {itemModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#f1ece5] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div>
-                <span className="text-[11px] text-zinc-950 font-semibold uppercase tracking-wider">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                   Level 3 Item &amp; Page CMS
                 </span>
-                <h3 className="text-base font-semibold text-zinc-950 mt-0.5">
+                <h3 className="text-base font-semibold text-slate-900 mt-0.5">
                   {editingItem.item ? `Edit: ${editingItem.item.title}` : "Add New Nav Item"}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setItemModalOpen(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-950"
+                className="p-1 text-slate-500 hover:bg-slate-100 rounded"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -917,7 +916,7 @@ export function TreeCMSManager({
 
             <form onSubmit={handleSaveItem} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Item Title *
                 </label>
                 <input
@@ -926,13 +925,13 @@ export function TreeCMSManager({
                   value={itemForm.title}
                   onChange={(e) => setItemForm({ ...itemForm, title: e.target.value })}
                   placeholder="e.g. UAV LiDAR Survey or Executive & Technical Leads"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Custom Route / Href (Optional - auto-generated if left blank)
                 </label>
                 <input
@@ -940,12 +939,12 @@ export function TreeCMSManager({
                   value={itemForm.href}
                   onChange={(e) => setItemForm({ ...itemForm, href: e.target.value })}
                   placeholder="e.g. /company/about/executive-technical-leads"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-sm text-[#f1ece5] focus:border-cyan-500 outline-none font-mono text-xs"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-mono text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Intro / Summary Hook
                 </label>
                 <textarea
@@ -953,12 +952,12 @@ export function TreeCMSManager({
                   value={itemForm.intro}
                   onChange={(e) => setItemForm({ ...itemForm, intro: e.target.value })}
                   placeholder="A dependable picture of the ground, even where the ground is hard to reach."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-[#f1ece5] text-xs text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-[#f1ece5] leading-relaxed"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 leading-relaxed"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Detailed Page Description (CMS)
                 </label>
                 <textarea
@@ -968,13 +967,13 @@ export function TreeCMSManager({
                     setItemForm({ ...itemForm, description: e.target.value })
                   }
                   placeholder="Dense point clouds penetrating steep slopes and heavy vegetation to produce true bare-earth terrain models."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.1] bg-[#f1ece5]/60 text-xs text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-[#f1ece5] outline-none leading-relaxed"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 leading-relaxed"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-medium text-zinc-300">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Key Deliverables / Outcomes
                   </label>
                   <button
@@ -985,7 +984,7 @@ export function TreeCMSManager({
                         outcomes: [...itemForm.outcomes, ""],
                       })
                     }
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Deliverable</span>
@@ -1003,7 +1002,7 @@ export function TreeCMSManager({
                           setItemForm({ ...itemForm, outcomes: updated });
                         }}
                         placeholder={`Deliverable ${oIdx + 1}`}
-                        className="flex-1 px-3 py-2 rounded-lg border border-zinc-800 bg-[#f1ece5] text-xs text-[#f1ece5] focus:outline-none focus:ring-1 focus:ring-[#f1ece5]"
+                        className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                       />
                       {itemForm.outcomes.length > 1 && (
                         <button
@@ -1014,7 +1013,7 @@ export function TreeCMSManager({
                             );
                             setItemForm({ ...itemForm, outcomes: updated });
                           }}
-                          className="p-1.5 text-zinc-500 hover:text-red-400 rounded"
+                          className="p-1.5 text-rose-600 hover:bg-rose-100 rounded"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -1024,18 +1023,18 @@ export function TreeCMSManager({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setItemModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-zinc-950"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-[#f1ece5] hover:bg-[#e2dcce] text-zinc-950 text-xs font-semibold"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
                   {isSaving ? "Saving..." : editingItem.item ? "Save Item Changes" : "Add Item"}
                 </button>

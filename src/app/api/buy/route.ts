@@ -4,6 +4,8 @@ import {
   getEmailAccount,
   sendCustomerConfirmation,
 } from "@/lib/email";
+import connectDB from "@/lib/db/connection";
+import { Consultation } from "@/lib/models/Consultation";
 import { productInquirySchema } from "@/lib/validations/product-inquiry.schema";
 
 export const runtime = "nodejs";
@@ -50,6 +52,22 @@ export async function POST(request: Request) {
   }
 
   const { name, company, email, phone, product, details } = parsed.data;
+
+  try {
+    await connectDB();
+    await Consultation.create({
+      name,
+      organisation: company,
+      email,
+      phone,
+      interest: product,
+      details,
+      type: "PRODUCT_BUY",
+      status: "pending",
+    });
+  } catch (dbErr) {
+    console.error("Error saving product inquiry to MongoDB:", dbErr);
+  }
 
   const account = getEmailAccount("GMAIL_BUY_USER", "GMAIL_BUY_APP_PASSWORD");
   if (!account) {
