@@ -96,6 +96,7 @@ export interface PartnerItem {
   category: string;
   tier: string;
   description: string;
+  url?: string;
   logo?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   order?: number;
 }
@@ -105,6 +106,7 @@ export interface CompanyClientItem {
   name: string;
   category: string;
   description: string;
+  url?: string;
   image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   order?: number;
 }

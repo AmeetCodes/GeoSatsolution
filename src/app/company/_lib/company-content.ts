@@ -64,6 +64,7 @@ export type PartnerItem = {
   category?: string;
   tier?: string;
   description?: string;
+  url?: string;
   logo?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   order?: number;
 };
@@ -73,6 +74,7 @@ export type ClientItem = {
   name: string;
   category: string;
   description: string;
+  url?: string;
   image?: { src: string; alt: string; source?: "upload" | "url"; mediaId?: string };
   order: number;
 };
@@ -157,6 +159,7 @@ export async function getDynamicPartners(): Promise<PartnerItem[]> {
       category: p.category,
       tier: p.tier,
       description: p.description,
+      url: p.url,
       logo: p.logo ? {
         src: p.logo.src,
         alt: p.logo.alt,
@@ -179,6 +182,7 @@ export async function getDynamicClients(): Promise<ClientItem[]> {
       name: c.name,
       category: c.category || "Institutional",
       description: c.description || "",
+      url: c.url,
       image: c.image ? {
         src: c.image.src,
         alt: c.image.alt,

@@ -51,6 +51,7 @@ const partnerItemSchema = z.object({
   category: optionalText(120, "Partner category"),
   tier: optionalText(120, "Partner tier"),
   description: optionalText(1000, "Partner description"),
+  url: z.string().trim().max(2048).optional().refine((value) => !value || /^https?:\/\//i.test(value) || value.startsWith("/"), "Partner URL must be an http(s) URL or site-relative path"),
   logo: galleryImageSchema.optional(),
   order: z.number().int().nonnegative().optional(),
 });
@@ -63,6 +64,7 @@ const clientItemSchema = z.object({
   category: optionalText(120, "Client category"),
   description: optionalText(1000, "Client description"),
   image: galleryImageSchema.optional(),
+  url: z.string().trim().max(2048).optional().refine((value) => !value || /^https?:\/\//i.test(value) || value.startsWith("/"), "Client URL must be an http(s) URL or site-relative path"),
   order: z.number().int().nonnegative().optional(),
 });
 
