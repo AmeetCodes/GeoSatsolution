@@ -82,9 +82,9 @@ export function ProductsCatalogView({
   }, [products, selectedCategory, selectedSubcategory]);
 
   return (
-    <div className="mt-8 space-y-10">
+    <div className="mt-6 space-y-12">
       {/* Category Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-line pb-4">
+      <div className="flex flex-wrap items-center gap-2.5 border-b border-slate-100 pb-6">
         {CATEGORIES.map((cat) => {
           const count = categoryCounts[cat] || 0;
           const isActive = selectedCategory === cat;
@@ -96,18 +96,18 @@ export function ProductsCatalogView({
                 setSelectedCategory(cat);
                 setSelectedSubcategory("All");
               }}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans text-sm font-medium tracking-normal transition-all ${
+              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-sans text-xs font-medium tracking-normal transition-all lg:text-sm ${
                 isActive
-                  ? "bg-aqua/15 text-aqua border border-aqua/40 shadow-sm"
-                  : "bg-panel/30 text-ink-2 hover:bg-panel/60 hover:text-ink border border-line"
+                  ? "border-teal-500 bg-teal-50/70 text-teal-700 shadow-sm"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700"
               }`}
             >
               <span>{cat}</span>
               <span
                 className={`rounded-full px-2 py-0.5 font-sans text-xs tabular ${
                   isActive
-                    ? "bg-aqua/20 text-aqua"
-                    : "bg-abyss/60 text-ink-3"
+                    ? "bg-teal-100 text-teal-700"
+                    : "bg-slate-100 text-slate-500"
                 }`}
               >
                 {count}
@@ -121,7 +121,7 @@ export function ProductsCatalogView({
       <section aria-labelledby="subcategories-heading">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Layers className="size-4 text-aqua" aria-hidden="true" />
+            <Layers className="size-4 text-teal-600" aria-hidden="true" />
             <h2 id="subcategories-heading" className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
               Product Classes & Subcategories
             </h2>
@@ -130,23 +130,23 @@ export function ProductsCatalogView({
             <button
               type="button"
               onClick={() => setSelectedSubcategory("All")}
-              className="font-sans text-xs font-medium text-aqua hover:underline"
+              className="font-sans text-xs font-medium text-teal-700 hover:underline"
             >
               Show all classes
             </button>
           )}
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {activeSubcategories.map((sub) => {
             const isSelected = selectedSubcategory === sub.name;
             return (
               <div
                 key={sub.name}
-                className={`group flex items-center justify-between rounded-xl border p-3.5 transition-all ${
+                className={`group flex items-center justify-between rounded-xl border p-4 transition-all ${
                   isSelected
-                    ? "border-aqua bg-aqua/10 text-aqua"
-                    : "border-line bg-panel/20 text-ink-2 hover:border-line-strong hover:bg-panel/50 hover:text-ink"
+                    ? "border-teal-500 bg-teal-50/60 text-teal-800 shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-teal-500 hover:bg-teal-50/40 hover:text-slate-900"
                 }`}
               >
                 <button
@@ -161,7 +161,7 @@ export function ProductsCatalogView({
                 </button>
                 <Link
                   href={`/products/${sub.slug}`}
-                  className="ml-2 rounded-lg p-1 text-ink-3 transition-colors hover:bg-abyss/80 hover:text-aqua"
+                  className="ml-2 rounded-lg p-1 text-slate-400 transition-colors hover:bg-teal-50 hover:text-teal-700"
                   title={`Go to ${sub.name} catalog page`}
                 >
                   <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -198,7 +198,7 @@ export function ProductsCatalogView({
             </p>
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {filteredProducts.map((product, idx) => (
               <ProductCard
                 key={product.id || product.slug || product.title}

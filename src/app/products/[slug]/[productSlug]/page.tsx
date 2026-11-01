@@ -72,7 +72,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   return (
     <>
       <Navbar />
-      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
+      <PageTransition className="min-h-screen bg-abyss pb-16 pt-[calc(var(--nav-h)+0.5rem)] sm:pt-[calc(var(--nav-h)+1rem)]">
         <ProductDetailView product={product} subcategorySlug={subcategorySlug} />
       </PageTransition>
       <Footer />

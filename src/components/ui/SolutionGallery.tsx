@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type SolutionImage = {
   src: string;
@@ -9,7 +10,15 @@ export type SolutionImage = {
   caption?: string;
 };
 
-export function SolutionGallery({ images }: { images: SolutionImage[] }) {
+export function SolutionGallery({
+  images,
+  className,
+  frameClassName,
+}: {
+  images: SolutionImage[];
+  className?: string;
+  frameClassName?: string;
+}) {
   const resolvedImages = images || [];
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -17,11 +26,11 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
 
   if (!activeImage) {
     return (
-      <div className="overflow-hidden rounded-panel border border-line bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
+      <div className={cn("overflow-hidden rounded-panel border border-line bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]", className)}>
         <div
           role="img"
           aria-label="No images have been added for this page"
-          className="flex aspect-4/3 items-center justify-center bg-slate-100 text-sm text-slate-500 sm:aspect-[1.18/1]"
+          className={cn("flex aspect-4/3 items-center justify-center bg-slate-100 text-sm text-slate-500 sm:aspect-[1.18/1]", frameClassName)}
         >
           No images available
         </div>
@@ -35,7 +44,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-panel border border-line bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]">
+    <div className={cn("overflow-hidden rounded-panel border border-line bg-white shadow-[0_24px_60px_-38px_rgba(15,23,42,0.45)]", className)}>
       <div
         role="region"
         aria-roledescription="carousel"
@@ -55,7 +64,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
         <div
           role="img"
           aria-label={activeImage.alt}
-          className="relative aspect-4/3 overflow-hidden bg-slate-200 sm:aspect-[1.18/1]"
+          className={cn("relative aspect-4/3 overflow-hidden bg-slate-200 sm:aspect-[1.18/1]", frameClassName)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- gallery images are content-provided URLs */}
           <img

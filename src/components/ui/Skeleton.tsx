@@ -100,8 +100,8 @@ export function CardGridSkeleton({
 /** Products catalog: category tabs + subcategory tiles + product grid. */
 export function CatalogSkeleton() {
   return (
-    <div className="mt-8 space-y-10" aria-hidden="true">
-      <div className="flex flex-wrap gap-2 border-b border-line pb-4">
+    <div className="mt-6 space-y-12" aria-hidden="true">
+      <div className="flex flex-wrap gap-2.5 border-b border-slate-100 pb-6">
         {Array.from({ length: 5 }).map((_, index) => (
           <Skeleton key={index} className="h-10 w-28 rounded-xl" />
         ))}
@@ -109,7 +109,7 @@ export function CatalogSkeleton() {
 
       <div className="space-y-4">
         <Skeleton className="h-4 w-64" />
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <Skeleton key={index} className="h-16 rounded-xl" />
           ))}
@@ -118,7 +118,7 @@ export function CatalogSkeleton() {
 
       <div className="space-y-6 pt-4">
         <Skeleton className="h-8 w-72" />
-        <CardGridSkeleton count={6} columns={3} />
+        <CardGridSkeleton count={8} columns={4} />
       </div>
     </div>
   );
@@ -130,8 +130,8 @@ export function DetailSkeleton() {
     <div aria-hidden="true">
       <Skeleton className="h-5 w-32" />
 
-      <div className="mt-8 grid items-start gap-10 lg:mt-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-        <div className="max-w-xl">
+      <div className="grid grid-cols-1 items-start gap-8 pt-8 pb-12 lg:grid-cols-12 lg:gap-12 lg:pt-12 lg:pb-20">
+        <div className="max-w-2xl lg:col-span-5 lg:max-w-none">
           <Skeleton className="h-6 w-48 rounded-full" />
           <Skeleton className="mt-6 h-11 w-full" />
           <Skeleton className="mt-3 h-11 w-3/4" />
@@ -146,10 +146,10 @@ export function DetailSkeleton() {
           </div>
         </div>
 
-        <Skeleton className="aspect-[4/3] w-full rounded-[var(--radius-panel)]" />
+        <Skeleton className="aspect-[4/3] min-h-[420px] w-full rounded-3xl lg:col-span-7 lg:min-h-[500px] xl:min-h-[560px]" />
       </div>
 
-      <div className="mt-16 grid gap-8 border-t border-line pt-9 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
+      <div className="grid gap-8 border-t border-slate-100 py-16 md:grid-cols-[0.7fr_1.3fr] md:gap-12 lg:py-24 lg:gap-16">
         <div>
           <Skeleton className="h-3 w-32" />
           <Skeleton className="mt-4 h-8 w-full" />

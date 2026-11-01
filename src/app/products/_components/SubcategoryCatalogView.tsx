@@ -23,9 +23,9 @@ export function SubcategoryCatalogView({
   const siblingSubcategories = PRODUCT_TAXONOMY[categoryGroup] || [];
 
   return (
-    <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+    <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-12">
       {/* Breadcrumb Navigation */}
-      <nav aria-label="Breadcrumb" className="py-2">
+      <nav aria-label="Breadcrumb" className="py-3">
         <ol className="flex flex-wrap items-center gap-2 font-sans text-sm text-ink-3">
           <li>
             <Link
@@ -53,23 +53,23 @@ export function SubcategoryCatalogView({
       </nav>
 
       {/* Header Banner */}
-      <header className="mt-8 max-w-3xl">
-        <div className="flex items-center gap-2">
-          <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">{categoryGroup.toUpperCase()} · PRODUCT CLASS</p>
-        </div>
-        <h1 className="mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
+      <header className="pt-8 pb-2 lg:pt-12">
+        <p className="font-heading font-semibold text-xs tracking-wider uppercase text-teal-600 bg-teal-50/80 px-3 py-1 rounded-full w-fit">
+          {categoryGroup} · Product Class
+        </p>
+        <h1 className="mt-5 max-w-4xl font-heading font-extrabold text-4xl leading-[1.1] tracking-tight text-slate-900 sm:text-5xl xl:text-6xl">
           {subcategoryTitle}
         </h1>
-        <p className="mt-4 font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
+        <p className="mt-5 max-w-3xl font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
           Explore certified {subcategoryTitle.toLowerCase()} hardware systems, models, and calibrated payloads
           available from GeoSAT Solutions.
         </p>
 
         {/* Sibling Subcategories Navigation Pills */}
         {siblingSubcategories.length > 1 && (
-          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-line/60 pt-2">
-            <span className="mr-1 font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
-              Related Classes:
+          <div className="my-6 flex flex-wrap items-center gap-2.5 border-t border-slate-100 pt-6">
+            <span className="mr-1 font-heading text-xs font-semibold uppercase tracking-wider text-teal-600">
+              Related Classes
             </span>
             {siblingSubcategories.map((sub) => {
               const slug = productSlug(sub);
@@ -78,10 +78,10 @@ export function SubcategoryCatalogView({
                 <Link
                   key={sub}
                   href={`/products/${slug}`}
-                  className={`rounded-lg px-3 py-1 font-sans text-xs font-medium tracking-normal transition-all ${
+                  className={`rounded-xl border px-4 py-2 font-sans text-xs font-medium tracking-normal transition-all lg:text-sm ${
                     isCurrent
-                      ? "bg-aqua/20 text-aqua border border-aqua/40 shadow-sm"
-                      : "bg-panel/30 text-ink-2 hover:bg-panel/60 hover:text-ink border border-line"
+                      ? "border-teal-500 bg-teal-50/70 text-teal-700 shadow-sm"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700"
                   }`}
                 >
                   {sub}
@@ -93,7 +93,7 @@ export function SubcategoryCatalogView({
       </header>
 
       {/* Product Models Grid */}
-      <section aria-labelledby="models-heading" className="mt-12">
+      <section aria-labelledby="models-heading" className="mt-6">
         <div className="flex items-center justify-between gap-4 border-b border-line pb-4">
           <h2 id="models-heading" className="font-heading text-2xl font-semibold tracking-tight text-ink">
             Available Models & Instruments
@@ -122,7 +122,7 @@ export function SubcategoryCatalogView({
             </div>
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {products.map((product, idx) => (
               <ProductCard
                 key={product.id || product.slug || product.title}

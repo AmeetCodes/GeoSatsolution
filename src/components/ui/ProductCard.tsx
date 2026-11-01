@@ -31,7 +31,7 @@ export function ProductCard({ product, currentSubcategorySlug, priority }: Produ
       : [product.brand, product.group].filter(Boolean).join("  |  ");
 
   return (
-    <div className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-[#F8F9FA] p-6 font-sans transition-all duration-300 hover:border-slate-300 hover:shadow-xl sm:p-7">
+    <div className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-[#F8F9FA] p-5 font-sans transition-all duration-300 hover:border-slate-300 hover:shadow-xl sm:p-6 lg:p-7">
       {/* Whole-card overlay link keeps every click target navigating to the product detail route. */}
       <Link
         href={detailHref}
@@ -47,7 +47,7 @@ export function ProductCard({ product, currentSubcategorySlug, priority }: Produ
           </span>
         )}
 
-        <h3 className="font-heading text-2xl font-semibold leading-tight tracking-tight text-slate-950 lg:text-[28px]">
+        <h3 className="font-heading text-xl font-semibold leading-tight tracking-tight text-slate-950 sm:text-2xl lg:text-[26px]">
           {product.title}
         </h3>
 
@@ -70,13 +70,13 @@ export function ProductCard({ product, currentSubcategorySlug, priority }: Produ
       </div>
 
       {/* B. Bottom product showcase image zone */}
-      <div className="relative mt-6 flex min-h-[280px] w-full flex-1 items-center justify-center overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-100/80 shadow-inner sm:min-h-[320px]">
+      <div className="relative mt-6 flex aspect-[4/3] min-h-[220px] w-full flex-1 items-center justify-center overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-100/80 shadow-inner">
         {mainImage?.src ? (
           <Image
             src={mainImage.src}
             alt={mainImage.alt || product.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             priority={priority}
             unoptimized

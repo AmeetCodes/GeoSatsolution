@@ -1,6 +1,25 @@
 import { revalidatePath, revalidateTag } from "next/cache";
+import { Types } from "mongoose";
 import { productRepository, CreateProductDTO, UpdateProductDTO } from "../repositories/product.repository";
 import { IProduct } from "../../models/product";
+
+export interface GetRelatedProductsParams {
+  currentProductId?: string;
+  categoryId?: string;
+  subcategorySlug?: string;
+  limit?: number;
+}
+
+export interface RelatedProduct {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  subcategory?: string;
+  shortDescription: string;
+  thumbnailImage?: string;
+  images?: IProduct["images"];
+}
 
 export function slugify(text: string): string {
   return text
@@ -35,6 +54,86 @@ export class ProductService {
 
   async getByTitle(title: string): Promise<IProduct | null> {
     return productRepository.findByTitle(title);
+  }
+
+  async getRelatedProducts({
+    currentProductId,
+    categoryId,
+    subcategorySlug,
+    limit = 4,
+  }: GetRelatedProductsParams): Promise<RelatedProduct[]> {
+    const safeLimit = Math.min(Math.max(Math.trunc(limit) || 4, 1), 12);
+
+    try {
+      const current =
+        currentProductId && Types.ObjectId.isValid(currentProductId)
+          ? await productRepository.findById(currentProductId)
+          : null;
+
+      const currentId = current?._id?.toString() || currentProductId || "";
+      const currentSlug = current?.slug || "";
+      const targetGroup = (categoryId || current?.group || "").trim();
+      const targetSubcategory = (subcategorySlug || current?.subcategory || "").trim();
+
+      const isCurrent = (item: IProduct): boolean => {
+        const id = item._id?.toString();
+        return Boolean(
+          (currentId && id === currentId) ||
+            (currentSlug && item.slug === currentSlug)
+        );
+      };
+
+      const buckets: IProduct[][] = [];
+      if (targetGroup && targetSubcategory) {
+        buckets.push(
+          await productRepository.findAll({
+            isPublished: true,
+            group: targetGroup,
+            subcategory: targetSubcategory,
+          })
+        );
+      }
+      if (targetGroup) {
+        buckets.push(
+          await productRepository.findAll({
+            isPublished: true,
+            group: targetGroup,
+          })
+        );
+      }
+      buckets.push(await productRepository.findAll({ isPublished: true }));
+
+      const selected: IProduct[] = [];
+      const seen = new Set<string>();
+
+      for (const bucket of buckets) {
+        for (const item of bucket) {
+          if (selected.length >= safeLimit) break;
+          if (isCurrent(item)) continue;
+
+          const key = item._id?.toString() || item.slug;
+          if (!key || seen.has(key)) continue;
+
+          seen.add(key);
+          selected.push(item);
+        }
+        if (selected.length >= safeLimit) break;
+      }
+
+      return selected.map((item) => ({
+        id: item._id?.toString() || item.slug,
+        name: item.title,
+        slug: item.slug,
+        category: item.subcategory || item.group,
+        subcategory: item.subcategory,
+        shortDescription: item.intro || item.description || "",
+        thumbnailImage: item.images?.[0]?.src,
+        images: item.images || [],
+      }));
+    } catch (error) {
+      console.error("Error fetching related products:", error);
+      return [];
+    }
   }
 
   async create(data: CreateProductDTO): Promise<IProduct> {

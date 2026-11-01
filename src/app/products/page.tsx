@@ -28,9 +28,9 @@ export default async function ProductsPage() {
   return (
     <>
       <Navbar />
-      <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-          <header className="max-w-3xl">
+      <PageTransition className="min-h-screen bg-abyss pb-16 pt-[calc(var(--nav-h)+0.5rem)] sm:pt-[calc(var(--nav-h)+1rem)]">
+        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-12">
+          <header className="max-w-4xl pt-8 pb-10 lg:pt-10 lg:pb-14">
             <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Products & Hardware Catalog</p>
             <h1 className="mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
               Tools and systems that keep field and office work moving.

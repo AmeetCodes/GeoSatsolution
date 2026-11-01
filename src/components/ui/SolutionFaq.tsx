@@ -1,6 +1,16 @@
 import { ChevronDown } from "lucide-react";
 
-export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTitle: string; deliverables: string[]; items?: { question: string; answer: string }[] }) {
+export function SolutionFaq({
+  solutionTitle,
+  deliverables,
+  items,
+  className,
+}: {
+  solutionTitle: string;
+  deliverables: string[];
+  items?: { question: string; answer: string }[];
+  className?: string;
+}) {
   const generatedFaqs = [
     {
       question: `What is included with ${solutionTitle}?`,
@@ -16,9 +26,14 @@ export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTi
     },
   ];
   const faqs = items?.length ? items : generatedFaqs;
+  const sectionClassName =
+    className ?? "mt-14 border-t border-line pt-10 sm:mt-16 sm:pt-12";
 
   return (
-    <section className="mt-14 border-t border-line pt-10 sm:mt-16 sm:pt-12" aria-labelledby="solution-faq-heading">
+    <section
+      className={sectionClassName}
+      aria-labelledby="solution-faq-heading"
+    >
       <div className="grid gap-7 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
         <div>
           <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Good to know</p>

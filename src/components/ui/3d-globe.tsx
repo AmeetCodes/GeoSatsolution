@@ -1,18 +1,9 @@
 "use client";
-import React, { useRef, useMemo, useState, useCallback, Suspense } from "react";
+import React, { useRef, useMemo, Suspense } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
-
-
-export interface GlobeMarker {
-  lat: number;
-  lng: number;
-  src: string;
-  label?: string;
-  size?: number;
-}
 
 export interface Globe3DConfig {
   /** Globe radius */
@@ -49,8 +40,6 @@ export interface Globe3DConfig {
   cameraDistanceFactor?: number;
   /** Initial rotation */
   initialRotation?: { x: number; y: number };
-  /** Marker default size */
-  markerSize?: number;
   /** Show wireframe overlay */
   showWireframe?: boolean;
   /** Wireframe color */
@@ -64,16 +53,10 @@ export interface Globe3DConfig {
 }
 
 interface Globe3DProps {
-  /** Array of markers to display on the globe */
-  markers?: GlobeMarker[];
   /** Globe configuration */
   config?: Globe3DConfig;
   /** Additional CSS classes */
   className?: string;
-  /** Callback when a marker is clicked */
-  onMarkerClick?: (marker: GlobeMarker) => void;
-  /** Callback when a marker is hovered */
-  onMarkerHover?: (marker: GlobeMarker | null) => void;
 }
 
 const DEFAULT_EARTH_TEXTURE =
@@ -81,98 +64,11 @@ const DEFAULT_EARTH_TEXTURE =
 const DEFAULT_BUMP_TEXTURE =
   "https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png";
 
-function latLngToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
-  const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lng + 180) * (Math.PI / 180);
-
-  const x = -(radius * Math.sin(phi) * Math.cos(theta));
-  const z = radius * Math.sin(phi) * Math.sin(theta);
-  const y = radius * Math.cos(phi);
-
-  return new THREE.Vector3(x, y, z);
-}
-
-interface MarkerProps {
-  marker: GlobeMarker;
-  radius: number;
-  defaultSize: number;
-  onClick?: (marker: GlobeMarker) => void;
-  onHover?: (marker: GlobeMarker | null) => void;
-}
-
-function Marker({ marker, radius, defaultSize, onClick, onHover }: MarkerProps) {
-  const [hovered, setHovered] = useState(false);
-
-  const surfacePosition = useMemo(() => {
-    return latLngToVector3(marker.lat, marker.lng, radius * 1.001);
-  }, [marker.lat, marker.lng, radius]);
-
-  const topPosition = useMemo(() => {
-    return latLngToVector3(marker.lat, marker.lng, radius * 1.18);
-  }, [marker.lat, marker.lng, radius]);
-
-  const lineHeight = topPosition.distanceTo(surfacePosition);
-
-  const handlePointerEnter = useCallback(() => {
-    setHovered(true);
-    onHover?.(marker);
-  }, [marker, onHover]);
-
-  const handlePointerLeave = useCallback(() => {
-    setHovered(false);
-    onHover?.(null);
-  }, [onHover]);
-
-  const handleClick = useCallback(() => {
-    onClick?.(marker);
-  }, [marker, onClick]);
-
-  const { lineCenter, lineQuaternion } = useMemo(() => {
-    const center = surfacePosition.clone().lerp(topPosition, 0.5);
-    const direction = topPosition.clone().sub(surfacePosition).normalize();
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-
-    return { lineCenter: center, lineQuaternion: quaternion };
-  }, [surfacePosition, topPosition]);
-
-  return (
-    <group>
-      <mesh position={lineCenter} quaternion={lineQuaternion}>
-        <cylinderGeometry args={[0.003, 0.003, lineHeight, 8]} />
-        <meshBasicMaterial
-          color={hovered ? "#ffffff" : "#94a3b8"}
-          transparent
-          opacity={hovered ? 0.9 : 0.6}
-        />
-      </mesh>
-
-      <mesh position={surfacePosition} quaternion={lineQuaternion}>
-        <coneGeometry args={[0.015, 0.04, 8]} />
-        <meshBasicMaterial color={hovered ? "#f97316" : "#ef4444"} />
-      </mesh>
-
-      <sprite
-        position={topPosition}
-        scale={hovered ? (marker.size ?? defaultSize) * 1.3 : marker.size ?? defaultSize}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
-        onClick={handleClick}
-      >
-        <spriteMaterial color={hovered ? "#f97316" : "#f8fafc"} />
-      </sprite>
-    </group>
-  );
-}
-
 interface RotatingGlobeProps {
   config: Required<Globe3DConfig>;
-  markers: GlobeMarker[];
-  onMarkerClick?: (marker: GlobeMarker) => void;
-  onMarkerHover?: (marker: GlobeMarker | null) => void;
 }
 
-function RotatingGlobe({ config, markers, onMarkerClick, onMarkerHover }: RotatingGlobeProps) {
+function RotatingGlobe({ config }: RotatingGlobeProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   const [earthTexture, bumpTexture] = useTexture(
@@ -219,17 +115,6 @@ function RotatingGlobe({ config, markers, onMarkerClick, onMarkerHover }: Rotati
           />
         </mesh>
       )}
-
-      {markers.map((marker, index) => (
-        <Marker
-          key={`marker-${index}-${marker.lat}-${marker.lng}`}
-          marker={marker}
-          radius={config.radius}
-          defaultSize={config.markerSize}
-          onClick={onMarkerClick}
-          onHover={onMarkerHover}
-        />
-      ))}
     </group>
   );
 }
@@ -286,13 +171,10 @@ function Atmosphere({ radius, color, intensity, blur }: AtmosphereProps) {
 }
 
 interface SceneProps {
-  markers: GlobeMarker[];
   config: Required<Globe3DConfig>;
-  onMarkerClick?: (marker: GlobeMarker) => void;
-  onMarkerHover?: (marker: GlobeMarker | null) => void;
 }
 
-function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
+function Scene({ config }: SceneProps) {
   const { camera } = useThree();
 
   React.useEffect(() => {
@@ -314,12 +196,7 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
         color="#88ccff"
       />
 
-      <RotatingGlobe
-        config={config}
-        markers={markers}
-        onMarkerClick={onMarkerClick}
-        onMarkerHover={onMarkerHover}
-      />
+      <RotatingGlobe config={config} />
 
       {config.showAtmosphere && (
         <Atmosphere
@@ -372,7 +249,6 @@ const defaultConfig: Required<Globe3DConfig> = {
   maxDistance: 11,
   cameraDistanceFactor: 2.9,
   initialRotation: { x: 0, y: 0 },
-  markerSize: 0.06,
   showWireframe: false,
   wireframeColor: "#4a9eff",
   ambientIntensity: 0.6,
@@ -380,13 +256,7 @@ const defaultConfig: Required<Globe3DConfig> = {
   backgroundColor: null,
 };
 
-export function Globe3D({
-  markers = [],
-  config = {},
-  className,
-  onMarkerClick,
-  onMarkerHover,
-}: Globe3DProps) {
+export function Globe3D({ config = {}, className }: Globe3DProps) {
   const mergedConfig = useMemo(() => ({ ...defaultConfig, ...config }), [config]);
 
   return (
@@ -413,12 +283,7 @@ export function Globe3D({
         }}
       >
         <Suspense fallback={<LoadingFallback />}>
-          <Scene
-            markers={markers}
-            config={mergedConfig}
-            onMarkerClick={onMarkerClick}
-            onMarkerHover={onMarkerHover}
-          />
+          <Scene config={mergedConfig} />
         </Suspense>
       </Canvas>
     </div>
