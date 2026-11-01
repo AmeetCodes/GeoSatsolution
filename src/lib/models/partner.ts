@@ -6,6 +6,7 @@ export interface IPartner extends Document {
   category: string;
   tier: string;
   description: string;
+  url?: string;
   logo?: {
     src: string;
     alt: string;
@@ -24,6 +25,7 @@ const PartnerSchema = new Schema<IPartner>(
     category: { type: String, required: true, trim: true },
     tier: { type: String, required: true, trim: true },
     description: { type: String, required: true },
+    url: { type: String, trim: true },
     logo: {
       src: { type: String },
       alt: { type: String },

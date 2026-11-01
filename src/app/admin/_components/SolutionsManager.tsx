@@ -1,5 +1,6 @@
 "use client";
 
+import type { ContentImage, SolutionItem } from '@/lib/content-types';
 import React, { useState, useMemo } from "react";
 import {
   Plus,
@@ -13,7 +14,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
-import type { ContentImage, SolutionItem } from "@/lib/data-store";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface SolutionsManagerProps {
@@ -98,7 +98,7 @@ export function SolutionsManager({
     setFormDesc(item.description);
     setFormOutcomes(item.outcomes.length > 0 ? [...item.outcomes] : [""]);
     setFormImages(
-      item.images?.length > 0
+      item.images && item.images.length > 0
         ? [...item.images]
         : [{ src: "", alt: "", caption: "", source: "url" }]
     );

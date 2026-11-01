@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -165,11 +166,11 @@ export function PartnersClients() {
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex h-12 w-auto items-center">
                       {partner.logoUrl ? (
-                        <img
+                        <Image
                           src={partner.logoUrl}
                           alt={partner.alt || partner.name}
-                          loading="lazy"
-                          decoding="async"
+                          width={160}
+                          height={40}
                           className="h-10 w-auto max-w-[160px] object-contain"
                         />
                       ) : (
@@ -246,11 +247,11 @@ export function PartnersClients() {
                 >
                   <div className="mb-3 flex h-16 w-full items-center justify-center">
                     {client.logoUrl ? (
-                      <img
+                      <Image
                         src={client.logoUrl}
                         alt={client.alt || client.name}
-                        loading="lazy"
-                        decoding="async"
+                        width={120}
+                        height={48}
                         className="h-auto max-h-12 w-auto max-w-[120px] object-contain opacity-75 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
                       />
                     ) : (

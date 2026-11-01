@@ -33,10 +33,6 @@ function emptyDistrictEntry(
 }
 
 export class DistrictProjectService {
-  async list(): Promise<IDistrictProject[]> {
-    return districtProjectRepository.findAll();
-  }
-
   /** Serializable list for server-rendered admin pages. */
   async listRecords(): Promise<DistrictProjectRecord[]> {
     let docs: IDistrictProject[] = [];
@@ -51,8 +47,6 @@ export class DistrictProjectService {
       id: String(doc._id),
       district: doc.district,
       province: doc.province,
-      title: doc.title,
-      category: doc.category,
       status: doc.status,
       latitude: doc.latitude,
       longitude: doc.longitude,
@@ -89,8 +83,6 @@ export class DistrictProjectService {
       base.count = row.count;
       base.projects = (row.projects ?? []).map((project) => ({
         id: project.id,
-        title: project.title || "Survey project",
-        category: project.category || "Geospatial survey",
         status: project.status || "COMPLETED",
       }));
       totalProjects += row.count;
@@ -135,8 +127,6 @@ export class DistrictProjectService {
 
   async create(input: {
     district: string;
-    title?: string;
-    category?: string;
     status?: DistrictProjectStatus;
     latitude?: number;
     longitude?: number;
@@ -149,19 +139,56 @@ export class DistrictProjectService {
   /** Adds a single project record to a district (bumps its count by one). */
   async increment(input: {
     district: string;
-    title?: string;
-    category?: string;
     status?: DistrictProjectStatus;
   }): Promise<IDistrictProject> {
     const saved = await districtProjectRepository.create(
       this.buildDTO(input.district, {
-        title: input.title || "Field survey project",
-        category: input.category || "Geospatial survey",
         status: input.status ?? "COMPLETED",
       }),
     );
     this.revalidate();
     return saved;
+  }
+
+  /** Sets the number of project records for a district and applies one status. */
+  async setDistrictProjects(input: {
+    district: string;
+    count: number;
+    status?: DistrictProjectStatus;
+  }): Promise<IDistrictProject[]> {
+    if (!getDistrictByName(input.district)) {
+      throw new Error(`Unknown district: ${input.district}`);
+    }
+
+    const status = input.status ?? "COMPLETED";
+    const target = Math.max(0, Math.trunc(input.count));
+    const existing = await districtProjectRepository.findByDistrict(input.district);
+
+    if (existing.length > target) {
+      const toRemove = existing.slice(target);
+      await Promise.all(
+        toRemove.map((project) => districtProjectRepository.deleteById(String(project._id))),
+      );
+    } else if (existing.length < target) {
+      const additions = Array.from({ length: target - existing.length }, () =>
+        districtProjectRepository.create(this.buildDTO(input.district, { status })),
+      );
+      await Promise.all(additions);
+    }
+
+    if (target > 0) {
+      await districtProjectRepository.updateStatusByDistrict(input.district, status);
+    }
+
+    this.revalidate();
+    return districtProjectRepository.findByDistrict(input.district);
+  }
+
+  /** Removes every project record for a district. */
+  async removeDistrict(district: string): Promise<number> {
+    const removed = await districtProjectRepository.deleteByDistrict(district);
+    if (removed > 0) this.revalidate();
+    return removed;
   }
 
   /** Removes the most recent project record from a district (count - one). */

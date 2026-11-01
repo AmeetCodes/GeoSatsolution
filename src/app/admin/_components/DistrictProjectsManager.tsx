@@ -6,8 +6,10 @@ import {
   Loader2,
   MapPin,
   Minus,
+  Pencil,
   Plus,
   RefreshCw,
+  Save,
   Search,
   Trash2,
 } from "lucide-react";
@@ -18,6 +20,7 @@ import {
 } from "@/lib/data/nepal-districts";
 import { NepalProjectMap } from "@/components/ui/NepalProjectMap";
 import type {
+  AdminMapState,
   DistrictCountResponse,
   DistrictProjectRecord,
   DistrictProjectStatus,
@@ -26,6 +29,24 @@ import type {
 interface DistrictProjectsManagerProps {
   initialProjects?: DistrictProjectRecord[];
   onTriggerToast: (title: string, desc?: string) => void;
+}
+
+type DistrictSummary = {
+  district: string;
+  province: number;
+  count: number;
+  status: DistrictProjectStatus;
+  latestAt: string;
+};
+
+const EMPTY_MAP_STATE: AdminMapState = {
+  district: "",
+  projectCount: 1,
+  status: "COMPLETED",
+};
+
+function statusLabel(status: DistrictProjectStatus) {
+  return status === "ONGOING" ? "Ongoing" : "Completed";
 }
 
 function buildCounts(projects: DistrictProjectRecord[]): DistrictCountResponse {
@@ -50,8 +71,6 @@ function buildCounts(projects: DistrictProjectRecord[]): DistrictCountResponse {
     entry.count += 1;
     entry.projects.push({
       id: project.id,
-      title: project.title || "Field survey project",
-      category: project.category || "Geospatial survey",
       status: project.status,
     });
     totalProjects += 1;
@@ -89,10 +108,8 @@ export function DistrictProjectsManager({
 
   const [districtQuery, setDistrictQuery] = useState("");
   const [districtOpen, setDistrictOpen] = useState(false);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [status, setStatus] = useState<DistrictProjectStatus>("COMPLETED");
+  const [mapState, setMapState] = useState<AdminMapState>(EMPTY_MAP_STATE);
+  const { district: selectedDistrict, projectCount, status } = mapState;
 
   const load = useCallback(async () => {
     try {
@@ -126,15 +143,35 @@ export function DistrictProjectsManager({
     return [...grouped.entries()].sort((a, b) => a[0] - b[0]);
   }, [districtQuery]);
 
-  const districtProjectList = useMemo(
-    () =>
-      [...projects].sort((a, b) =>
-        a.district === b.district
-          ? (b.createdAt ?? "").localeCompare(a.createdAt ?? "")
-          : a.district.localeCompare(b.district),
-      ),
-    [projects],
-  );
+  const districtSummaries = useMemo(() => {
+    const summaryByDistrict = new Map<string, DistrictSummary>();
+
+    for (const project of projects) {
+      const current = summaryByDistrict.get(project.district);
+      const createdAt = project.createdAt ?? "";
+
+      if (!current) {
+        summaryByDistrict.set(project.district, {
+          district: project.district,
+          province: project.province,
+          count: 1,
+          status: project.status,
+          latestAt: createdAt,
+        });
+        continue;
+      }
+
+      current.count += 1;
+      if (createdAt >= current.latestAt) {
+        current.status = project.status;
+        current.latestAt = createdAt;
+      }
+    }
+
+    return [...summaryByDistrict.values()].sort(
+      (a, b) => a.province - b.province || a.district.localeCompare(b.district),
+    );
+  }, [projects]);
 
   async function request(body: unknown, successTitle: string) {
     setSaving(true);
@@ -160,68 +197,63 @@ export function DistrictProjectsManager({
   }
 
   const handleSelectDistrict = (name: string) => {
-    setSelectedDistrict(name);
+    const existing = districtSummaries.find((summary) => summary.district === name);
+    setMapState({
+      district: name,
+      projectCount: existing?.count ?? 1,
+      status: existing?.status ?? "COMPLETED",
+    });
     setDistrictQuery(name);
     setDistrictOpen(false);
   };
 
-  const handleAdd = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEdit = (summary: DistrictSummary) => {
+    setMapState({
+      district: summary.district,
+      projectCount: summary.count,
+      status: summary.status,
+    });
+    setDistrictQuery(summary.district);
+    setDistrictOpen(false);
+  };
+
+  const updateProjectCount = (value: number) => {
+    if (!Number.isFinite(value)) return;
+    setMapState((current) => ({
+      ...current,
+      projectCount: Math.min(10000, Math.max(0, Math.trunc(value))),
+    }));
+  };
+
+  const handleSaveDistrict = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedDistrict) {
-      onTriggerToast("Select a district", "Choose a district before adding a project.");
+      onTriggerToast("Select a district", "Choose a district before saving.");
       return;
     }
+
+    await request(
+      {
+        action: "set",
+        data: {
+          district: selectedDistrict,
+          count: projectCount,
+          status,
+        },
+      },
+      projectCount === 0 ? "District Cleared" : "District Saved",
+    );
+  };
+
+  const handleDelete = async (summary: DistrictSummary) => {
     const ok = await request(
-      {
-        action: "create",
-        data: {
-          district: selectedDistrict,
-          title: title.trim(),
-          category: category.trim(),
-          status,
-        },
-      },
-      "Project Added",
+      { action: "delete-district", data: { district: summary.district } },
+      "District Removed",
     );
-    if (ok) {
-      setTitle("");
-      setCategory("");
-      setStatus("COMPLETED");
+    if (ok && selectedDistrict === summary.district) {
+      setMapState(EMPTY_MAP_STATE);
+      setDistrictQuery("");
     }
-  };
-
-  const handleIncrement = async () => {
-    if (!selectedDistrict) {
-      onTriggerToast("Select a district", "Choose a district to increment.");
-      return;
-    }
-    await request(
-      {
-        action: "increment",
-        data: {
-          district: selectedDistrict,
-          title: title.trim(),
-          category: category.trim(),
-          status,
-        },
-      },
-      "Project Count Increased",
-    );
-  };
-
-  const handleDecrement = async () => {
-    if (!selectedDistrict) {
-      onTriggerToast("Select a district", "Choose a district to decrement.");
-      return;
-    }
-    await request(
-      { action: "decrement", data: { district: selectedDistrict } },
-      "Project Count Decreased",
-    );
-  };
-
-  const handleDelete = async (project: DistrictProjectRecord) => {
-    await request({ action: "delete", id: project.id }, "Project Deleted");
   };
 
   const summary = counts.summary;
@@ -233,7 +265,7 @@ export function DistrictProjectsManager({
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
           <p className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Total projects across Nepal
+            Projects completed
           </p>
           <p className="mt-2 text-3xl font-bold text-slate-900">{summary.totalProjects}</p>
         </div>
@@ -248,7 +280,7 @@ export function DistrictProjectsManager({
         </div>
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
           <p className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Most active province
+            Top province
           </p>
           <p className="mt-2 text-2xl font-bold text-slate-900">
             {summary.mostActiveProvince?.name ?? "—"}
@@ -270,7 +302,7 @@ export function DistrictProjectsManager({
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">Project & Location Manager</h2>
                 <p className="mt-1 text-xs text-slate-500">
-                  Assign projects to any of Nepal&apos;s 77 districts.
+                  Set project counts and status for any of Nepal&apos;s 77 districts.
                 </p>
               </div>
               <button
@@ -286,16 +318,18 @@ export function DistrictProjectsManager({
               </button>
             </div>
 
-            <form onSubmit={handleAdd} className="mt-5 space-y-4">
+            <form onSubmit={handleSaveDistrict} className="mt-5 space-y-4">
               <div className="relative">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">District</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  District
+                </label>
                 <div className="relative mt-1.5">
                   <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                   <input
                     value={districtQuery}
                     onChange={(event) => {
                       setDistrictQuery(event.target.value);
-                      setSelectedDistrict("");
+                      setMapState((current) => ({ ...current, district: "" }));
                       setDistrictOpen(true);
                     }}
                     onFocus={() => setDistrictOpen(true)}
@@ -350,65 +384,68 @@ export function DistrictProjectsManager({
                 </p>
               ) : null}
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Project title
-                  <input
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                    maxLength={200}
-                    placeholder="e.g. Jajarkot LiDAR corridor"
-                    className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
-                  />
+                  Project count
                 </label>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Category
+                <div className="mt-1.5 flex items-stretch gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateProjectCount(projectCount - 1)}
+                    disabled={saving || projectCount <= 0}
+                    aria-label="Decrease project count"
+                    className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 disabled:opacity-50"
+                  >
+                    <Minus className="size-4" />
+                  </button>
                   <input
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                    maxLength={120}
-                    placeholder="e.g. UAV LiDAR, Cadastral Survey"
-                    className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
+                    type="number"
+                    min={0}
+                    max={10000}
+                    value={projectCount}
+                    onChange={(event) => updateProjectCount(Number(event.target.value))}
+                    className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-center text-sm font-semibold text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   />
-                </label>
+                  <button
+                    type="button"
+                    onClick={() => updateProjectCount(projectCount + 1)}
+                    disabled={saving || projectCount >= 10000}
+                    aria-label="Increase project count"
+                    className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 disabled:opacity-50"
+                  >
+                    <Plus className="size-4" />
+                  </button>
+                </div>
+                <p className="mt-1.5 text-xs text-slate-500">
+                  {projectCount} {projectCount === 1 ? "project" : "projects"} for this district.
+                </p>
               </div>
 
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Status
                 <select
                   value={status}
-                  onChange={(event) => setStatus(event.target.value as DistrictProjectStatus)}
+                  onChange={(event) =>
+                    setMapState((current) => ({
+                      ...current,
+                      status: event.target.value as DistrictProjectStatus,
+                    }))
+                  }
                   className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 >
-                  <option value="COMPLETED">COMPLETED</option>
-                  <option value="ONGOING">ONGOING</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ONGOING">Ongoing</option>
                 </select>
               </label>
 
-              <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
+              <div className="border-t border-slate-100 pt-4">
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || !selectedDistrict}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
                 >
-                  {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                  Add project to district
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void handleIncrement()}
-                  disabled={saving}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 disabled:opacity-60"
-                >
-                  <Plus className="size-4" /> Increment
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void handleDecrement()}
-                  disabled={saving}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 disabled:opacity-60"
-                >
-                  <Minus className="size-4" /> Decrement
+                  {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                  Save district
                 </button>
               </div>
             </form>
@@ -418,7 +455,7 @@ export function DistrictProjectsManager({
           <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
             <h3 className="text-sm font-semibold text-slate-900">
               Recorded district projects{" "}
-              <span className="font-normal text-slate-400">({projects.length})</span>
+              <span className="font-normal text-slate-400">({districtSummaries.length})</span>
             </h3>
 
             {loading && projects.length === 0 ? (
@@ -427,35 +464,43 @@ export function DistrictProjectsManager({
               </p>
             ) : loadError ? (
               <p className="mt-4 text-sm text-rose-600">{loadError}</p>
-            ) : districtProjectList.length === 0 ? (
+            ) : districtSummaries.length === 0 ? (
               <p className="mt-4 text-center py-16 rounded-xl border border-dashed border-slate-300 bg-white/60 text-sm text-slate-500">
-                No district projects recorded yet. Add one above.
+                No district projects recorded yet. Save a district above.
               </p>
             ) : (
               <ul className="mt-4 max-h-80 space-y-2 overflow-y-auto pr-1">
-                {districtProjectList.map((project) => (
+                {districtSummaries.map((districtSummary) => (
                   <li
-                    key={project.id}
+                    key={districtSummary.district}
                     className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">
-                        {project.title || "Field survey project"}
-                      </p>
-                      <p className="truncate text-xs text-slate-500">
-                        {project.district} · {project.category || "Geospatial survey"} ·{" "}
-                        {project.status === "ONGOING" ? "Ongoing" : "Completed"}
-                      </p>
+                    <p className="min-w-0 truncate text-sm font-medium text-slate-900">
+                      {districtSummary.district} · Province {districtSummary.province} ·{" "}
+                      {PROVINCE_NAMES[districtSummary.province]} · {districtSummary.count}{" "}
+                      {districtSummary.count === 1 ? "Project" : "Projects"} ·{" "}
+                      {statusLabel(districtSummary.status)}
+                    </p>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(districtSummary)}
+                        disabled={saving}
+                        aria-label={`Edit ${districtSummary.district}`}
+                        className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100 disabled:opacity-60"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleDelete(districtSummary)}
+                        disabled={saving}
+                        aria-label={`Delete ${districtSummary.district}`}
+                        className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 disabled:opacity-60"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => void handleDelete(project)}
-                      disabled={saving}
-                      aria-label={`Delete project in ${project.district}`}
-                      className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 disabled:opacity-60"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
                   </li>
                 ))}
               </ul>
@@ -468,7 +513,7 @@ export function DistrictProjectsManager({
           <div className="border-b border-slate-200 px-5 py-4">
             <h3 className="text-sm font-semibold text-slate-900">Live map preview</h3>
             <p className="mt-0.5 text-xs text-slate-500">
-              Updates instantly as you add, increment, or remove district projects.
+              Updates immediately after saving or removing a district entry.
             </p>
           </div>
           <NepalProjectMap data={counts} heading={false} compact />

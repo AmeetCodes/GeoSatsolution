@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   title: "Executive & Technical Leads | GeoSAT Solutions",
   description: "Meet the executive and engineering leadership team guiding GeoSAT geospatial intelligence.",
   alternates: {
-    canonical: "https://geosatsoln.com/company/about/executive-technical-leads",
+    canonical: "https://www.geosatsolutions.com.np/company/about/executive-technical-leads",
   },
   openGraph: {
     title: "Executive & Technical Leads | GeoSAT Solutions",
     description: "Meet the executive and engineering leadership team guiding GeoSAT geospatial intelligence.",
-    url: "https://geosatsoln.com/company/about/executive-technical-leads",
+    url: "https://www.geosatsolutions.com.np/company/about/executive-technical-leads",
     type: "website",
   },
 };

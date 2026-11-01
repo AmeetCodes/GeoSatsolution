@@ -1,5 +1,7 @@
 "use client";
 
+import type { ContentImage, IndustryItem } from '@/lib/content-types';
+
 import React, { useState } from "react";
 import {
   Building2,
@@ -9,7 +11,6 @@ import {
   CheckCircle2,
   ImagePlus,
 } from "lucide-react";
-import type { ContentImage, IndustryItem } from "@/lib/data-store";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface IndustriesManagerProps {

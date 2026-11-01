@@ -25,7 +25,7 @@ export function ProductsTemplate({
         {/* Back link */}
         <Link
           href={`/${tab.slug}`}
-          className="inline-flex items-center gap-2 py-2 text-sm text-ink-3 transition-colors hover:text-aqua"
+          className="inline-flex items-center gap-2 py-2 font-sans text-sm text-ink-3 transition-colors hover:text-aqua"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           All {tab.label}
@@ -34,21 +34,21 @@ export function ProductsTemplate({
         {/* Hero grid */}
         <article className="mt-8 grid items-center gap-10 lg:mt-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
           <header className="max-w-xl py-2">
-            <p className="label text-aqua">
+            <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
               {column.title} · GeoSAT Product
             </p>
-            <h1 className="mt-5 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-[3.75rem]">
+            <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
               {item.title}
             </h1>
             {item.intro && (
-              <p className="mt-6 font-display text-xl leading-relaxed text-ink-2 sm:text-2xl">
+              <p className="mt-6 font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
                 {item.intro}
               </p>
             )}
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <ProductBuyDialog productTitle={item.title} productGroup={column.title} />
-              <p className="max-w-60 text-xs leading-relaxed text-ink-3">
+              <p className="max-w-60 font-sans text-xs leading-relaxed text-ink-3">
                 Request configuration and pricing for this product.
               </p>
             </div>
@@ -65,7 +65,7 @@ export function ProductsTemplate({
                   href={item.brandUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-panel/40 px-3 py-1.5 text-xs font-semibold text-aqua transition-colors hover:bg-aqua/10"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-panel/40 px-3 py-1.5 font-sans text-sm font-medium tracking-normal text-aqua transition-colors hover:bg-aqua/10"
                 >
                   <span>Official {item.brand || "Manufacturer"} Website</span>
                 </a>
@@ -73,7 +73,7 @@ export function ProductsTemplate({
             )}
 
             {item.description && (
-              <p className="mt-5 max-w-lg text-base leading-7 text-ink-3">
+              <p className="mt-5 max-w-lg font-sans text-base leading-relaxed text-slate-600">
                 {item.description}
               </p>
             )}
@@ -90,10 +90,10 @@ export function ProductsTemplate({
           >
             <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
               <div>
-                <p className="label text-aqua">What you get</p>
+                <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">What you get</p>
                 <h2
                   id="product-specs-heading"
-                  className="mt-4 max-w-sm font-display text-3xl leading-tight text-ink"
+                  className="mt-4 max-w-sm font-heading text-3xl font-semibold leading-tight tracking-tight text-ink"
                 >
                   Key features &amp; practical value.
                 </h2>
@@ -102,7 +102,7 @@ export function ProductsTemplate({
                 {item.outcomes.map((outcome: string, idx: number) => (
                   <li
                     key={idx}
-                    className="flex min-h-16 items-start gap-3 border-b border-line py-4 text-sm leading-relaxed text-ink-2"
+                    className="flex min-h-16 items-start gap-3 border-b border-line py-4 font-sans text-sm leading-relaxed text-ink-2"
                   >
                     <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-aqua/10 text-aqua">
                       <Check className="size-3.5" aria-hidden="true" />

@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState } from "react";
 import {
   Users,
@@ -12,13 +13,13 @@ import {
   Calendar,
 } from "lucide-react";
 import type {
-  LeaderItem,
-  PartnerItem,
-  CompanyClientItem,
-  NewsItem,
+  CompanyClient,
+  CompanyInsight,
+  CompanyLeader,
+  CompanyPartner,
   ContentImage,
   SiteContentData,
-} from "@/lib/data-store";
+} from "@/lib/content-types";
 import { ResourcesManager } from "./ResourcesManager";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
@@ -38,23 +39,23 @@ export function CompanyManager({
   const [subTab, setSubTab] = useState<SubTab>("leadership");
 
   // Leadership editing state
-  const [editingLeader, setEditingLeader] = useState<LeaderItem | null>(null);
-  const [leaderForm, setLeaderForm] = useState<LeaderItem>({ name: "", role: "", division: "", bio: "", expertise: "", accent: "#0d9488", imagePosition: "center top" });
+  const [editingLeader, setEditingLeader] = useState<CompanyLeader | null>(null);
+  const [leaderForm, setLeaderForm] = useState<CompanyLeader>({ name: "", role: "", division: "", bio: "", expertise: "", accent: "#0d9488", imagePosition: "center top" });
   const [isUploadingLeaderImage, setIsUploadingLeaderImage] = useState(false);
 
   // Partner editing state
-  const [editingPartner, setEditingPartner] = useState<PartnerItem | null>(null);
-  const [partnerForm, setPartnerForm] = useState<PartnerItem>({ id: "", name: "", category: "", tier: "", description: "" });
+  const [editingPartner, setEditingPartner] = useState<CompanyPartner | null>(null);
+  const [partnerForm, setPartnerForm] = useState<CompanyPartner>({ id: "", name: "", category: "", tier: "", description: "" });
   const [isUploadingPartnerLogo, setIsUploadingPartnerLogo] = useState(false);
 
   // Client and institution editing state
-  const [editingClient, setEditingClient] = useState<CompanyClientItem | null>(null);
-  const [clientForm, setClientForm] = useState<CompanyClientItem>({ name: "", category: "Institutional", description: "" });
+  const [editingClient, setEditingClient] = useState<CompanyClient | null>(null);
+  const [clientForm, setClientForm] = useState<CompanyClient>({ name: "", category: "Institutional", description: "" });
   const [isUploadingClientImage, setIsUploadingClientImage] = useState(false);
 
   // News editing state
-  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
-  const [newsForm, setNewsForm] = useState<NewsItem>({ slug: "", title: "", date: "", category: "", excerpt: "", body: [""], author: "GeoSAT Editorial", isPublished: true });
+  const [editingNews, setEditingNews] = useState<CompanyInsight | null>(null);
+  const [newsForm, setNewsForm] = useState<CompanyInsight>({ slug: "", title: "", date: "", category: "", excerpt: "", body: [""], author: "GeoSAT Editorial", isPublished: true });
   const [isUploadingNewsImage, setIsUploadingNewsImage] = useState(false);
 
   // Handler for Leadership

@@ -1,9 +1,10 @@
 "use client";
 
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { ExternalLink, Check } from "lucide-react";
-import type { SiteContentData, SolutionItem, ProductItem } from "@/lib/data-store";
+import type { SiteContentData, SolutionItem, ProductItem } from "@/lib/content-types";
 
 interface LivePreviewProps {
   content: SiteContentData;

@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
 import {
   getDynamicNewsItems,
   getDynamicNewsItemBySlug,
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
 
   const title = `${item.title} | GeoSAT News`;
   const description = item.excerpt;
-  const canonicalUrl = `https://geosatsoln.com/company/insights/news/${slug}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/company/insights/news/${slug}`;
 
   return {
     title,
@@ -70,23 +71,28 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     author: {
       "@type": "Organization",
       name: item.author || "GeoSAT Solutions",
-      url: "https://geosatsoln.com",
+      url: "https://www.geosatsolutions.com.np",
     },
     publisher: {
       "@type": "Organization",
       name: "GeoSAT Solutions",
       logo: {
         "@type": "ImageObject",
-        url: "https://geosatsoln.com/icon.png",
+        url: "https://www.geosatsolutions.com.np/icon.png",
       },
     },
   };
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "https://www.geosatsolutions.com.np/" },
+    { name: "News & Field Notes", url: "https://www.geosatsolutions.com.np/company/insights/news" },
+    { name: item.title, url: `https://www.geosatsolutions.com.np/company/insights/news/${slug}` },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd([articleJsonLd, breadcrumb]) }}
       />
       <Navbar />
       <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">

@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Recent updates, case studies, field notes and technology milestones from GeoSAT survey operations.",
   alternates: {
-    canonical: "https://geosatsoln.com/company/insights/news",
+    canonical: "https://www.geosatsolutions.com.np/company/insights/news",
   },
   openGraph: {
     title: "News & Field Notes | GeoSAT Solutions",
     description:
       "Recent updates, case studies, field notes and technology milestones from GeoSAT survey operations.",
-    url: "https://geosatsoln.com/company/insights/news",
+    url: "https://www.geosatsolutions.com.np/company/insights/news",
     type: "website",
   },
 };

@@ -121,17 +121,18 @@ const INDUSTRY_ACCENTS = [
 ] as const;
 
 const NAVBAR_TEXT_STYLE = {
-  fontFamily: '"Times New Roman", serif',
+  fontFamily: "var(--font-dm-sans), sans-serif",
   fontSize: "16px",
   backgroundColor: "#FFFFFF",
   color: "#000000",
 } as const;
 
 const NAV_LINK_TEXT_STYLE = {
-  fontFamily: '"knowledge-medium", sans-serif',
+  fontFamily: "var(--font-dm-sans), sans-serif",
   fontSize: "14px",
   fontWeight: 500,
   lineHeight: "20px",
+  letterSpacing: "0",
   color: "#212223",
   marginRight: "4px",
 } as const;
@@ -143,7 +144,7 @@ const DROPDOWN_ICON_STYLE = {
 } as const;
 
 const CTA_BUTTON_STYLE = {
-  fontFamily: '"knowledge-medium", sans-serif',
+  fontFamily: "var(--font-dm-sans), sans-serif",
   fontSize: "14px",
   fontWeight: 500,
   backgroundColor: "#00A884",
@@ -153,7 +154,7 @@ const CTA_BUTTON_STYLE = {
 } as const;
 
 const DROPDOWN_ITEM_STYLE = {
-  fontFamily: '"knowledge-regular", sans-serif',
+  fontFamily: "var(--font-dm-sans), sans-serif",
   fontSize: "16px",
   lineHeight: "24px",
   color: "#666666",
@@ -161,7 +162,7 @@ const DROPDOWN_ITEM_STYLE = {
 } as const;
 
 const DROPDOWN_GROUP_STYLE = {
-  fontFamily: '"knowledge-medium", sans-serif',
+  fontFamily: "var(--font-outfit), sans-serif",
   fontSize: "18px",
   fontWeight: 500,
   lineHeight: "1.2",
@@ -487,7 +488,7 @@ export function Navbar() {
                 className="hidden items-center justify-center whitespace-nowrap text-center transition-[transform,background-color] duration-200 hover:-translate-y-0.5 sm:inline-flex"
                 style={CTA_BUTTON_STYLE}
               >
-                Request assessment
+                Contact us
               </Link>
               <button
                 type="button"
@@ -632,7 +633,7 @@ export function Navbar() {
                             <Link
                               href={isIndustriesLink ? "/industries" : item.href || `/${item.slug}`}
                               onClick={() => setDrawerOpen(false)}
-                              className="flex items-center justify-between py-4 font-display text-xl text-ink"
+                              className="flex items-center justify-between py-4 font-heading text-xl text-ink"
                             >
                               {item.label}
                             </Link>
@@ -646,7 +647,7 @@ export function Navbar() {
                             type="button"
                             aria-expanded={isOpen}
                             onClick={() => setExpanded(isOpen ? null : item.label)}
-                            className="flex w-full items-center justify-between py-4 font-display text-xl text-ink"
+                            className="flex w-full items-center justify-between py-4 font-heading text-xl text-ink"
                           >
                             {item.label}
                             <ChevronDown
@@ -679,7 +680,7 @@ export function Navbar() {
                                         )}
                                       >
                                         <div className="mb-2 flex items-center justify-between">
-                                          <h3 className="font-display text-lg text-ink">{industry.title}</h3>
+                                          <h3 className="font-heading text-lg text-ink">{industry.title}</h3>
                                           <span className="text-[0.55rem] uppercase tracking-[0.16em] text-ink-3">
                                             {String(index + 1).padStart(2, "0")}
                                           </span>

@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-
 export interface NavTreeItem {
   id: string;
   title: string;
@@ -48,8 +45,6 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
-
-const TREE_FILE_PATH = path.join(process.cwd(), "src", "data", "navigation-tree.json");
 
 /** Default initial navigation tree strictly adhering to task.md specifications */
 export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
@@ -652,36 +647,9 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
   ],
 };
 
-/** Load the navigation tree from disk, initializing if file doesn't exist */
+/** Legacy pure helper. Runtime navigation is read from MongoDB by NavigationService. */
 export function getNavigationTree(): NavigationTree {
-  try {
-    if (fs.existsSync(TREE_FILE_PATH)) {
-      const data = fs.readFileSync(TREE_FILE_PATH, "utf-8");
-      const parsed = JSON.parse(data);
-      if (parsed?.tabs && Array.isArray(parsed.tabs) && parsed.tabs.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error("Error reading navigation-tree.json:", err);
-  }
-
-  // Save default tree and return it
-  saveNavigationTree(DEFAULT_NAVIGATION_TREE);
   return DEFAULT_NAVIGATION_TREE;
-}
-
-/** Persist navigation tree to disk */
-export function saveNavigationTree(tree: NavigationTree): void {
-  try {
-    const dir = path.dirname(TREE_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(TREE_FILE_PATH, JSON.stringify(tree, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Error saving navigation-tree.json:", err);
-  }
 }
 
 /**

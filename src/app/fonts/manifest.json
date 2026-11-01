@@ -24,18 +24,6 @@
     ]
   },
   {
-    "slug": "open-sans",
-    "faces": [
-      {
-        "file": "open-sans-var-300-800-latin.woff2",
-        "weight": "300 800",
-        "style": "normal",
-        "subset": "latin",
-        "bytes": 48320
-      }
-    ]
-  },
-  {
     "slug": "space-grotesk",
     "faces": [
       {

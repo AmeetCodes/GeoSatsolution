@@ -26,7 +26,7 @@ export function SubcategoryCatalogView({
     <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
       {/* Breadcrumb Navigation */}
       <nav aria-label="Breadcrumb" className="py-2">
-        <ol className="flex flex-wrap items-center gap-2 text-xs text-ink-3">
+        <ol className="flex flex-wrap items-center gap-2 font-sans text-sm text-ink-3">
           <li>
             <Link
               href="/products"
@@ -55,20 +55,20 @@ export function SubcategoryCatalogView({
       {/* Header Banner */}
       <header className="mt-8 max-w-3xl">
         <div className="flex items-center gap-2">
-          <p className="label text-aqua">{categoryGroup.toUpperCase()} · PRODUCT CLASS</p>
+          <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">{categoryGroup.toUpperCase()} · PRODUCT CLASS</p>
         </div>
-        <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-6xl">
+        <h1 className="mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
           {subcategoryTitle}
         </h1>
-        <p className="mt-4 text-base sm:text-lg text-ink-2 leading-relaxed">
+        <p className="mt-4 font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
           Explore certified {subcategoryTitle.toLowerCase()} hardware systems, models, and calibrated payloads
           available from GeoSAT Solutions.
         </p>
 
         {/* Sibling Subcategories Navigation Pills */}
         {siblingSubcategories.length > 1 && (
-          <div className="mt-6 flex flex-wrap items-center gap-2 pt-2 border-t border-line/60">
-            <span className="text-xs font-mono uppercase tracking-wider text-ink-3 mr-1">
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-line/60 pt-2">
+            <span className="mr-1 font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
               Related Classes:
             </span>
             {siblingSubcategories.map((sub) => {
@@ -78,7 +78,7 @@ export function SubcategoryCatalogView({
                 <Link
                   key={sub}
                   href={`/products/${slug}`}
-                  className={`rounded-lg px-3 py-1 text-xs font-medium transition-all ${
+                  className={`rounded-lg px-3 py-1 font-sans text-xs font-medium tracking-normal transition-all ${
                     isCurrent
                       ? "bg-aqua/20 text-aqua border border-aqua/40 shadow-sm"
                       : "bg-panel/30 text-ink-2 hover:bg-panel/60 hover:text-ink border border-line"
@@ -95,10 +95,10 @@ export function SubcategoryCatalogView({
       {/* Product Models Grid */}
       <section aria-labelledby="models-heading" className="mt-12">
         <div className="flex items-center justify-between gap-4 border-b border-line pb-4">
-          <h2 id="models-heading" className="font-display text-2xl font-bold text-ink">
+          <h2 id="models-heading" className="font-heading text-2xl font-semibold tracking-tight text-ink">
             Available Models & Instruments
           </h2>
-          <span className="text-xs font-mono text-ink-3">
+          <span className="font-sans text-sm tabular text-ink-3">
             {products.length} {products.length === 1 ? "model" : "models"} listed
           </span>
         </div>
@@ -106,16 +106,16 @@ export function SubcategoryCatalogView({
         {products.length === 0 ? (
           <div className="mt-8 rounded-[var(--radius-panel)] border border-dashed border-line bg-panel/20 py-20 text-center">
             <Box className="mx-auto size-10 text-ink-3 opacity-40" />
-            <h3 className="mt-4 font-display text-xl text-ink">
+            <h3 className="mt-4 font-heading text-xl font-semibold tracking-tight text-ink">
               New models are currently being calibrated
             </h3>
-            <p className="mt-2 text-sm text-ink-3 max-w-md mx-auto">
+            <p className="mx-auto mt-2 max-w-md font-sans text-sm leading-relaxed text-slate-600">
               Our equipment team is actively updating product models for {subcategoryTitle}. Request custom specs or immediate quotes below.
             </p>
             <div className="mt-6">
               <Link
                 href="/company/contact"
-                className="inline-flex items-center rounded-xl bg-aqua/15 border border-aqua/40 px-5 py-2.5 text-xs font-semibold text-aqua transition-colors hover:bg-aqua/25"
+                className="inline-flex items-center rounded-xl border border-aqua/40 bg-aqua/15 px-5 py-2.5 font-sans text-sm font-medium tracking-normal text-aqua transition-colors hover:bg-aqua/25"
               >
                 Request Instrument Consultation
               </Link>

@@ -190,7 +190,7 @@ export function NepalProjectMap({
               <MapPin className="h-3.5 w-3.5 text-blue-600" aria-hidden="true" />
               Nationwide coverage
             </p>
-            <h2 className="mb-3 mt-4 font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+            <h2 className="mb-3 mt-4 font-heading text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
               Our Footprint Across Nepal
             </h2>
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base">

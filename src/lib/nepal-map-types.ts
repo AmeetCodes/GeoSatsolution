@@ -6,17 +6,23 @@
 
 export type DistrictProjectStatus = "COMPLETED" | "ONGOING";
 
-export type DistrictProjectRecord = {
+export type DistrictProject = {
   id: string;
   district: string;
   province: number;
-  title?: string;
-  category?: string;
   status: DistrictProjectStatus;
   latitude?: number;
   longitude?: number;
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type DistrictProjectRecord = DistrictProject;
+
+export type AdminMapState = {
+  district: string;
+  projectCount: number;
+  status: DistrictProjectStatus;
 };
 
 export type DistrictCountEntry = {
@@ -27,8 +33,6 @@ export type DistrictCountEntry = {
   lng: number;
   projects: {
     id: string;
-    title: string;
-    category: string;
     status: DistrictProjectStatus;
   }[];
 };

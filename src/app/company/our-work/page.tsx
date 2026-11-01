@@ -8,11 +8,11 @@ import type { ProjectItem } from "@/lib/data/project-content";
 export const metadata: Metadata = {
   title: "Our Work | GeoSAT Solutions",
   description: "Explore GeoSAT's survey, LiDAR, GIS, and geospatial project portfolio.",
-  alternates: { canonical: "https://geosatsoln.com/company/our-work" },
+  alternates: { canonical: "https://www.geosatsolutions.com.np/company/our-work" },
   openGraph: {
     title: "Our Work | GeoSAT Solutions",
     description: "Explore GeoSAT's survey, LiDAR, GIS, and geospatial project portfolio.",
-    url: "https://geosatsoln.com/company/our-work",
+    url: "https://www.geosatsolutions.com.np/company/our-work",
     type: "website",
   },
 };

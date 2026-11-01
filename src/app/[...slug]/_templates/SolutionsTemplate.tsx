@@ -23,7 +23,7 @@ export function SolutionsTemplate({
     <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-ink-3">
+        <div className="flex items-center gap-2 font-sans text-sm text-ink-3">
           <Link href="/" className="inline-flex items-center gap-1.5 transition-colors hover:text-aqua">
             <ArrowLeft className="size-4" aria-hidden="true" />
             <span>Home</span>
@@ -31,7 +31,7 @@ export function SolutionsTemplate({
           <ChevronRight className="size-3 text-ink-4" />
           <span className="text-ink-3">{tab.label}</span>
           <ChevronRight className="size-3 text-ink-4" />
-          <span className="text-aqua font-medium">{column.title}</span>
+          <span className="font-medium text-aqua">{column.title}</span>
         </div>
 
         {/* Hero grid */}
@@ -39,18 +39,18 @@ export function SolutionsTemplate({
           <header className="max-w-2xl py-2">
             <SectionBadge tabId={tab.id} label={`${tab.label} · ${column.title}`} />
 
-            <h1 className="mt-5 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-[3.5rem]">
+            <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
               {item.title}
             </h1>
 
             {item.intro && (
-              <p className="mt-6 text-lg leading-relaxed text-ink-2 font-medium">
+              <p className="mt-6 font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
                 {item.intro}
               </p>
             )}
 
             {item.description && (
-              <p className="mt-4 text-base leading-relaxed text-ink-3">
+              <p className="mt-4 font-sans text-base leading-relaxed text-slate-600">
                 {item.description}
               </p>
             )}
@@ -58,12 +58,12 @@ export function SolutionsTemplate({
             {/* Outcomes / Key Deliverables */}
             {item.outcomes && item.outcomes.length > 0 && (
               <section className="mt-8 rounded-2xl border border-line bg-panel/30 p-6" aria-label="Key Capabilities">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-aqua mb-4">
+                <h2 className="mb-4 font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
                   Key Capabilities &amp; Deliverables
                 </h2>
                 <ul className="space-y-3">
                   {item.outcomes.map((outcome: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-ink-2">
+                    <li key={idx} className="flex items-start gap-3 font-sans text-sm leading-relaxed text-ink-2">
                       <CheckCircle2 className="size-4 text-aqua shrink-0 mt-0.5" />
                       <span>{outcome}</span>
                     </li>
@@ -79,7 +79,7 @@ export function SolutionsTemplate({
               />
               <Link
                 href="/request-assessment"
-                className="rounded-full border border-line px-6 py-3 text-sm font-medium text-ink-2 hover:border-line-strong hover:text-ink transition-colors"
+                className="rounded-full border border-line px-6 py-3 font-sans text-sm font-medium tracking-normal text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
               >
                 Contact engineering team
               </Link>

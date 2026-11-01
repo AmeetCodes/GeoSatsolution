@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (subcatMeta) {
     const title = `${subcatMeta.subcategory} | GeoSAT Products Catalog`;
     const description = `Explore professional ${subcatMeta.subcategory.toLowerCase()} equipment, payloads, and solutions calibrated by GeoSAT Solutions.`;
-    const canonicalUrl = `https://geosatsoln.com/products/${slug}`;
+    const canonicalUrl = `https://www.geosatsolutions.com.np/products/${slug}`;
     return {
       title,
       description,
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (product) {
     const title = `${product.title} | GeoSAT Products`;
     const description = product.intro || product.description;
-    const canonicalUrl = `https://geosatsoln.com/products/${slug}`;
+    const canonicalUrl = `https://www.geosatsolutions.com.np/products/${slug}`;
     return {
       title,
       description,

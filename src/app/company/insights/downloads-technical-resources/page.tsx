@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Field-ready documents, technical specifications, and operational manuals for surveying, LiDAR, GIS and geodetic instrumentation.",
   alternates: {
-    canonical: "https://geosatsoln.com/company/insights/downloads-technical-resources",
+    canonical: "https://www.geosatsolutions.com.np/company/insights/downloads-technical-resources",
   },
   openGraph: {
     title: "Downloads & Technical Resources | GeoSAT Solutions",
     description:
       "Field-ready documents, technical specifications, and operational manuals for surveying, LiDAR, GIS and geodetic instrumentation.",
-    url: "https://geosatsoln.com/company/insights/downloads-technical-resources",
+    url: "https://www.geosatsolutions.com.np/company/insights/downloads-technical-resources",
     type: "website",
   },
 };

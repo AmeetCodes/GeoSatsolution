@@ -1,8 +1,9 @@
 "use client";
 
+import type { ContentImage, ResourceItem } from '@/lib/content-types';
+
 import { useState } from "react";
 import { Download, FileText, LoaderCircle, Pencil, Plus, Trash2, Upload } from "lucide-react";
-import type { ContentImage, ResourceItem } from "@/lib/data-store";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
 const emptyResource = (): ResourceItem => ({
@@ -17,7 +18,7 @@ export function ResourcesManager({ resources = [], onSave }: { resources?: Resou
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const update = (key: keyof ResourceItem, value: unknown) => setForm((current) => current ? { ...current, [key]: value } : current);
+  const update = <K extends keyof ResourceItem>(key: K, value: ResourceItem[K]) => setForm((current) => current ? { ...current, [key]: value } : current);
 
   const uploadFile = async (file?: File) => {
     if (!file) return;

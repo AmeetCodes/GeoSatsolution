@@ -1,4 +1,4 @@
-import type { ContentImage } from "@/lib/data-store";
+import type { ContentImage } from "@/lib/content-types";
 
 export interface ProjectItem {
   code: string;

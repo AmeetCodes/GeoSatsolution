@@ -1,9 +1,10 @@
 "use client";
 
+
 import React, { useMemo, useState } from "react";
 import { Briefcase, Edit2, Plus, Search, Trash2 } from "lucide-react";
 import type { ProjectItem } from "@/lib/data/project-content";
-import type { ContentImage } from "@/lib/data-store";
+import type { ContentImage } from "@/lib/content-types";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
 interface ProjectsManagerProps {

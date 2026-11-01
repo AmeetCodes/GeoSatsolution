@@ -5,6 +5,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
 import {
   industryPathSlug,
   getDynamicIndustryBySlug,
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
 
   const title = `${industry.title} | GeoSAT Industries`;
   const description = industry.intro || industry.description;
-  const canonicalUrl = `https://geosat.co/industries/${slug}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/industries/${slug}`;
 
   return {
     title,
@@ -73,15 +74,20 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
     provider: {
       "@type": "Organization",
       name: "GeoSAT Solutions",
-      url: "https://geosat.co",
+      url: "https://www.geosatsolutions.com.np",
     },
   };
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "https://www.geosatsolutions.com.np/" },
+    { name: "Industries", url: "https://www.geosatsolutions.com.np/industries" },
+    { name: industry.title, url: `https://www.geosatsolutions.com.np/industries/${slug}` },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(industryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd([industryJsonLd, breadcrumb]) }}
       />
       <Navbar />
       <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">

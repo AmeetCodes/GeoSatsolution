@@ -17,7 +17,7 @@ export async function GET() {
       );
     }
 
-    const data = await districtProjectService.list();
+    const data = await districtProjectService.listRecords();
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     return NextResponse.json(
@@ -75,6 +75,20 @@ export async function POST(request: Request) {
           );
         }
         return NextResponse.json({ success: true, message: "Project count decreased" });
+      }
+      case "set": {
+        const data = await districtProjectService.setDistrictProjects(request_.data);
+        return NextResponse.json({ success: true, message: "District updated", data });
+      }
+      case "delete-district": {
+        const removed = await districtProjectService.removeDistrict(request_.data.district);
+        if (removed === 0) {
+          return NextResponse.json(
+            { success: false, message: "No projects found in this district." },
+            { status: 404 },
+          );
+        }
+        return NextResponse.json({ success: true, message: "District projects removed" });
       }
       case "update": {
         const updated = await districtProjectService.update(request_.id, request_.data);

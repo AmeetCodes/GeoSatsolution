@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState, useMemo } from "react";
 import {
   Plus,
@@ -21,7 +22,7 @@ import {
   type ContentImage,
   type ProductDownloadItem,
   type ProductItem,
-} from "@/lib/data-store";
+} from "@/lib/content-types";
 import { PRODUCT_TAXONOMY } from "@/lib/product-taxonomy";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 
@@ -159,7 +160,7 @@ export function ProductsManager({
         : []
     );
     setFormImages(
-      item.images?.length > 0
+      item.images && item.images.length > 0
         ? item.images.map((img) => ({ ...img, caption: img.caption || "" }))
         : [{ src: "", alt: "", caption: "", source: "url" }]
     );

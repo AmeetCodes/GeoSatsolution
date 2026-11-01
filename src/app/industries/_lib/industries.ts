@@ -1,5 +1,5 @@
 import { industryService } from "@/lib/db/services/industry.service";
-import type { ContentImage } from "@/lib/data-store";
+import type { ContentImage } from "@/lib/content-types";
 
 export type Industry = {
   slug?: string;

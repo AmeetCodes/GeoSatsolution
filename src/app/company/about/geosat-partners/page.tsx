@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Strategic technology partners and institutional clients working with GeoSAT Solutions on survey, GIS and geospatial intelligence projects.",
   alternates: {
-    canonical: "https://geosatsoln.com/company/about/geosat-partners",
+    canonical: "https://www.geosatsolutions.com.np/company/about/geosat-partners",
   },
   openGraph: {
     title: "GeoSat Partners | GeoSAT Solutions",
     description:
       "Strategic technology partners and institutional clients working with GeoSAT Solutions on survey, GIS and geospatial intelligence projects.",
-    url: "https://geosatsoln.com/company/about/geosat-partners",
+    url: "https://www.geosatsolutions.com.np/company/about/geosat-partners",
     type: "website",
   },
 };

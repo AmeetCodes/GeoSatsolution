@@ -189,7 +189,7 @@ export async function getDynamicClients(): Promise<ClientItem[]> {
         source: c.image.source,
         mediaId: c.image.mediaId ? String(c.image.mediaId) : undefined,
       } : c.logo ? { src: c.logo, alt: c.name } : undefined,
-      order: c.order,
+      order: c.order || 0,
     }));
   } catch (err) {
     console.error("Error fetching dynamic clients:", err);

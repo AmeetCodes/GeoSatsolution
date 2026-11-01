@@ -40,7 +40,7 @@ export async function generateMetadata({
 
   const title = `${product.title} | ${product.subcategory || product.group} | GeoSAT Products`;
   const description = product.intro || product.description;
-  const canonicalUrl = `https://geosatsoln.com/products/${slug}/${modelSlug}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/products/${slug}/${modelSlug}`;
 
   return {
     title,

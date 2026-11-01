@@ -1,5 +1,7 @@
 "use client";
 
+import type { SiteContentData } from '@/lib/content-types';
+
 import React, { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AdminHeader, type AdminTab } from "./AdminHeader";
@@ -16,7 +18,6 @@ import { InquiryTable } from "./InquiryTable";
 import { InquiryDrawer } from "./InquiryDrawer";
 import { INQUIRY_STATUS_META } from "./inquiry-status";
 import SwipeToast from "@/components/ui/SwipeToast";
-import type { SiteContentData } from "@/lib/data-store";
 import type { NavigationTree } from "@/lib/tree-store";
 import type { ProjectItem } from "@/lib/data/project-content";
 import type { DistrictProjectRecord } from "@/lib/nepal-map-types";
@@ -103,7 +104,7 @@ export function AdminDashboard({
 
       const resData = await res.json().catch(() => null);
       if (!res.ok) throw new Error(resData?.message || "Failed to save changes");
-      setContent((prev) => ({ ...prev, [section]: resData?.data ?? data }));
+      setContent((prev) => ({ ...prev, [section]: resData?.data ?? data }) as SiteContentData);
       setSavedRecently(true);
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);

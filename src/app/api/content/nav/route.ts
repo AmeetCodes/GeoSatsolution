@@ -6,62 +6,33 @@ import { getErrorMessage } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const getCachedNavigationPayload = unstable_cache(
-  async () => {
-    const [tree, content] = await Promise.all([
-      navigationService.getTree(),
-      siteContentService.getFullSiteContent(),
-    ]);
-
-    // Extract solution groups directly from the dynamic tree
-    const solutionsTab = tree.tabs.find((t) => t.id === "solutions");
-    const solutionGroups = (solutionsTab?.columns || []).map((col) => ({
-      title: col.title,
-      links: col.items.map((i) => i.title),
-    }));
-
-    // Extract product groups directly from the dynamic tree
-    const productsTab = tree.tabs.find((t) => t.id === "products");
-    const productGroups = (productsTab?.columns || []).map((col) => ({
-      title: col.title,
-      links: col.items.map((i) => i.title),
-    }));
-
-    // Extract company groups directly from the dynamic tree
-    const companyTab = tree.tabs.find((t) => t.id === "company");
-    const companyGroups = (companyTab?.columns || []).map((col) => ({
-      title: col.title,
-      links: col.items.map((i) => i.title),
-    }));
-
-    // Extract industries cards directly from the dynamic tree
-    const industriesTab = tree.tabs.find((t) => t.id === "industries");
-    const industries = (industriesTab?.columns || []).map((col) => ({
-      title: col.title,
-      intro: col.items[0]?.intro || "",
-      description: col.items[0]?.description || "",
-      items: col.items.map((i) => i.title),
-    }));
-
-    return {
-      tree,
-      tabs: tree.tabs,
-      solutionGroups,
-      productGroups,
-      companyGroups,
-      industries,
-      solutions: content.Solutions,
-      products: content.Products,
-    };
-  },
-  ["public-navigation-payload-v2"],
-  { revalidate: 3600, tags: ["public-navigation"] },
-);
+const getCachedNavigationPayload = unstable_cache(async () => {
+  const [tree, content] = await Promise.all([navigationService.getTree(), siteContentService.getFullSiteContent()]);
+  const groups = (id: string) => (tree.tabs.find((tab) => tab.id === id)?.columns || []).map((column) => ({
+    title: column.title,
+    links: column.items.map((item) => item.title),
+  }));
+  const industries = (tree.tabs.find((tab) => tab.id === "industries")?.columns || []).map((column) => ({
+    title: column.title,
+    intro: column.items[0]?.intro || "",
+    description: column.items[0]?.description || "",
+    items: column.items.map((item) => item.title),
+  }));
+  return {
+    tree,
+    tabs: tree.tabs,
+    solutionGroups: groups("solutions"),
+    productGroups: groups("products"),
+    companyGroups: groups("company"),
+    industries,
+    solutions: content.Solutions.filter((item: { isPublished?: boolean }) => item.isPublished !== false),
+    products: content.Products.filter((item: { isPublished?: boolean }) => item.isPublished !== false),
+  };
+}, ["public-navigation-payload-v2"], { revalidate: 3600, tags: ["public-navigation"] });
 
 export async function GET() {
   try {
-    const data = await getCachedNavigationPayload();
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: await getCachedNavigationPayload() });
   } catch (error) {
     return NextResponse.json({ success: false, message: getErrorMessage(error) }, { status: 500 });
   }

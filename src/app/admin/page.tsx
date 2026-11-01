@@ -40,7 +40,7 @@ export default async function AdminPage() {
     <AdminDashboard
       initialContent={content}
       initialTree={tree}
-      initialProjects={projects.map(({ code, title, sector, body, tags, images, isPublished }) => ({ code, title, sector, body, tags, images: (images || []).map((image) => ({ src: image.src, alt: image.alt || title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })), isPublished: isPublished !== false }))}
+      initialProjects={projects.map((p) => ({ code: p.code, title: p.title, sector: p.sector, body: p.body, tags: p.tags, images: (p.images || []).map((image) => ({ src: image.src, alt: image.alt || p.title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })), isPublished: p.isPublished !== false }))}
       initialDistrictProjects={districtProjects}
       initialInquiries={inquiries}
       initialInquiryCounts={inquiryCounts}

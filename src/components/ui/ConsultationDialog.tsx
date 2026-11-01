@@ -237,10 +237,10 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
       >
         <DialogHeader className="px-6 pb-5 pt-8 sm:px-8 sm:pt-10">
           <p className="label text-amber">Consultation request / {solutionGroup}</p>
-          <DialogTitle className="font-display text-4xl font-semibold leading-[1.05] tracking-normal text-ink sm:text-5xl">
+          <DialogTitle className="font-heading text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
             Let&apos;s plan your survey.
           </DialogTitle>
-          <DialogDescription className="max-w-lg text-base leading-relaxed text-ink-2">
+          <DialogDescription className="max-w-lg font-sans text-base leading-relaxed text-slate-600">
             Tell us what you need, and our team will prepare the right next step.
           </DialogDescription>
           <span className="mt-1 inline-flex w-fit border border-aqua/40 px-2.5 py-1 text-xs font-semibold text-aqua-deep">
@@ -253,13 +253,13 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
             <div className="flex gap-4 rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-950">
               <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-700" aria-hidden="true" />
               <div>
-                <h3 className="font-display text-xl font-semibold">Thank you for consulting with us.</h3>
-                <p className="mt-2 text-sm leading-relaxed">
+                <h3 className="font-heading text-xl font-semibold tracking-tight">Thank you for consulting with us.</h3>
+                <p className="mt-2 font-sans text-sm leading-relaxed">
                   Your request has been sent to the GeoSAT consultation team. We&apos;ll follow up at {fields.email.trim()}.
                 </p>
               </div>
             </div>
-            <DialogClose className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-aqua px-5 text-sm font-semibold text-white transition hover:bg-aqua-bright">
+            <DialogClose className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-aqua px-5 font-sans text-sm font-medium tracking-normal text-white transition hover:bg-aqua-bright">
               Done
             </DialogClose>
           </div>

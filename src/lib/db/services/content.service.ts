@@ -66,6 +66,33 @@ export class ContentService {
     await connectDB();
     return Consultation.find({}).sort({ createdAt: -1 }).lean().exec() as unknown as Promise<IConsultation[]>;
   }
+
+
+  async getLeaders() {
+    const { companyRepository } = await import("../repositories/company.repository");
+    return companyRepository.getLeaders();
+  }
+
+  async getPartners() {
+    const { companyRepository } = await import("../repositories/company.repository");
+    return companyRepository.getPartners();
+  }
+
+  async getArticles(publishedOnly = false) {
+    const { companyRepository } = await import("../repositories/company.repository");
+    return companyRepository.getArticles(publishedOnly);
+  }
+
+  async getArticleBySlug(slug: string) {
+    const { companyRepository } = await import("../repositories/company.repository");
+    return companyRepository.getArticleBySlug(slug);
+  }
+
+  async getResources(publishedOnly = false) {
+    const { companyRepository } = await import("../repositories/company.repository");
+    return companyRepository.getResources(publishedOnly);
+  }
+
 }
 
 export const contentService = new ContentService();

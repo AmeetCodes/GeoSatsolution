@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { navigationService } from "@/lib/db/services/navigation.service";
@@ -115,7 +116,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { item, tab, column } = match;
   const dbContent = await getDbContentForTreeItem(match);
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
-  const canonicalUrl = `https://geosat.co/${pagePath}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/${pagePath}`;
 
   const title =
     item.metadata?.metaTitle ||
@@ -240,7 +241,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
 
   // ── JSON-LD Structured Data ─────────────────────────────────────────────────
   const pagePath = Array.isArray(slug) ? slug.join("/") : slug;
-  const canonicalUrl = `https://geosat.co/${pagePath}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/${pagePath}`;
 
   let jsonLd: Record<string, unknown> | null = null;
   if (tab.id === "products") {
@@ -274,7 +275,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       provider: {
         "@type": "Organization",
         name: "GeoSAT Solutions",
-        url: "https://geosat.co",
+        url: "https://www.geosatsolutions.com.np",
       },
     };
   } else if (tab.id === "industries") {
@@ -287,7 +288,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       provider: {
         "@type": "Organization",
         name: "GeoSAT Solutions",
-        url: "https://geosat.co",
+        url: "https://www.geosatsolutions.com.np",
       },
     };
   } else if (tab.id === "company") {
@@ -297,9 +298,15 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       name: resolvedItem.title,
       description: resolvedItem.intro || resolvedItem.description,
       url: canonicalUrl,
-      sameAs: ["https://geosat.co"],
+      sameAs: ["https://www.geosatsolutions.com.np"],
     };
   }
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "https://www.geosatsolutions.com.np/" },
+    { name: tab.label, url: `https://www.geosatsolutions.com.np/${tab.slug}` },
+    ...(column ? [{ name: column.title, url: `https://www.geosatsolutions.com.np/${pagePath}` }] : []),
+    { name: resolvedItem.title, url: canonicalUrl },
+  ]);
 
   // ── Section-aware template routing ──────────────────────────────────────────
   return (
@@ -307,7 +314,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd([jsonLd, breadcrumb]) }}
         />
       )}
       <Navbar />

@@ -5,6 +5,7 @@ export interface IClient extends Document {
   logo?: string;
   category?: string;
   description?: string;
+  url?: string;
   image?: {
     src: string;
     alt: string;
@@ -22,6 +23,7 @@ const ClientSchema = new Schema<IClient>(
     logo: { type: String },
     category: { type: String, default: "Institutional" },
     description: { type: String, default: "" },
+    url: { type: String, trim: true },
     image: {
       src: { type: String },
       alt: { type: String },

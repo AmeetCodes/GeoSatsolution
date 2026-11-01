@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Enterprise-grade geospatial hardware, survey instruments, UAV payloads, LiDAR sensors, and engineering software catalog.",
   alternates: {
-    canonical: "https://geosatsoln.com/products",
+    canonical: "https://www.geosatsolutions.com.np/products",
   },
   openGraph: {
     title: "Products & Equipment Catalog | GeoSAT Solutions",
     description:
       "Enterprise-grade geospatial hardware, survey instruments, UAV payloads, LiDAR sensors, and engineering software catalog.",
-    url: "https://geosatsoln.com/products",
+    url: "https://www.geosatsolutions.com.np/products",
     siteName: "GeoSAT Solutions",
     type: "website",
   },
@@ -31,11 +31,11 @@ export default async function ProductsPage() {
       <PageTransition className="min-h-screen bg-abyss pb-20 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
           <header className="max-w-3xl">
-            <p className="label text-aqua">Products & Hardware Catalog</p>
-            <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl">
+            <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Products & Hardware Catalog</p>
+            <h1 className="mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
               Tools and systems that keep field and office work moving.
             </h1>
-            <p className="mt-4 text-base text-ink-2 max-w-2xl leading-relaxed">
+            <p className="mt-4 max-w-2xl font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
               Explore certified geospatial hardware, high-end optical total stations, GNSS rover systems,
               aerial drone payloads, and industry-standard processing software suites.
             </p>

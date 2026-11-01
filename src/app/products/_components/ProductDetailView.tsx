@@ -5,8 +5,9 @@ import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
 import type { Product } from "../_lib/product-types";
-import { productSlug } from "../_lib/product-types";
+import { productPathSlug, productSlug } from "../_lib/product-types";
 
 interface ProductDetailViewProps {
   product: Product;
@@ -23,31 +24,30 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
     name: product.title,
     category: product.group,
     description: product.intro || product.description,
+    image: product.images?.map((image) => image.src),
     brand: {
       "@type": "Brand",
       name: product.brand || "GeoSAT",
     },
-    offers: {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      priceCurrency: "USD",
-      seller: {
-        "@type": "Organization",
-        name: "GeoSAT Solutions",
-      },
-    },
   };
+  const canonical = `https://www.geosatsolutions.com.np/products/${subSlug}/${productPathSlug(product)}`;
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "https://www.geosatsolutions.com.np/" },
+    { name: "Products", url: "https://www.geosatsolutions.com.np/products" },
+    ...(product.subcategory ? [{ name: product.subcategory, url: `https://www.geosatsolutions.com.np/products/${subSlug}` }] : []),
+    { name: product.title, url: canonical },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd([productJsonLd, breadcrumb]) }}
       />
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         {/* Breadcrumb navigation */}
         <nav aria-label="Breadcrumb" className="py-2">
-          <ol className="flex flex-wrap items-center gap-2 text-xs text-ink-3">
+          <ol className="flex flex-wrap items-center gap-2 font-sans text-sm text-ink-3">
             <li>
               <Link
                 href="/products"
@@ -85,32 +85,32 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
         <article className="mt-6 grid items-center gap-10 lg:mt-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
           <header className="max-w-xl py-2">
             <div className="flex flex-wrap items-center gap-2.5">
-              <p className="label text-aqua">
+              <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
                 {product.group.toUpperCase()} · GEOSAT PRODUCT
               </p>
               {product.subcategory && (
-                <span className="rounded-full bg-panel/60 px-2.5 py-0.5 text-[11px] font-mono text-ink-2 border border-line">
+                <span className="rounded-full border border-line bg-panel/60 px-2.5 py-0.5 font-sans text-[11px] font-medium text-ink-2">
                   {product.subcategory}
                 </span>
               )}
               {product.brand && (
-                <span className="rounded-full bg-amber-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300 border border-amber-400/25">
+                <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-0.5 font-sans text-[11px] font-semibold text-amber-300">
                   {product.brand}
                 </span>
               )}
             </div>
 
-            <h1 className="mt-4 font-display text-4xl leading-[1.04] text-ink sm:text-5xl lg:text-[3.75rem]">
+            <h1 className="mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-ink lg:text-5xl">
               {product.title}
             </h1>
 
-            <p className="mt-6 font-display text-xl leading-relaxed text-ink-2 sm:text-2xl">
+            <p className="mt-6 font-sans text-base font-normal leading-relaxed text-slate-600 lg:text-lg">
               {product.intro}
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <ProductBuyDialog productTitle={product.title} productGroup={product.group} />
-              <p className="max-w-60 text-xs leading-relaxed text-ink-3">
+              <p className="max-w-60 font-sans text-xs leading-relaxed text-ink-3">
                 Talk directly with our equipment team to request quote and specs.
               </p>
             </div>
@@ -123,7 +123,7 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
                   href={product.brandUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-line bg-panel/40 px-4 py-2.5 text-xs font-semibold text-ink-2 transition-colors hover:border-aqua/50 hover:bg-aqua/10 hover:text-aqua"
+                  className="inline-flex items-center gap-2 rounded-xl border border-line bg-panel/40 px-4 py-2.5 font-sans text-sm font-medium tracking-normal text-ink-2 transition-colors hover:border-aqua/50 hover:bg-aqua/10 hover:text-aqua"
                 >
                   <span>Official {product.brand || "Manufacturer"} Page</span>
                   <ExternalLink className="size-3.5" aria-hidden="true" />
@@ -131,7 +131,7 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
               )}
             </div>
 
-            <p className="mt-6 max-w-lg text-base leading-7 text-ink-3 whitespace-pre-line">
+            <p className="mt-6 max-w-lg whitespace-pre-line font-sans text-base leading-relaxed text-slate-600">
               {product.description}
             </p>
           </header>
@@ -148,15 +148,15 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
         >
           <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
             <div>
-              <p className="label text-aqua">Hardware Specifications</p>
+              <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Hardware Specifications</p>
               <h2
                 id="specs-heading"
-                className="mt-4 max-w-sm font-display text-3xl leading-tight text-ink"
+                className="mt-4 max-w-sm font-heading text-3xl leading-tight tracking-tight text-ink"
               >
                 Engineered for rigorous field conditions.
               </h2>
               {product.brand && (
-                <p className="mt-3 text-xs text-ink-3">
+                <p className="mt-3 font-sans text-xs leading-relaxed text-ink-3">
                   Calibrated and certified hardware solution from {product.brand}.
                 </p>
               )}
@@ -168,7 +168,7 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
                   {product.outcomes.map((outcome) => (
                     <li
                       key={outcome}
-                      className="flex min-h-16 items-start gap-3 border-b border-line py-4 text-sm leading-relaxed text-ink-2"
+                      className="flex min-h-16 items-start gap-3 border-b border-line py-4 font-sans text-sm leading-relaxed text-ink-2"
                     >
                       <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-aqua/10 text-aqua">
                         <Check className="size-3.5" aria-hidden="true" />
@@ -182,14 +182,14 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
               {/* Technical Specifications Key-Value Grid if provided */}
               {product.specifications && Object.keys(product.specifications).length > 0 && (
                 <div className="mt-6 rounded-xl border border-line bg-panel/20 p-5">
-                  <h3 className="text-xs font-mono uppercase tracking-wider text-ink-3 mb-4">
+                  <h3 className="mb-4 font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
                     Technical Parameters
                   </h3>
-                  <dl className="grid gap-3 sm:grid-cols-2 text-xs">
+                  <dl className="grid gap-3 font-sans text-sm sm:grid-cols-2">
                     {Object.entries(product.specifications).map(([key, value]) => (
                       <div key={key} className="flex justify-between border-b border-line/40 py-2">
-                        <dt className="text-ink-3 font-medium">{key}</dt>
-                        <dd className="text-ink font-semibold">{value}</dd>
+                        <dt className="font-medium text-ink-3">{key}</dt>
+                        <dd className="font-semibold text-ink">{value}</dd>
                       </div>
                     ))}
                   </dl>

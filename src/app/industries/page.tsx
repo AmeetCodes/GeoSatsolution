@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Specialized geospatial intelligence and surveying solutions tailored for infrastructure, energy, forestry, mining, and government sectors.",
   alternates: {
-    canonical: "https://geosatsoln.com/industries",
+    canonical: "https://www.geosatsolutions.com.np/industries",
   },
   openGraph: {
     title: "Industries | GeoSAT Solutions",
     description:
       "Specialized geospatial intelligence and surveying solutions tailored for infrastructure, energy, forestry, mining, and government sectors.",
-    url: "https://geosatsoln.com/industries",
+    url: "https://www.geosatsolutions.com.np/industries",
     siteName: "GeoSAT Solutions",
     type: "website",
   },

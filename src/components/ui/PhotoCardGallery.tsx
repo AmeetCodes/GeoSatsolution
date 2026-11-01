@@ -127,7 +127,7 @@ export function PhotoCardGallery({ items = DEFAULT_ITEMS, className }: PhotoCard
                 className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900/25 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
             </div>
-            <figcaption className="mt-3 text-center font-serif text-sm font-semibold text-slate-800">
+            <figcaption className="mt-3 text-center font-heading text-sm font-medium text-slate-800">
               {item.caption}
             </figcaption>
           </figure>

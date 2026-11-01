@@ -1,5 +1,5 @@
+import type { ContentImage, ProductDownloadItem } from '@/lib/content-types';
 import type { NavTreeColumn, NavTreeItem, NavTreeTab } from "@/lib/tree-store";
-import type { ContentImage, ProductDownloadItem } from "@/lib/data-store";
 
 export type { NavTreeColumn, NavTreeItem, NavTreeTab, ContentImage, ProductDownloadItem };
 

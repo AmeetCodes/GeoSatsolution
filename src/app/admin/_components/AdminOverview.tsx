@@ -1,5 +1,7 @@
 "use client";
 
+import type { SiteContentData } from '@/lib/content-types';
+
 import React from "react";
 import {
   Layers,
@@ -15,7 +17,6 @@ import {
 import { InquiryTable } from "./InquiryTable";
 import { INQUIRY_STATUS_META } from "./inquiry-status";
 import type { AdminTab } from "./AdminHeader";
-import type { SiteContentData } from "@/lib/data-store";
 import type {
   InquiryRecord,
   InquiryStatus,

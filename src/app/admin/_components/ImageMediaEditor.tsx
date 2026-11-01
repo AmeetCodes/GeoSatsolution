@@ -1,8 +1,9 @@
 "use client";
 
+
 import { useRef, useState } from "react";
 import { Link2, LoaderCircle, Trash2, Upload } from "lucide-react";
-import type { ContentImage } from "@/lib/data-store";
+import type { ContentImage } from "@/lib/content-types";
 
 interface ImageMediaEditorProps {
   image: ContentImage;

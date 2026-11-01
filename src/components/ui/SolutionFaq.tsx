@@ -21,8 +21,8 @@ export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTi
     <section className="mt-14 border-t border-line pt-10 sm:mt-16 sm:pt-12" aria-labelledby="solution-faq-heading">
       <div className="grid gap-7 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
         <div>
-          <p className="label text-aqua">Good to know</p>
-          <h2 id="solution-faq-heading" className="mt-4 max-w-sm font-display text-3xl leading-tight text-ink">
+          <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Good to know</p>
+          <h2 id="solution-faq-heading" className="mt-4 max-w-sm font-heading text-3xl font-semibold leading-tight tracking-tight text-ink">
             Questions about {solutionTitle}?
           </h2>
         </div>
@@ -30,7 +30,7 @@ export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTi
         <div className="space-y-2">
           {faqs.map((faq) => (
             <details key={faq.question} className="group rounded-lg border border-line bg-white">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-4 font-medium text-ink transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-4 font-sans font-medium leading-normal text-ink transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
                 <span>{faq.question}</span>
                 <ChevronDown
                   className="size-5 shrink-0 text-ink-3 transition-transform duration-300 group-open:rotate-180"
@@ -38,7 +38,7 @@ export function SolutionFaq({ solutionTitle, deliverables, items }: { solutionTi
                 />
               </summary>
               <div className="border-t border-line px-4 py-4">
-                <p className="max-w-3xl text-sm leading-relaxed text-ink-2">
+                <p className="max-w-3xl font-sans text-sm leading-relaxed text-slate-600">
                   {faq.answer}
                 </p>
               </div>

@@ -1,47 +1,30 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Fraunces } from "next/font/google";
+import { DM_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const fraunces = Fraunces({
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://www.geosatsolutions.com.np"
+).replace(/\/+$/, "");
+
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
-const geist = localFont({
-  src: [{ path: "./fonts/geist-var-100-900-latin.woff2", weight: "100 900", style: "normal" }],
-  variable: "--font-sans",
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
 const ibmPlexSans = localFont({
   src: [{ path: "./fonts/ibm-plex-sans-var-100-700-latin.woff2", weight: "100 700", style: "normal" }],
   variable: "--font-ibm-plex-sans",
-  display: "swap",
-});
-
-const openSans = localFont({
-  src: [{ path: "./fonts/open-sans-var-300-800-latin.woff2", weight: "300 800", style: "normal" }],
-  variable: "--font-open-sans",
-  display: "swap",
-});
-
-const spaceGrotesk = localFont({
-  src: [
-    { path: "./fonts/space-grotesk-400-latin.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/space-grotesk-500-latin.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/space-grotesk-600-latin.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/space-grotesk-700-latin.woff2", weight: "700", style: "normal" },
-  ],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-const inter = localFont({
-  src: [{ path: "./fonts/inter-var-100-900-latin.woff2", weight: "100 900", style: "normal" }],
-  variable: "--font-inter",
   display: "swap",
 });
 
@@ -55,6 +38,7 @@ const jetbrainsMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "GeoSAT — Geospatial Survey, LiDAR & Spatial Intelligence",
     template: "%s · GeoSAT",
@@ -84,6 +68,15 @@ export const metadata: Metadata = {
     description:
       "Survey-grade geospatial intelligence for infrastructure, government and natural resources.",
     type: "website",
+    url: SITE_URL,
+    siteName: "GeoSAT Solutions",
+    images: [{ url: "/icon.png", width: 512, height: 512, alt: "GeoSAT Solutions" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GeoSAT — Geospatial Survey, LiDAR & Spatial Intelligence",
+    description: "Survey-grade geospatial intelligence for infrastructure, government and natural resources.",
+    images: ["/icon.png"],
   },
 };
 
@@ -92,13 +85,64 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": ["Organization", "LocalBusiness"],
+  name: "GeoSAT Solutions",
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
+  description: "Survey-grade geospatial intelligence, UAV LiDAR mapping, geodetic engineering, GIS solutions and spatial monitoring.",
+  sameAs: [
+    "https://linkedin.com/company/geosatsoln",
+    "https://twitter.com/geosatsoln",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    availableLanguage: ["English", "Nepali"],
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Phulbari Nagar Marg, Koteshwor-32",
+    addressLocality: "Kathmandu",
+    postalCode: "44600",
+    addressCountry: "NP",
+  },
+  telephone: "+977 9842496370",
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "GeoSAT Solutions",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/solutions?search={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", spaceGrotesk.variable, inter.variable, jetbrainsMono.variable, "font-sans", geist.variable, ibmPlexSans.variable, openSans.variable, fraunces.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        outfit.variable,
+        dmSans.variable,
+        ibmPlexSans.variable,
+        jetbrainsMono.variable,
+        "font-sans",
+      )}
     >
-      <body className="min-h-full flex flex-col bg-abyss text-ink">{children}</body>
+      <body className="min-h-full flex flex-col bg-abyss text-ink">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+        {children}
+      </body>
     </html>
   );
 }

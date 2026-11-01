@@ -10,6 +10,15 @@ export const metadata: Metadata = {
   title: "Leadership — GeoSAT Solutions",
   description:
     "Leadership overview for GeoSAT Solutions and the executive and technical leads driving the company across survey, GIS and LiDAR operations.",
+  alternates: { canonical: "https://www.geosatsolutions.com.np/leadership" },
+  openGraph: {
+    title: "Leadership | GeoSAT Solutions",
+    description: "Meet the executive and technical leads driving GeoSAT survey, GIS and LiDAR operations.",
+    url: "https://www.geosatsolutions.com.np/leadership",
+    siteName: "GeoSAT Solutions",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image", title: "Leadership | GeoSAT Solutions" },
 };
 
 export default async function LeadershipPage() {

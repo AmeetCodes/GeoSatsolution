@@ -96,7 +96,7 @@ export function ProductsCatalogView({
                 setSelectedCategory(cat);
                 setSelectedSubcategory("All");
               }}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 font-sans text-sm font-medium tracking-normal transition-all ${
                 isActive
                   ? "bg-aqua/15 text-aqua border border-aqua/40 shadow-sm"
                   : "bg-panel/30 text-ink-2 hover:bg-panel/60 hover:text-ink border border-line"
@@ -104,7 +104,7 @@ export function ProductsCatalogView({
             >
               <span>{cat}</span>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-mono ${
+                className={`rounded-full px-2 py-0.5 font-sans text-xs tabular ${
                   isActive
                     ? "bg-aqua/20 text-aqua"
                     : "bg-abyss/60 text-ink-3"
@@ -122,7 +122,7 @@ export function ProductsCatalogView({
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Layers className="size-4 text-aqua" aria-hidden="true" />
-            <h2 id="subcategories-heading" className="text-sm font-semibold uppercase tracking-wider text-ink-3">
+            <h2 id="subcategories-heading" className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">
               Product Classes & Subcategories
             </h2>
           </div>
@@ -130,7 +130,7 @@ export function ProductsCatalogView({
             <button
               type="button"
               onClick={() => setSelectedSubcategory("All")}
-              className="text-xs text-aqua hover:underline"
+              className="font-sans text-xs font-medium text-aqua hover:underline"
             >
               Show all classes
             </button>
@@ -154,8 +154,8 @@ export function ProductsCatalogView({
                   onClick={() => setSelectedSubcategory(isSelected ? "All" : sub.name)}
                   className="flex-1 text-left"
                 >
-                  <p className="text-xs font-semibold leading-snug">{sub.name}</p>
-                  <p className="text-[11px] font-mono text-ink-3 mt-0.5">
+                  <p className="font-heading text-xs font-medium leading-snug tracking-tight">{sub.name}</p>
+                  <p className="mt-0.5 font-sans text-[11px] tabular text-ink-3">
                     {sub.count} {sub.count === 1 ? "model" : "models"}
                   </p>
                 </button>
@@ -176,14 +176,14 @@ export function ProductsCatalogView({
       <section aria-labelledby="models-heading" className="pt-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 id="models-heading" className="font-display text-2xl font-bold text-ink">
+            <h2 id="models-heading" className="font-heading text-2xl font-semibold tracking-tight text-ink">
               {selectedSubcategory !== "All"
                 ? `${selectedSubcategory} Models`
                 : selectedCategory !== "All"
                 ? `${selectedCategory} Equipment & Software`
                 : "All Equipment & System Models"}
             </h2>
-            <p className="mt-1 text-xs text-ink-3 font-mono">
+            <p className="mt-1 font-sans text-sm text-slate-600">
               Displaying {filteredProducts.length} active hardware & software solutions
             </p>
           </div>
@@ -192,8 +192,8 @@ export function ProductsCatalogView({
         {filteredProducts.length === 0 ? (
           <div className="mt-8 rounded-[var(--radius-panel)] border border-dashed border-line bg-panel/20 py-16 text-center">
             <Filter className="mx-auto size-8 text-ink-3 opacity-50" />
-            <h3 className="mt-3 font-display text-lg text-ink">No product models in this selection</h3>
-            <p className="mt-1 text-sm text-ink-3">
+            <h3 className="mt-3 font-heading text-lg font-semibold tracking-tight text-ink">No product models in this selection</h3>
+            <p className="mt-1 font-sans text-sm text-slate-600">
               Try selecting another category or check back as newly calibrated equipment is added.
             </p>
           </div>

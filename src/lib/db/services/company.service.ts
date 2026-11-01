@@ -5,7 +5,7 @@ import { IPartner } from "../../models/partner";
 import { IArticle } from "../../models/Article";
 import { IClient } from "../../models/client";
 import { Types } from "mongoose";
-import type { SiteContentData } from "../../data-store";
+import type { SiteContentData } from "../../content-types";
 
 export class CompanyService {
   async getCompanyData() {

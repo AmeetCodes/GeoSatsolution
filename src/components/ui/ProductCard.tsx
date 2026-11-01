@@ -31,7 +31,7 @@ export function ProductCard({ product, currentSubcategorySlug, priority }: Produ
       : [product.brand, product.group].filter(Boolean).join("  |  ");
 
   return (
-    <div className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-[#F8F9FA] p-6 font-metropolis transition-all duration-300 hover:border-slate-300 hover:shadow-xl sm:p-7">
+    <div className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-[#F8F9FA] p-6 font-sans transition-all duration-300 hover:border-slate-300 hover:shadow-xl sm:p-7">
       {/* Whole-card overlay link keeps every click target navigating to the product detail route. */}
       <Link
         href={detailHref}
@@ -42,24 +42,24 @@ export function ProductCard({ product, currentSubcategorySlug, priority }: Produ
       {/* A. Top text + CTA zone */}
       <div className="pointer-events-none relative z-20 flex flex-col items-center text-center">
         {product.subcategory && (
-          <span className="mb-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <span className="mb-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 font-heading text-[10px] font-medium uppercase tracking-[0.18em] text-teal-600">
             {product.subcategory}
           </span>
         )}
 
-        <h3 className="text-2xl font-bold leading-tight tracking-tight text-slate-950 lg:text-[28px]">
+        <h3 className="font-heading text-2xl font-semibold leading-tight tracking-tight text-slate-950 lg:text-[28px]">
           {product.title}
         </h3>
 
         {tagline && (
-          <p className="my-2 text-xs font-medium tracking-wide text-slate-600 lg:text-sm">
+          <p className="my-2 font-sans text-xs font-medium leading-normal tracking-normal text-slate-600 lg:text-sm">
             {tagline}
           </p>
         )}
 
         <Link
           href={detailHref}
-          className="pointer-events-auto mt-4 inline-flex items-center gap-2 rounded-full border border-slate-900 px-6 py-2 text-xs font-bold tracking-wider text-slate-900 shadow-sm transition-all duration-300 hover:bg-slate-900 hover:text-white"
+          className="pointer-events-auto mt-4 inline-flex items-center gap-2 rounded-full border border-slate-900 px-6 py-2 font-sans text-sm font-medium tracking-normal text-slate-900 shadow-sm transition-all duration-300 hover:bg-slate-900 hover:text-white"
         >
           View Specs
           <ArrowRight

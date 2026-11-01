@@ -8,8 +8,6 @@ import {
 export interface CreateDistrictProjectDTO {
   district: string;
   province: number;
-  title?: string;
-  category?: string;
   status?: DistrictProjectStatus;
   latitude?: number;
   longitude?: number;
@@ -18,8 +16,6 @@ export interface CreateDistrictProjectDTO {
 export interface UpdateDistrictProjectDTO {
   district?: string;
   province?: number;
-  title?: string;
-  category?: string;
   status?: DistrictProjectStatus;
   latitude?: number | null;
   longitude?: number | null;
@@ -31,8 +27,6 @@ export interface DistrictAggregateRow {
   province: number;
   projects: {
     id: string;
-    title: string;
-    category: string;
     status: DistrictProjectStatus;
   }[];
 }
@@ -71,12 +65,29 @@ export class DistrictProjectRepository {
       .exec() as unknown as Promise<IDistrictProject | null>;
   }
 
+  async findByDistrict(district: string): Promise<IDistrictProject[]> {
+    await connectDB();
+    return DistrictProject.find({ district })
+      .sort({ createdAt: 1, _id: 1 })
+      .lean()
+      .exec() as unknown as Promise<IDistrictProject[]>;
+  }
+
   async findLatestByDistrict(district: string): Promise<IDistrictProject | null> {
     await connectDB();
     return DistrictProject.findOne({ district })
       .sort({ createdAt: -1 })
       .lean()
       .exec() as unknown as Promise<IDistrictProject | null>;
+  }
+
+  async updateStatusByDistrict(
+    district: string,
+    status: DistrictProjectStatus,
+  ): Promise<number> {
+    await connectDB();
+    const res = await DistrictProject.updateMany({ district }, { $set: { status } }).exec();
+    return res.modifiedCount ?? 0;
   }
 
   async deleteById(id: string): Promise<boolean> {
@@ -100,8 +111,6 @@ export class DistrictProjectRepository {
       province: number;
       projects: {
         id: string;
-        title: string;
-        category: string;
         status: DistrictProjectStatus;
       }[];
     }>([
@@ -113,8 +122,6 @@ export class DistrictProjectRepository {
           projects: {
             $push: {
               id: { $toString: "$_id" },
-              title: { $ifNull: ["$title", ""] },
-              category: { $ifNull: ["$category", ""] },
               status: { $ifNull: ["$status", "COMPLETED"] },
             },
           },

@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description:
     "Tell us what you need to measure, map or monitor. Our geospatial team will shape a practical assessment around your site and intended deliverables.",
   alternates: {
-    canonical: "https://geosatsoln.com/request-assessment",
+    canonical: "https://www.geosatsolutions.com.np/request-assessment",
   },
   openGraph: {
     title: "Request an Assessment · GeoSAT Solutions",
     description:
       "Talk to the GeoSAT geospatial team about your survey, mapping or monitoring project.",
-    url: "https://geosatsoln.com/request-assessment",
+    url: "https://www.geosatsolutions.com.np/request-assessment",
     siteName: "GeoSAT Solutions",
     type: "website",
   },
@@ -59,7 +59,7 @@ export default function RequestAssessmentPage() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 md:py-16">
           <header>
-            <h1 className="font-serif font-bold text-3xl md:text-4xl text-slate-900 mb-3">
+            <h1 className="mb-3 font-heading text-3xl font-semibold leading-tight tracking-tight text-slate-900 md:text-4xl">
               Get in Touch with Our Geospatial Team
             </h1>
             <p className="text-slate-600 text-sm md:text-base max-w-2xl mb-10">

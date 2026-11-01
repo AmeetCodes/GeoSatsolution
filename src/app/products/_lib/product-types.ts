@@ -1,4 +1,4 @@
-import type { ProductDownloadItem } from "@/lib/data-store";
+import type { ProductDownloadItem } from "@/lib/content-types";
 import { PRODUCT_TAXONOMY } from "@/lib/product-taxonomy";
 
 export type ProductImage = {

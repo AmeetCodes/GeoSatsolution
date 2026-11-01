@@ -67,7 +67,7 @@ export function SolutionGallery({ images }: { images: SolutionImage[] }) {
             }}
           />
           <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 via-slate-950/20 to-transparent px-6 pb-6 pt-16 sm:px-8 sm:pb-8">
-            <p className="max-w-md font-display text-lg leading-snug text-white sm:text-xl">
+            <p className="max-w-md font-heading text-lg font-medium leading-snug tracking-tight text-white sm:text-xl">
               {activeImage.caption}
             </p>
           </div>
