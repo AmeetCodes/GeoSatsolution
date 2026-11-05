@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
+import { z } from "zod";
+
 import {
   Dialog,
   DialogClose,
@@ -11,8 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ProductMultiSelect } from "@/components/ui/product-multi-select";
 import { launchConfetti } from "@/components/ui/confetti";
 import { SpecularButton } from "@/components/ui/SpecularButton";
+import {
+  normalizeProductOptions,
+  resolveProductOption,
+  type QuoteProductOption,
+} from "@/lib/product-options";
 import { productInquirySchema } from "@/lib/validations/product-inquiry.schema";
 
 type ProductFields = {
@@ -20,7 +28,7 @@ type ProductFields = {
   company: string;
   email: string;
   phone: string;
-  product: string;
+  productIds: string[];
   details: string;
 };
 
@@ -28,6 +36,15 @@ type FieldName = keyof ProductFields;
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const INITIAL_ERRORS: FieldErrors = {};
+
+const quoteRequestSchema = productInquirySchema.extend({
+  productIds: z
+    .array(z.string().trim().min(1))
+    .min(1, "Please select at least one product."),
+  products: z
+    .array(z.string().trim().min(1))
+    .min(1, "Please select at least one product."),
+});
 
 function InputField({
   id,
@@ -74,19 +91,126 @@ function InputField({
   );
 }
 
-export function ProductBuyDialog({ productTitle, productGroup }: { productTitle: string; productGroup: string }) {
+type ProductBuyDialogProps = {
+  productTitle: string;
+  productGroup: string;
+  productId?: string;
+};
+
+export function ProductBuyDialog({
+  productTitle,
+  productGroup,
+  productId,
+}: ProductBuyDialogProps) {
   const [fields, setFields] = useState<ProductFields>({
     name: "",
     company: "",
     email: "",
     phone: "",
-    product: productTitle,
+    productIds: productId ? [productId] : [],
     details: "",
   });
+  const [products, setProducts] = useState<QuoteProductOption[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
+  const [reloadToken, setReloadToken] = useState(0);
   const [errors, setErrors] = useState<FieldErrors>(INITIAL_ERRORS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    async function loadProducts() {
+      try {
+        const response = await fetch("/api/products", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const result = (await response.json().catch(() => null)) as
+          | { success?: boolean; data?: unknown; message?: string }
+          | null;
+
+        if (!response.ok || !result?.success) {
+          throw new Error(result?.message ?? "Could not load the product catalogue.");
+        }
+
+        const options = normalizeProductOptions(result.data);
+        if (!active) return;
+
+        setProducts(options);
+        setProductsError(
+          options.length === 0 ? "No products are available right now." : "",
+        );
+
+        if (options.length > 0) {
+          setFields((current) => {
+            const validProductIds = current.productIds.filter((selectedId) =>
+              options.some((product) => product.id === selectedId),
+            );
+
+            if (validProductIds.length === current.productIds.length) {
+              return current;
+            }
+
+            if (validProductIds.length > 0) {
+              return { ...current, productIds: validProductIds };
+            }
+
+            const nextProduct = resolveProductOption(
+              options,
+              productId ?? "",
+              productTitle,
+            );
+
+            return nextProduct
+              ? { ...current, productIds: [nextProduct.id] }
+              : current;
+          });
+        }
+      } catch (error) {
+        if (!active || controller.signal.aborted) return;
+        setProductsError(
+          error instanceof Error
+            ? error.message
+            : "Could not load the product catalogue.",
+        );
+      } finally {
+        if (active) setIsProductsLoading(false);
+      }
+    }
+
+    void loadProducts();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [productId, productTitle, reloadToken]);
+
+  const selectedProducts = useMemo(
+    () =>
+      fields.productIds
+        .map((selectedId) =>
+          products.find((product) => product.id === selectedId),
+        )
+        .filter((product): product is QuoteProductOption => Boolean(product)),
+    [fields.productIds, products],
+  );
+
+  const selectedProductNames = selectedProducts.map((product) => product.name);
+  const displayProductName =
+    selectedProductNames.length > 0
+      ? selectedProductNames.join(", ")
+      : productTitle;
+  const displayProductGroup =
+    selectedProducts.length > 0
+      ? Array.from(
+          new Set(selectedProducts.map((product) => product.category)),
+        ).join(" · ")
+      : productGroup;
 
   function updateField(field: FieldName, value: string) {
     setFields((current) => ({ ...current, [field]: value }));
@@ -94,13 +218,30 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
     setSubmitError("");
   }
 
+  function handleProductsChange(nextProductIds: string[]) {
+    setFields((current) => ({ ...current, productIds: nextProductIds }));
+    setErrors((current) => {
+      if (!current.productIds) return current;
+      return { ...current, productIds: undefined };
+    });
+    setSubmitError("");
+  }
+
+  function handleRetryProducts() {
+    setProductsError("");
+    setIsProductsLoading(true);
+    setReloadToken((token) => token + 1);
+  }
+
   function validate() {
-    const result = productInquirySchema.safeParse({
+    const result = quoteRequestSchema.safeParse({
       name: fields.name.trim(),
       company: fields.company.trim(),
       email: fields.email.trim(),
       phone: fields.phone.trim(),
-      product: fields.product,
+      productIds: fields.productIds,
+      products: selectedProductNames,
+      product: selectedProductNames.join(", "),
       details: fields.details.trim(),
       website: "",
     });
@@ -112,8 +253,17 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
 
     const nextErrors: FieldErrors = {};
     for (const issue of result.error.issues) {
-      const field = issue.path[0] as FieldName | undefined;
-      if (field && !nextErrors[field]) nextErrors[field] = issue.message;
+      const sourceField = issue.path[0];
+      if (typeof sourceField !== "string") continue;
+
+      const field = (
+        sourceField === "product" ||
+        sourceField === "products" ||
+        sourceField === "productIds"
+          ? "productIds"
+          : sourceField
+      ) as FieldName;
+      if (!nextErrors[field]) nextErrors[field] = issue.message;
     }
     setErrors(nextErrors);
     return nextErrors;
@@ -142,7 +292,9 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
           company: fields.company.trim(),
           email: fields.email.trim(),
           phone: fields.phone.trim(),
-          product: fields.product,
+          productIds: fields.productIds,
+          products: selectedProductNames,
+          product: selectedProductNames.join(", "),
           details: fields.details.trim(),
           website: formData.get("website"),
         }),
@@ -195,7 +347,7 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
         showCloseButton
       >
         <DialogHeader className="px-6 pb-5 pt-8 sm:px-8 sm:pt-10">
-          <p className="label text-amber">Purchase request / {productGroup}</p>
+          <p className="label text-amber">Purchase request / {displayProductGroup}</p>
           <DialogTitle className="font-heading text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
             Request a quote.
           </DialogTitle>
@@ -203,7 +355,7 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
             Share your requirement and our team will prepare the right pricing, configuration and next step.
           </DialogDescription>
           <span className="mt-1 inline-flex w-fit border border-aqua/40 px-2.5 py-1 text-xs font-semibold text-aqua-deep">
-            {productTitle}
+            {displayProductName}
           </span>
         </DialogHeader>
 
@@ -214,7 +366,7 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
               <div>
                 <h3 className="font-heading text-xl font-semibold tracking-tight">Your quote request has been sent.</h3>
                 <p className="mt-2 font-sans text-sm leading-relaxed">
-                  We&apos;ll follow up with pricing and configuration details for {productTitle} at {fields.email.trim()}.
+                  We&apos;ll follow up with pricing and configuration details for {displayProductName} at {fields.email.trim()}.
                 </p>
               </div>
             </div>
@@ -264,17 +416,30 @@ export function ProductBuyDialog({ productTitle, productGroup }: { productTitle:
                 onChange={(value) => updateField("phone", value)}
               />
               <div className="sm:col-span-2">
-                <label htmlFor="product" className="text-sm font-semibold text-ink">
-                  Product
+                <label htmlFor="productIds" className="text-sm font-semibold text-ink">
+                  Products
                   <span className="ml-1 text-aqua" aria-hidden="true">*</span>
                 </label>
-                <input
-                  id="product"
-                  name="product"
-                  value={productTitle}
-                  readOnly
-                  className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 bg-slate-100 px-3.5 text-sm text-ink shadow-sm outline-none"
+
+                <ProductMultiSelect
+                  id="productIds"
+                  options={products}
+                  values={fields.productIds}
+                  onChange={handleProductsChange}
+                  loading={isProductsLoading}
+                  loadError={productsError}
+                  onRetry={handleRetryProducts}
+                  invalid={Boolean(errors.productIds)}
+                  describedBy={errors.productIds ? "productIds-error" : undefined}
+                  placeholder="Select one or more products..."
+                  className="mt-1.5 border-slate-300 bg-white text-ink shadow-sm"
                 />
+
+                {errors.productIds ? (
+                  <p id="productIds-error" className="mt-1 text-xs text-rose-700">
+                    {errors.productIds}
+                  </p>
+                ) : null}
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="details" className="text-sm font-semibold text-ink">

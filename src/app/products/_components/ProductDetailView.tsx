@@ -113,7 +113,11 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
             </p>
 
             <div className="flex items-center gap-4 flex-wrap mb-5">
-              <ProductBuyDialog productTitle={product.title} productGroup={product.group} />
+              <ProductBuyDialog
+                productTitle={product.title}
+                productGroup={product.group}
+                productId={product.id}
+              />
               <DownloadResourcesButton
                 productTitle={product.title}
                 resources={product.resources}

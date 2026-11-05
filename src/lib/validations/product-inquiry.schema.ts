@@ -37,7 +37,7 @@ export const productInquirySchema = z.object({
     .string({ error: "Choose a product." })
     .trim()
     .min(1, "Choose a product.")
-    .max(200, "Product name is too long."),
+    .max(4000, "Too many products were selected."),
   details: z
     .string({ error: "Add a few details so the team can prepare the quote." })
     .trim()

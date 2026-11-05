@@ -17,7 +17,7 @@ export function SolutionFaq({
       answer: `A ${solutionTitle} engagement is scoped to your site and decisions. Typical handover items include ${deliverables.join(", ")}, along with the supporting checks and metadata agreed during planning.`,
     },
     {
-      question: "What information do you need to prepare a proposal?",
+      question: "What information do we need to prepare a proposal?",
       answer: "Share the site location or coverage area, intended use, required accuracy or output, access constraints, and target schedule. If some details are still unknown, we can help define them during the first consultation.",
     },
     {

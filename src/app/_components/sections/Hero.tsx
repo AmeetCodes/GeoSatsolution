@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/Reveal";
 import { CREDENTIALS, HERO } from "@/lib/content";
 import { Globe3DDemo } from "@/components/3d-globe-demo";
