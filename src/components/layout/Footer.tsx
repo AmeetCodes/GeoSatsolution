@@ -6,7 +6,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CONTACT, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
-import { solutionSlug } from "@/lib/utils";
+import { normalizeSlug, solutionSlug } from "@/lib/utils";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
 
 type FooterCol = {
@@ -62,7 +62,7 @@ export function Footer() {
         label: link,
         href:
           col.title === "Solutions"
-            ? `/solutions/${solutionSlug(link)}`
+            ? `/solutions#${solutionSlug(link)}`
             : col.title === "Industries"
               ? `/industries/${solutionSlug(link)}`
               : "/request-assessment",
@@ -83,12 +83,22 @@ export function Footer() {
           const dynamicCols: FooterCol[] = [];
 
           if (solTab) {
+            const solutionLinks = (data.solutions ?? [])
+              .filter((solution) => solution.isPublished !== false)
+              .slice(0, 6)
+              .map((solution) => ({
+                label: solution.title,
+                href: `/solutions/${normalizeSlug(solution.slug || solutionSlug(solution.title))}`,
+              }));
+
             dynamicCols.push({
               title: solTab.label || "Solutions",
-              links: solTab.columns.slice(0, 5).map((col) => ({
-                label: col.title,
-                href: `/solutions#${col.slug}`,
-              })),
+              links: solutionLinks.length
+                ? solutionLinks
+                : solTab.columns.slice(0, 5).map((col) => ({
+                    label: col.title,
+                    href: `/solutions#${col.slug}`,
+                  })),
             });
           }
 

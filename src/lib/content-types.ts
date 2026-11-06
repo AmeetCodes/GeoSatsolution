@@ -1,9 +1,27 @@
+export type ImageFitMode = "contain" | "cover";
+export type ImageFocalPosition = "center" | "top" | "bottom" | "left" | "right";
+
+export const IMAGE_FOCAL_POSITIONS: { value: ImageFocalPosition; label: string; css: string }[] = [
+  { value: "center", label: "Center", css: "50% 50%" },
+  { value: "top", label: "Top", css: "0% 0%" },
+  { value: "bottom", label: "Bottom", css: "50% 100%" },
+  { value: "left", label: "Left", css: "0% 50%" },
+  { value: "right", label: "Right", css: "100% 50%" },
+];
+
+export function imageFocalPositionCss(position?: ImageFocalPosition | string): string {
+  return IMAGE_FOCAL_POSITIONS.find((item) => item.value === position)?.css ?? "50% 50%";
+}
+
 export type ContentImage = {
   src: string;
   alt: string;
   source?: "upload" | "url";
   mediaId?: string;
   caption?: string;
+  order?: number;
+  fitMode?: ImageFitMode;
+  focalPosition?: ImageFocalPosition;
 };
 
 export type ContentFaq = {

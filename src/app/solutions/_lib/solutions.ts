@@ -1,9 +1,14 @@
+import type { ImageFitMode, ImageFocalPosition } from "@/lib/content-types";
 import { solutionService } from "@/lib/db/services/solution.service";
+import { normalizeSlug } from "@/lib/utils";
 
 export type SolutionImage = {
   src: string;
   alt: string;
   caption?: string;
+  order?: number;
+  fitMode?: ImageFitMode;
+  focalPosition?: ImageFocalPosition;
 };
 
 export type Solution = {
@@ -27,7 +32,7 @@ export function solutionSlug(title: string): string {
 }
 
 export function solutionPathSlug(solution: Pick<Solution, "title" | "slug">): string {
-  return solution.slug || solutionSlug(solution.title);
+  return normalizeSlug(solution.slug || solutionSlug(solution.title));
 }
 
 export async function getDynamicSolutions(): Promise<Solution[]> {
@@ -46,6 +51,9 @@ export async function getDynamicSolutions(): Promise<Solution[]> {
           src: img.src,
           alt: img.alt,
           caption: img.caption || "",
+          order: img.order,
+          fitMode: img.fitMode,
+          focalPosition: img.focalPosition,
         })),
         isPublished: item.isPublished,
       }));
@@ -59,25 +67,30 @@ export async function getDynamicSolutions(): Promise<Solution[]> {
 export async function getDynamicSolutionBySlug(slug: string): Promise<Solution | undefined> {
   try {
     const item = await solutionService.getBySlug(slug, true);
-    if (item) {
-      return {
-        slug: item.slug,
-        title: item.title,
-        group: item.group,
-        intro: item.intro || "",
-        description: item.description || "",
-        outcomes: item.outcomes || [],
-        faqs: item.faqs || [],
-        images: (item.images || []).map((img) => ({
-          src: img.src,
-          alt: img.alt,
-          caption: img.caption || "",
-        })),
-        isPublished: item.isPublished,
-      };
-    }
+    if (!item) return undefined;
+
+    return {
+      slug: item.slug,
+      title: item.title,
+      group: item.group,
+      intro: item.intro || "",
+      description: item.description || "",
+      outcomes: item.outcomes || [],
+      faqs: item.faqs || [],
+      images: (item.images || []).map((img) => ({
+        src: img.src,
+        alt: img.alt,
+        caption: img.caption || "",
+        order: img.order,
+        fitMode: img.fitMode,
+        focalPosition: img.focalPosition,
+      })),
+      isPublished: item.isPublished,
+    };
   } catch (err) {
+    // A database/query failure is not the same as a missing document: let the
+    // error bubble up instead of incorrectly rendering the 404 page.
     console.error("Error fetching dynamic solution by slug:", err);
+    throw err;
   }
-  return undefined;
 }

@@ -3,8 +3,9 @@
 import type { SiteContentData } from '@/lib/content-types';
 
 import React, { useState, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { AdminHeader, type AdminTab } from "./AdminHeader";
+import { AdminSessionWarning } from "./AdminSessionWarning";
+import { useAdminSession } from "../_lib/use-admin-session";
 import { AdminOverview } from "./AdminOverview";
 import { TreeCMSManager } from "./TreeCMSManager";
 import { SolutionsManager } from "./SolutionsManager";
@@ -57,7 +58,7 @@ export function AdminDashboard({
   initialInquiryCounts,
   userEmail = "",
 }: AdminDashboardProps) {
-  const router = useRouter();
+  const { showWarning, warningRemainingMs, extendSession, logout } = useAdminSession();
   const [content, setContent] = useState<SiteContentData>(initialContent);
   const [tree, setTree] = useState<NavigationTree>(initialTree || { tabs: [] });
   const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
@@ -217,16 +218,6 @@ export function AdminDashboard({
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/admin/auth", { method: "DELETE" });
-      router.push("/admin/login");
-      router.refresh();
-    } catch {
-      router.push("/admin/login");
-    }
-  };
-
   const filteredInquiries = useMemo(
     () =>
       inquiryFilter === "all"
@@ -261,7 +252,7 @@ export function AdminDashboard({
       <AdminHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onLogout={handleLogout}
+        onLogout={logout}
         userEmail={userEmail}
         isSaving={isSaving}
         savedRecently={savedRecently}
@@ -429,6 +420,13 @@ export function AdminDashboard({
         onClose={() => setSelectedInquiry(null)}
         onStatusChange={handleInquiryStatusChange}
         updatingId={updatingInquiryId}
+      />
+
+      <AdminSessionWarning
+        open={showWarning}
+        secondsRemaining={Math.ceil(warningRemainingMs / 1000)}
+        onStayActive={extendSession}
+        onLogout={logout}
       />
 
       {/* Toast stack */}

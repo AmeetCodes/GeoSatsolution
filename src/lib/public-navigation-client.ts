@@ -7,6 +7,7 @@ type PublicNavigationPayload = {
   productGroups?: { title: string; links: string[] }[];
   companyGroups?: { title: string; links: string[] }[];
   industries?: { title: string; intro?: string; description?: string; items: string[] }[];
+  solutions?: { title: string; slug?: string; isPublished?: boolean }[];
 };
 
 const CACHE_MS = 15_000;

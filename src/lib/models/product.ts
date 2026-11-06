@@ -1,11 +1,17 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export type ProductImageFitMode = "contain" | "cover";
+export type ProductImageFocalPosition = "center" | "top" | "bottom" | "left" | "right";
+
 export interface IProductImage {
   src: string;
   alt: string;
   caption?: string;
   source?: "upload" | "url";
   mediaId?: string;
+  order?: number;
+  fitMode?: ProductImageFitMode;
+  focalPosition?: ProductImageFocalPosition;
 }
 
 export interface IProduct extends Document {
@@ -46,6 +52,9 @@ const ProductSchema = new Schema<IProduct>(
         caption: { type: String },
         source: { type: String, enum: ["upload", "url"] },
         mediaId: { type: String, match: /^[a-f\d]{24}$/i },
+        order: { type: Number, default: 0 },
+        fitMode: { type: String, enum: ["contain", "cover"], default: "contain" },
+        focalPosition: { type: String, enum: ["center", "top", "bottom", "left", "right"], default: "center" },
       },
     ],
     specifications: { type: Schema.Types.Mixed, default: {} },
@@ -65,7 +74,7 @@ const ProductSchema = new Schema<IProduct>(
 
 // Rebuild a stale dev-server model after schema changes so newly added resource
 // fields are not dropped by Mongoose strict mode during hot reloads.
-if (mongoose.models.Product && (!mongoose.models.Product.schema.path("resources") || !mongoose.models.Product.schema.path("subcategory"))) {
+if (mongoose.models.Product && (!mongoose.models.Product.schema.path("resources") || !mongoose.models.Product.schema.path("subcategory") || !mongoose.models.Product.schema.path("images.fitMode"))) {
   delete mongoose.models.Product;
 }
 

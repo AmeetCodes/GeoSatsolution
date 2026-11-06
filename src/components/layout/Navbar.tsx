@@ -4,14 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
-import { cn, solutionSlug } from "@/lib/utils";
-import type { NavTreeTab, NavTreeColumn, NavigationTree } from "@/lib/tree-store";
+import { cn, normalizeSlug, solutionSlug, stripTrailingNumericSuffix } from "@/lib/utils";
+import type { NavTreeItem, NavTreeTab, NavTreeColumn, NavigationTree } from "@/lib/tree-store";
 
 // ---------- types ----------
 type DynIndustry = { title: string; intro?: string; description?: string; items: string[] };
+type DynSolution = { title: string; slug?: string; isPublished?: boolean };
 
 type DynNavData = {
   tree?: NavigationTree;
@@ -20,6 +21,7 @@ type DynNavData = {
   productGroups?: { title: string; links: string[] }[];
   companyGroups?: { title: string; links: string[] }[];
   industries?: DynIndustry[];
+  solutions?: DynSolution[];
 } | null;
 
 // ---------- Logo ----------
@@ -251,13 +253,40 @@ function IndustryCardMenu({ industries }: { industries: DynIndustry[] }) {
   );
 }
 
+function pathLeaf(value?: string): string {
+  if (!value) return "";
+  return value.split(/[/?#]/).filter(Boolean).at(-1) ?? "";
+}
+
+/** Resolve a solution menu item to the canonical slug stored in MongoDB. */
+function resolveSolutionHref(item: NavTreeItem, solutionSlugs: Map<string, string>): string {
+  const candidates = [pathLeaf(item.href), item.slug, solutionSlug(item.title)];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeSlug(candidate);
+    if (!normalized) continue;
+
+    const direct = solutionSlugs.get(normalized);
+    if (direct) return `/solutions/${direct}`;
+
+    const base = stripTrailingNumericSuffix(normalized);
+    const stripped = base ? solutionSlugs.get(base) : undefined;
+    if (stripped) return `/solutions/${stripped}`;
+  }
+
+  const fallback = candidates.map(normalizeSlug).find(Boolean) ?? "";
+  return `/solutions/${stripTrailingNumericSuffix(fallback) || fallback}`;
+}
+
 // ---------- Dynamic Column Renderer for Mega-Menu ----------
 function TreeGroupColumn({
   tabSlug,
   column,
+  solutionSlugs,
 }: {
   tabSlug: string;
   column: NavTreeColumn;
+  solutionSlugs: Map<string, string>;
 }) {
   return (
     <div>
@@ -269,11 +298,13 @@ function TreeGroupColumn({
       </p>
       <ul className="space-y-2.5">
         {column.items.map((item) => {
-          // Resolve target URL
-          let href = item.href;
-          if (!href) {
-            if (tabSlug === "solutions") href = `/solutions/${item.slug || solutionSlug(item.title)}`;
-            else if (tabSlug === "products") href = `/products/${item.slug || solutionSlug(item.title)}`;
+          // Resolve target URL. Solutions always use the canonical database slug so
+          // stale hrefs/ids (e.g. /solutions/engineering-survey321) are never emitted.
+          let href = item.href ?? "";
+          if (tabSlug === "solutions") {
+            href = resolveSolutionHref(item, solutionSlugs);
+          } else if (!href) {
+            if (tabSlug === "products") href = `/products/${item.slug || solutionSlug(item.title)}`;
             else if (tabSlug === "company") {
               const colSlug = column.slug || solutionSlug(column.title);
               const iSlug = item.slug || solutionSlug(item.title);
@@ -362,6 +393,14 @@ export function Navbar() {
 
   const dynData = useDynamicNav();
   const dynamicTabs = buildDynamicTabs(dynData);
+  const solutionSlugs = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const solution of dynData?.solutions ?? []) {
+      const slug = normalizeSlug(solution.slug || solutionSlug(solution.title));
+      if (slug) map.set(slug, slug);
+    }
+    return map;
+  }, [dynData]);
 
   const cancelClose = useCallback(() => {
     if (closeTimer.current) {
@@ -556,6 +595,7 @@ export function Navbar() {
                               key={column.id || column.title}
                               tabSlug={item.slug || solutionSlug(item.label)}
                               column={column}
+                              solutionSlugs={solutionSlugs}
                             />
                           ))}
                         </div>
@@ -708,6 +748,7 @@ export function Navbar() {
                                         key={column.id || column.title}
                                         tabSlug={item.slug || solutionSlug(item.label)}
                                         column={column}
+                                        solutionSlugs={solutionSlugs}
                                       />
                                     ))}
                                   </div>

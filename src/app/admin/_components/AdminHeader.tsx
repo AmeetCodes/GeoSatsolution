@@ -69,7 +69,7 @@ export function AdminHeader({
       {/* Top bar */}
       <div className="flex min-h-[64px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Logo + badge */}
-        <Link href="/admin" className="flex shrink-0 items-center gap-3">
+        <Link href="/admin/dashboard" className="flex shrink-0 items-center gap-3">
           <Image
             src="/logo.png"
             alt="GeoSAT"

@@ -61,6 +61,9 @@ export const imageSchema = z.object({
   caption: optionalText(300, "Image caption"),
   source: z.enum(["upload", "url"]).optional(),
   mediaId: z.string().regex(/^[a-f\d]{24}$/i, "Media id is invalid").optional(),
+  order: z.number({ error: "Display order must be a number" }).int("Display order must be a whole number").min(0, "Display order cannot be negative").max(10_000, "Display order is out of range").optional(),
+  fitMode: z.enum(["contain", "cover"]).default("contain"),
+  focalPosition: z.enum(["center", "top", "bottom", "left", "right"]).default("center"),
 }).superRefine((image, ctx) => {
   if (image.source === "upload" && (!image.mediaId || !image.src.startsWith("/api/media/"))) {
     ctx.addIssue({ code: "custom", path: ["src"], message: "Uploaded images must reference stored media." });

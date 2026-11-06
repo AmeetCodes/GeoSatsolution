@@ -30,12 +30,12 @@ type DbContentItem = {
   intro?: string;
   description?: string;
   outcomes?: string[];
-  images?: { src: string; alt?: string; caption?: string }[];
+  images?: { src: string; alt?: string; caption?: string; order?: number; fitMode?: "contain" | "cover"; focalPosition?: "center" | "top" | "bottom" | "left" | "right" }[];
   metaTitle?: string;
   metaDescription?: string;
 };
 
-type ContentImage = { src: string; alt: string; caption: string };
+type ContentImage = { src: string; alt: string; caption: string; order?: number; fitMode?: "contain" | "cover"; focalPosition?: "center" | "top" | "bottom" | "left" | "right" };
 
 // ─── DB-backed content enrichment ────────────────────────────────────────────
 
@@ -215,6 +215,9 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
     src: image.src,
     alt: image.alt || resolvedTitle,
     caption: image.caption || "",
+    order: "order" in image ? image.order : undefined,
+    fitMode: "fitMode" in image ? image.fitMode : undefined,
+    focalPosition: "focalPosition" in image ? image.focalPosition : undefined,
   }));
 
   const resolvedItem = {

@@ -81,7 +81,21 @@ function InputField({
   );
 }
 
-export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionTitle: string; solutionGroup: string }) {
+type ConsultationDialogProps = {
+  solutionTitle: string;
+  solutionGroup: string;
+  triggerLabel?: string;
+  triggerVariant?: "specular" | "solid";
+  triggerClassName?: string;
+};
+
+export function ConsultationDialog({
+  solutionTitle,
+  solutionGroup,
+  triggerLabel = "Consult",
+  triggerVariant = "specular",
+  triggerClassName,
+}: ConsultationDialogProps) {
   const [interestOptions, setInterestOptions] = useState<string[]>(() => {
     const defaults = DEFAULT_SOLUTIONS.map((solution) => solution.title);
     return solutionTitle && !defaults.includes(solutionTitle) ? [solutionTitle, ...defaults] : defaults;
@@ -208,27 +222,37 @@ export function ConsultationDialog({ solutionTitle, solutionGroup }: { solutionT
     <Dialog>
       <DialogTrigger
         render={
-          <SpecularButton
-            size="lg"
-            radius={16}
-            tint="#ffffff"
-            tintOpacity={0}
-            blur={0}
-            textColor="#ffffff"
-            lineColor="#b7fff3"
-            baseColor="#087f75"
-            intensity={1.1}
-            shineSize={12}
-            shineFade={35}
-            thickness={1.2}
-            speed={0.25}
-            followMouse
-            proximity={260}
-            autoAnimate={false}
-            aria-label={`Consult about ${solutionTitle}`}
-          >
-            Consult
-          </SpecularButton>
+          triggerVariant === "solid" ? (
+            <button
+              type="button"
+              aria-label={`Consult about ${solutionTitle}`}
+              className={triggerClassName}
+            >
+              {triggerLabel}
+            </button>
+          ) : (
+            <SpecularButton
+              size="lg"
+              radius={16}
+              tint="#ffffff"
+              tintOpacity={0}
+              blur={0}
+              textColor="#ffffff"
+              lineColor="#b7fff3"
+              baseColor="#087f75"
+              intensity={1.1}
+              shineSize={12}
+              shineFade={35}
+              thickness={1.2}
+              speed={0.25}
+              followMouse
+              proximity={260}
+              autoAnimate={false}
+              aria-label={`Consult about ${solutionTitle}`}
+            >
+              {triggerLabel}
+            </SpecularButton>
+          )
         }
       />
       <DialogContent

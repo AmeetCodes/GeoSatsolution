@@ -38,6 +38,9 @@ export async function getDynamicProducts(): Promise<Product[]> {
           caption: img.caption || "",
           source: img.source,
           mediaId: img.mediaId ? String(img.mediaId) : undefined,
+          order: img.order,
+          fitMode: img.fitMode,
+          focalPosition: img.focalPosition,
         })),
         isPublished: item.isPublished,
       }));
@@ -97,6 +100,9 @@ export async function getDynamicProductBySlug(slug: string): Promise<Product | u
           caption: img.caption || "",
           source: img.source,
           mediaId: img.mediaId ? String(img.mediaId) : undefined,
+          order: img.order,
+          fitMode: img.fitMode,
+          focalPosition: img.focalPosition,
         })),
         isPublished: item.isPublished,
       };

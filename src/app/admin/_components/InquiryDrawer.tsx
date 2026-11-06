@@ -41,17 +41,17 @@ export function InquiryDrawer({
   const isUpdating = updatingId === inquiry.id;
 
   return (
-    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Inquiry details">
+    <div className="fixed inset-0 z-50 cursor-pointer" role="dialog" aria-modal="true" aria-label="Inquiry details" onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <button
         type="button"
         aria-label="Close details"
         onClick={onClose}
-        className="absolute inset-0 cursor-default bg-slate-900/40 backdrop-blur-sm"
+        className="absolute inset-0 cursor-pointer bg-slate-900/40 backdrop-blur-sm"
       />
 
-      <div className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-white shadow-2xl">
+      <div onClick={(event) => event.stopPropagation()} className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-white shadow-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
+        <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5">
           <div className="min-w-0">
             <span className="inline-block rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
               {inquiryReference(inquiry.id)}

@@ -5,18 +5,39 @@ import { ArrowLeft, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { getErrorMessage } from '@/lib/utils';
 
 export interface LoginPageProps {
   onSuccess?: () => void;
   redirectTo?: string;
+  initialReason?: string;
 }
 
-export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) {
+function getLoginErrorMessage(status?: number, code?: string): string {
+  if (code === 'admin_not_found') {
+    return "We couldn't find an admin account for that email. Check the address or contact your system administrator.";
+  }
+  if (code === 'invalid_credentials' || status === 401) {
+    return 'Email or password is incorrect. Check your details and try again.';
+  }
+  if (code === 'rate_limited' || status === 429) {
+    return 'There have been too many sign-in attempts. Please wait a few minutes and try again.';
+  }
+  if (code === 'session_not_configured' || code === 'session_unavailable') {
+    return "We couldn't start your admin session. Please try again shortly or contact your system administrator.";
+  }
+  if (status === 400) {
+    return 'Enter a valid email address and password, then try again.';
+  }
+  return "Sign-in is temporarily unavailable. Please try again shortly. If this continues, contact your system administrator.";
+}
+
+export function LoginPage({ onSuccess, redirectTo = '/admin/dashboard', initialReason }: LoginPageProps) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    initialReason === 'timeout' ? 'Session expired due to inactivity' : null,
+  );
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -50,11 +71,12 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
 
       const data = (await response.json().catch(() => null)) as {
         success?: boolean;
-        message?: string;
+        code?: string;
       } | null;
 
       if (!response.ok || !data?.success) {
-        throw new Error(data?.message || 'Invalid email or password');
+        setError(getLoginErrorMessage(response.status, data?.code));
+        return;
       }
 
       if (onSuccess) {
@@ -63,8 +85,8 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
         router.push(redirectTo);
         router.refresh();
       }
-    } catch (err) {
-      setError(getErrorMessage(err, 'Login failed. Please verify credentials.'));
+    } catch {
+      setError(getLoginErrorMessage());
     } finally {
       setLoading(false);
     }
@@ -135,10 +157,7 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
               Welcome Back
             </h1>
             <p className="font-sans text-sm text-slate-600">
-              Don&apos;t have an admin account?{' '}
-              <Link className="font-semibold text-teal-600 hover:text-teal-700" href="/admin/signup">
-                Request Access
-              </Link>
+              Admin access is managed by your GeoSAT administrator.
             </p>
           </div>
 
@@ -168,7 +187,7 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
                   value={formData.email}
                   onChange={handleInputChange}
                   autoComplete="email"
-                  placeholder="admin@geosatsoln.com"
+                  placeholder="you@example.com"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 font-sans text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
                   required
                 />
@@ -206,7 +225,7 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs font-sans">
+            <div className="flex items-center text-xs font-sans">
               <label className="flex cursor-pointer items-center space-x-2 text-slate-600">
                 <input
                   type="checkbox"
@@ -217,9 +236,6 @@ export function LoginPage({ onSuccess, redirectTo = '/admin' }: LoginPageProps) 
                 />
                 <span>Remember session</span>
               </label>
-              <Link className="font-medium text-teal-600 hover:text-teal-700" href="/admin/forgot-password">
-                Forgot password?
-              </Link>
             </div>
 
             <button

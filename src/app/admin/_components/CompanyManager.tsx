@@ -22,6 +22,7 @@ import type {
 } from "@/lib/content-types";
 import { ResourcesManager } from "./ResourcesManager";
 import { ImageMediaEditor } from "./ImageMediaEditor";
+import { Modal } from "@/components/ui/modal";
 
 interface CompanyManagerProps {
   company: SiteContentData["Company"];
@@ -485,15 +486,33 @@ export function CompanyManager({
       {subTab === "resources" && <ResourcesManager resources={company.Resources || []} onSave={(resources) => onSaveCompany({ ...company, Resources: resources })} />}
 
       {/* Leader Edit Modal */}
-      {editingLeader && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="my-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-7">
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Company content</p>
-              <h3 className="mt-1 text-lg font-semibold text-slate-900">{editingLeader.id ? "Edit team member" : "Add team member"}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-slate-500">These profile details are saved to the team database and shown on the leadership page.</p>
-            </div>
-            <form onSubmit={handleSaveLeader} className="grid max-h-[70vh] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2">
+      <Modal
+        open={Boolean(editingLeader)}
+        onClose={() => setEditingLeader(null)}
+        eyebrow="Company content"
+        title={editingLeader?.id ? "Edit team member" : "Add team member"}
+        description="These profile details are saved to the team database and shown on the leadership page."
+        onSubmit={handleSaveLeader}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingLeader(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isUploadingLeaderImage}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
+            >
+              Save Profile
+            </button>
+          </>
+        }
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">Name</label>
                 <input
@@ -565,37 +584,37 @@ export function CompanyManager({
                 <summary className="cursor-pointer text-xs font-medium text-slate-600">Legacy profile biography</summary>
                 <textarea rows={3} value={leaderForm.bio || ""} onChange={(e) => setLeaderForm({ ...leaderForm, bio: e.target.value })} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" placeholder="Existing profile bio, retained for other site content." />
               </details>
-              <div className="flex justify-end gap-2 border-t border-slate-200 pt-3 sm:col-span-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingLeader(null)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUploadingLeaderImage}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
-                >
-                  Save Profile
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
-      )}
+      </Modal>
 
       {/* Partner Edit Modal */}
-      {editingPartner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="my-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-7">
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Company content</p>
-              <h3 className="mt-1 text-lg font-semibold text-slate-900">{editingPartner.id ? "Edit technology partner" : "Add technology partner"}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-slate-500">Partner information and imagery displayed in the public gallery.</p>
-            </div>
-            <form onSubmit={handleSavePartner} className="grid max-h-[70vh] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2">
+      <Modal
+        open={Boolean(editingPartner)}
+        onClose={() => setEditingPartner(null)}
+        eyebrow="Company content"
+        title={editingPartner?.id ? "Edit technology partner" : "Add technology partner"}
+        description="Partner information and imagery displayed in the public gallery."
+        onSubmit={handleSavePartner}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingPartner(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isUploadingPartnerLogo}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
+            >
+              Save Partner
+            </button>
+          </>
+        }
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="block space-y-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Organization name
                 <input type="text" value={partnerForm.name} onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" required />
@@ -626,37 +645,37 @@ export function CompanyManager({
                   onRemove={() => setPartnerForm({ ...partnerForm, logo: undefined })}
                 />
               </div>
-              <div className="flex justify-end gap-2 border-t border-slate-200 pt-3 sm:col-span-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingPartner(null)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUploadingPartnerLogo}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
-                >
-                  Save Partner
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
-      )}
+      </Modal>
 
       {/* Client Editor */}
-      {editingClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm">
-          <div className="my-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-7">
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Company content</p>
-              <h3 className="mt-1 text-lg font-semibold text-slate-900">{editingClient.id ? "Edit client profile" : "Add client or institution"}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-slate-500">Add the image and details shown in the clients and institutions gallery.</p>
-            </div>
-            <form onSubmit={handleSaveClient} className="grid max-h-[70vh] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2">
+      <Modal
+        open={Boolean(editingClient)}
+        onClose={() => setEditingClient(null)}
+        eyebrow="Company content"
+        title={editingClient?.id ? "Edit client profile" : "Add client or institution"}
+        description="Add the image and details shown in the clients and institutions gallery."
+        onSubmit={handleSaveClient}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingClient(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isUploadingClientImage}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
+            >
+              Save client
+            </button>
+          </>
+        }
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="block space-y-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Organization name
                 <input type="text" value={clientForm.name} onChange={(e) => setClientForm({ ...clientForm, name: e.target.value })} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" required />
@@ -681,24 +700,39 @@ export function CompanyManager({
               </div>
               <label className="block space-y-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Display order
-                <input type="number" min={0} value={clientForm.order ?? 0} onChange={(e) => setClientForm({ ...clientForm, order: Number(e.target.value) })} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" />
+                <input type="number" min={0} value={clientForm.order ?? 0} onChange={(e) => setClientForm({ ...clientForm, order: Number(e.target.value) })} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" />
               </label>
-              <div className="flex justify-end gap-2 border-t border-slate-200 pt-3 sm:col-span-2">
-                <button type="button" onClick={() => setEditingClient(null)} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100">Cancel</button>
-                <button type="submit" disabled={isUploadingClientImage} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60">Save client</button>
-              </div>
-            </form>
-          </div>
         </div>
-      )}
+      </Modal>
 
       {/* News Edit Modal */}
-      {editingNews && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">Article editor</h3>
-            <p className="mb-5 text-sm text-slate-500">Manage the content, cover image, and publication status shown on the News &amp; Field Notes page.</p>
-            <form onSubmit={handleSaveNews} className="space-y-3">
+      <Modal
+        open={Boolean(editingNews)}
+        onClose={() => setEditingNews(null)}
+        eyebrow="Company content"
+        title="Article editor"
+        description="Manage the content, cover image, and publication status shown on the News & Field Notes page."
+        onSubmit={handleSaveNews}
+        bodyClassName="space-y-3"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingNews(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isUploadingNewsImage}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
+            >
+              Publish Article
+            </button>
+          </>
+        }
+      >
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Article Title</label>
                 <input
@@ -752,26 +786,7 @@ export function CompanyManager({
               />
               <div><label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Article content (one paragraph per line)</label><textarea rows={6} value={newsForm.body.join("\n")} onChange={(e) => setNewsForm({ ...newsForm, body: e.target.value.split("\n") })} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" required /></div>
               <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={newsForm.isPublished !== false} onChange={(e) => setNewsForm({ ...newsForm, isPublished: e.target.checked })} /> Published</label>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setEditingNews(null)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUploadingNewsImage}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
-                >
-                  Publish Article
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

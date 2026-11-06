@@ -12,6 +12,7 @@ import {
   ImagePlus,
 } from "lucide-react";
 import { ImageMediaEditor } from "./ImageMediaEditor";
+import { Modal } from "@/components/ui/modal";
 
 interface IndustriesManagerProps {
   industries: IndustryItem[];
@@ -228,17 +229,34 @@ export function IndustriesManager({
       </div>
 
       {/* Edit / Add Modal */}
-      {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">
-              {isNew ? "Add Industry Sector" : `Edit "${editingItem.title}"`}
-            </h3>
-            <p className="text-xs text-slate-500 mb-6">
-              Configure sector overview, lead paragraph, and associated disciplines.
-            </p>
-
-          <form onSubmit={handleSaveModal} className="space-y-4">
+      <Modal
+        open={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        eyebrow="Industry content"
+        title={isNew ? "Add Industry Sector" : `Edit "${editingItem?.title ?? ""}"`}
+        description="Configure sector overview, lead paragraph, and associated disciplines."
+        onSubmit={handleSaveModal}
+        bodyClassName="space-y-4"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingItem(null)}
+              disabled={uploadingImageIndexes.size > 0}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={uploadingImageIndexes.size > 0}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
+            >
+              {uploadingImageIndexes.size > 0 ? "Uploading image…" : "Save Sector"}
+            </button>
+          </>
+        }
+      >
             <div><label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Industry slug</label><input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="infrastructure" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" /></div>
             <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />Published</label>
               <div>
@@ -363,27 +381,7 @@ export function IndustriesManager({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setEditingItem(null)}
-                  disabled={uploadingImageIndexes.size > 0}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={uploadingImageIndexes.size > 0}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
-                >
-                  {uploadingImageIndexes.size > 0 ? "Uploading image…" : "Save Sector"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

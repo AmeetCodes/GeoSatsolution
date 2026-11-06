@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -14,6 +14,7 @@ import {
   LoaderCircle,
   ExternalLink,
   Tag,
+  X,
 } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
@@ -49,6 +50,14 @@ export function ProductsManager({
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingItem, setEditingItem] = useState<ProductItem | null>(null);
+  useEffect(() => {
+    if (!editingItem) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setEditingItem(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editingItem]);
   const [isNew, setIsNew] = useState(false);
 
   // Form states
@@ -63,7 +72,7 @@ export function ProductsManager({
   const [formDesc, setFormDesc] = useState("");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
   const [formImages, setFormImages] = useState<ContentImage[]>([
-    { src: "", alt: "", caption: "", source: "url" },
+    { src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" },
   ]);
   const [formResources, setFormResources] = useState<ProductDownloadItem[]>([]);
   const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string }[]>([]);
@@ -123,7 +132,7 @@ export function ProductsManager({
     setFormDesc("");
     setFormOutcomes(["Survey-grade accuracy", "IP55 weather resistance", "High payload capacity"]);
     setFormFaqs([]);
-    setFormImages([{ src: "", alt: "", caption: "", source: "url" }]);
+    setFormImages([{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]);
     setFormResources([]);
     setEditingItem({
       title: "",
@@ -161,9 +170,21 @@ export function ProductsManager({
     );
     setFormImages(
       item.images && item.images.length > 0
-        ? item.images.map((img) => ({ ...img, caption: img.caption || "" }))
-        : [{ src: "", alt: "", caption: "", source: "url" }]
+        ? [...item.images]
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((image, index) => ({ ...image, caption: image.caption || "", order: index, fitMode: image.fitMode ?? "contain", focalPosition: image.focalPosition ?? "center" }))
+        : [{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]
     );
+  };
+
+  const moveImage = (index: number, direction: -1 | 1) => {
+    setFormImages((current) => {
+      const target = index + direction;
+      if (target < 0 || target >= current.length) return current;
+      const next = [...current];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next.map((image, position) => ({ ...image, order: position }));
+    });
   };
 
   const handleGroupChange = (newGroup: string) => {
@@ -216,7 +237,13 @@ export function ProductsManager({
       description: formDesc.trim(),
       outcomes: cleanedOutcomes.length > 0 ? cleanedOutcomes : ["Standard calibration certified"],
       faqs: formFaqs.filter((faq) => faq.question.trim() && faq.answer.trim()),
-      images: cleanedImages.slice(0, 4).map((image) => ({ ...image, alt: image.alt.trim() || formTitle.trim() })),
+      images: cleanedImages.slice(0, 4).map((image, index) => ({
+        ...image,
+        alt: image.alt.trim() || formTitle.trim(),
+        order: index,
+        fitMode: image.fitMode ?? "contain",
+        focalPosition: image.focalPosition ?? "center",
+      })),
       resources: formResources.filter((resource) => resource.title.trim() && resource.fileUrl.trim()),
     };
 
@@ -518,8 +545,9 @@ export function ProductsManager({
 
       {/* Edit / Add Modal */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center">
-          <div className="relative my-8 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-2xl">
+        <div onClick={(event) => { if (event.target === event.currentTarget) setEditingItem(null); }} className="fixed inset-0 z-50 flex cursor-pointer items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm animate-in fade-in-0 duration-200 sm:items-center">
+          <div onClick={(event) => event.stopPropagation()} className="relative my-8 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
+            <button type="button" aria-label="Close dialog" onClick={() => setEditingItem(null)} className="sticky top-0 z-20 float-right -mr-2 -mt-2 flex size-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"><X className="size-4" /></button>
             <h3 className="text-lg font-semibold text-slate-900 mb-1">
               {isNew ? "Add Product Model" : `Edit "${editingItem.title}"`}
             </h3>
@@ -711,14 +739,14 @@ export function ProductsManager({
                   <div>
                     <label className="block text-sm font-semibold text-slate-900">Product Images</label>
                     <p className="mt-0.5 text-xs text-slate-500">
-                      Choose a database upload or an external image URL. Up to four gallery images.
+                      Choose a database upload or an external image URL. Up to four gallery images. Reorder and control framing below.
                     </p>
                   </div>
                   <button
                     type="button"
                     disabled={formImages.length >= 4}
                     onClick={() =>
-                      setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])
+                      setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url", order: formImages.length, fitMode: "contain", focalPosition: "center" }])
                     }
                     className="shrink-0 text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50"
                   >
@@ -730,6 +758,12 @@ export function ProductsManager({
                     key={index}
                     image={image}
                     index={index}
+                    title={`Image ${index + 1}`}
+                    showFramingControls
+                    onMoveUp={() => moveImage(index, -1)}
+                    onMoveDown={() => moveImage(index, 1)}
+                    canMoveUp={index > 0}
+                    canMoveDown={index < formImages.length - 1}
                     onChange={(updatedImage) =>
                       setFormImages(formImages.map((item, i) => (i === index ? updatedImage : item)))
                     }

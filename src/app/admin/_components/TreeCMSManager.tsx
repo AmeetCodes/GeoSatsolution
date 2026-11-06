@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Layers,
   Box,
@@ -77,6 +77,18 @@ export function TreeCMSManager({
     description: "",
     outcomes: [""],
   });
+
+  useEffect(() => {
+    if (!tabModalOpen && !colModalOpen && !itemModalOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (itemModalOpen) setItemModalOpen(false);
+      else if (colModalOpen) setColModalOpen(false);
+      else setTabModalOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [tabModalOpen, colModalOpen, itemModalOpen]);
 
   const activeTab = tree.tabs.find((t) => t.id === activeTabId) || tree.tabs[0];
 
@@ -741,9 +753,9 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT MAIN TAB ================= */}
       {tabModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div onClick={(event) => { if (event.target === event.currentTarget) setTabModalOpen(false); }} className="fixed inset-0 z-50 flex cursor-pointer items-start justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto animate-in fade-in-0 duration-200 sm:items-center">
+          <div onClick={(event) => event.stopPropagation()} className="relative my-8 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
+            <div className="sticky top-0 z-10 flex items-center justify-between bg-white pb-4 border-b border-slate-200">
               <h3 className="text-base font-semibold text-slate-900">
                 {editingTab ? `Edit Tab: ${editingTab.label}` : "Add Main Navigation Tab"}
               </h3>
@@ -837,9 +849,9 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT COLUMN ================= */}
       {colModalOpen && editingCol && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div onClick={(event) => { if (event.target === event.currentTarget) setColModalOpen(false); }} className="fixed inset-0 z-50 flex cursor-pointer items-start justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto animate-in fade-in-0 duration-200 sm:items-center">
+          <div onClick={(event) => event.stopPropagation()} className="relative my-8 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
+            <div className="sticky top-0 z-10 flex items-center justify-between bg-white pb-4 border-b border-slate-200">
               <h3 className="text-base font-semibold text-slate-900">
                 {editingCol.col ? `Rename Column: ${editingCol.col.title}` : "Add Column Header / Sub-Category"}
               </h3>
@@ -894,9 +906,9 @@ export function TreeCMSManager({
 
       {/* ================= MODAL: ADD / EDIT ITEM (LEVEL 3 & 4 CMS) ================= */}
       {itemModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div onClick={(event) => { if (event.target === event.currentTarget) setItemModalOpen(false); }} className="fixed inset-0 z-50 flex cursor-pointer items-start justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto animate-in fade-in-0 duration-200 sm:items-center">
+          <div onClick={(event) => event.stopPropagation()} className="relative my-8 max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
+            <div className="sticky top-0 z-10 flex items-center justify-between bg-white pb-4 border-b border-slate-200">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                   Level 3 Item &amp; Page CMS

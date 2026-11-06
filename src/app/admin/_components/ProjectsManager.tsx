@@ -6,6 +6,7 @@ import { Briefcase, Edit2, Plus, Search, Trash2 } from "lucide-react";
 import type { ProjectItem } from "@/lib/data/project-content";
 import type { ContentImage } from "@/lib/content-types";
 import { ImageMediaEditor } from "./ImageMediaEditor";
+import { Modal } from "@/components/ui/modal";
 
 interface ProjectsManagerProps {
   projects: ProjectItem[];
@@ -177,11 +178,33 @@ export function ProjectsManager({
         </div>
       )}
 
-      {editingProject && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-semibold text-slate-900">{isNew ? "Add Project" : "Edit Project"}</h2>
-            <form onSubmit={handleSave} className="mt-5 space-y-4">
+      <Modal
+        open={Boolean(editingProject)}
+        onClose={() => setEditingProject(null)}
+        eyebrow="Project content"
+        title={isNew ? "Add Project" : "Edit Project"}
+        description="Manage project details, gallery images, and public visibility."
+        onSubmit={handleSave}
+        bodyClassName="space-y-4"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingProject(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isUploadingImage}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
+            >
+              {isUploadingImage ? "Uploading image…" : "Save Project"}
+            </button>
+          </>
+        }
+      >
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Project code
@@ -251,26 +274,7 @@ export function ProjectsManager({
                 />)}
               </section>
               <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={form.isPublished !== false} onChange={(event) => setForm({ ...form, isPublished: event.target.checked })} /> Show this project in the public gallery</label>
-              <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingProject(null)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUploadingImage}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
-                >
-                  {isUploadingImage ? "Uploading image…" : "Save Project"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

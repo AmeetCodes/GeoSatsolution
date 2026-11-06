@@ -12,5 +12,7 @@ export * from "./project";
 export * from "./district-project";
 export * from "./Navigation";
 export * from "./Admin";
+export * from "./AdminSession";
+export * from "./AdminLoginAttempt";
 export * from "./Consultation";
 export * from "./MediaAsset";

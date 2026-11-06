@@ -31,7 +31,7 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-slate-950/40 duration-100 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-50 cursor-pointer bg-slate-950/40 duration-200 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -54,11 +54,22 @@ function DialogContent({
         <DialogPrimitive.Popup
           data-slot="dialog-content"
           className={cn(
-            "pointer-events-auto relative grid max-h-full w-full max-w-sm gap-4 overflow-y-auto rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "pointer-events-auto relative grid max-h-[90dvh] w-full max-w-sm gap-4 overflow-y-auto rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-200 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className
           )}
           {...props}
         >
+          {showCloseButton && (
+            <div className="sticky top-0 z-50 -mb-10 flex h-0 shrink-0 justify-end self-stretch pr-0 pt-0">
+              <DialogPrimitive.Close
+                data-slot="dialog-close"
+                render={<button type="button" aria-label="Close dialog" className="sticky top-2 z-50 flex size-9 items-center justify-center rounded-full border border-line-strong bg-white/90 text-ink shadow-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua" />}
+              >
+                <XIcon className="size-4" />
+                <span className="sr-only">Close</span>
+              </DialogPrimitive.Close>
+            </div>
+          )}
           {children}
           <BorderBeam
             size={64}
@@ -67,22 +78,6 @@ function DialogContent({
             colorTo="#d5b35e"
             borderWidth={1}
           />
-          {showCloseButton && (
-            <DialogPrimitive.Close
-              data-slot="dialog-close"
-              render={
-                <button
-                  type="button"
-                  aria-label="Close dialog"
-                  className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full border border-line-strong bg-white/70 text-ink transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua"
-                />
-              }
-            >
-              <XIcon
-              />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          )}
         </DialogPrimitive.Popup>
       </div>
     </DialogPortal>

@@ -1,6 +1,21 @@
 import connectDB from "../connection";
 import { Types } from "mongoose";
 import { Solution, ISolution, ISolutionImage } from "../../models/solution";
+import { normalizeSlug, stripTrailingNumericSuffix } from "../../utils";
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function slugPattern(pattern: string): RegExp {
+  return new RegExp(`^${escapeRegExp(pattern)}$`, "i");
+}
+
+async function findOneBySlugPattern(pattern: string): Promise<ISolution | null> {
+  return Solution.findOne({ slug: { $regex: slugPattern(pattern) } })
+    .lean()
+    .exec() as unknown as Promise<ISolution | null>;
+}
 
 export interface CreateSolutionDTO {
   id?: string;
@@ -41,7 +56,29 @@ export class SolutionRepository {
 
   async findBySlug(slug: string): Promise<ISolution | null> {
     await connectDB();
-    return Solution.findOne({ slug }).lean().exec() as unknown as Promise<ISolution | null>;
+
+    const cleanSlug = normalizeSlug(slug);
+    if (!cleanSlug) return null;
+
+    // 1. Case-insensitive exact match on the normalized slug.
+    const exactMatch = await findOneBySlugPattern(cleanSlug);
+    if (exactMatch) return exactMatch;
+
+    // 2. Retry without an accidental trailing numeric suffix (e.g. engineering-survey321).
+    const baseSlug = stripTrailingNumericSuffix(cleanSlug);
+    if (baseSlug && baseSlug !== cleanSlug) {
+      const baseMatch = await findOneBySlugPattern(baseSlug);
+      if (baseMatch) return baseMatch;
+    }
+
+    // 3. Last resort: tolerate a stored slug that still has a numeric suffix appended.
+    const tolerantPattern = new RegExp(
+      `^${escapeRegExp(baseSlug || cleanSlug)}(?:[-_]?\\d+)?$`,
+      "i",
+    );
+    return Solution.findOne({ slug: { $regex: tolerantPattern } })
+      .lean()
+      .exec() as unknown as Promise<ISolution | null>;
   }
 
   async findByTitle(title: string): Promise<ISolution | null> {

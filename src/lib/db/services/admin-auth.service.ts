@@ -8,6 +8,13 @@ export interface AuthenticatedAdmin {
   role: "admin" | "superadmin";
 }
 
+export class AdminRecordNotFoundError extends Error {
+  constructor() {
+    super("No administrator record matches the submitted email.");
+    this.name = "AdminRecordNotFoundError";
+  }
+}
+
 export async function authenticateAdmin(
   email: string,
   password: string,
@@ -17,7 +24,8 @@ export async function authenticateAdmin(
     .select("+passwordHash")
     .exec();
 
-  if (!admin || !(await verifyPassword(password, admin.passwordHash))) return null;
+  if (!admin) throw new AdminRecordNotFoundError();
+  if (!(await verifyPassword(password, admin.passwordHash))) return null;
 
   if (
     needsPasswordRehash(admin.passwordHash) &&

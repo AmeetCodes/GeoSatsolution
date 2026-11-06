@@ -15,6 +15,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
 import { ImageMediaEditor } from "./ImageMediaEditor";
+import { Modal } from "@/components/ui/modal";
 
 interface SolutionsManagerProps {
   solutions: SolutionItem[];
@@ -51,7 +52,7 @@ export function SolutionsManager({
   const [formDesc, setFormDesc] = useState("");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
   const [formImages, setFormImages] = useState<ContentImage[]>([
-    { src: "", alt: "", caption: "", source: "url" },
+    { src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" },
   ]);
 
   const filtered = useMemo(() => {
@@ -75,7 +76,7 @@ export function SolutionsManager({
     setFormIntro("");
     setFormDesc("");
     setFormOutcomes([""]);
-    setFormImages([{ src: "", alt: "", caption: "", source: "url" }]);
+    setFormImages([{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]);
     setEditingItem({
       title: "",
       group: "Survey & Mapping",
@@ -100,8 +101,20 @@ export function SolutionsManager({
     setFormImages(
       item.images && item.images.length > 0
         ? [...item.images]
-        : [{ src: "", alt: "", caption: "", source: "url" }]
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((image, index) => ({ ...image, order: index, fitMode: image.fitMode ?? "contain", focalPosition: image.focalPosition ?? "center" }))
+        : [{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]
     );
+  };
+
+  const moveImage = (index: number, direction: -1 | 1) => {
+    setFormImages((current) => {
+      const target = index + direction;
+      if (target < 0 || target >= current.length) return current;
+      const next = [...current];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next.map((image, position) => ({ ...image, order: position }));
+    });
   };
 
   const handleSaveModal = async (e: React.FormEvent) => {
@@ -125,7 +138,13 @@ export function SolutionsManager({
       intro: formIntro.trim(),
       description: formDesc.trim(),
       outcomes: cleanedOutcomes,
-      images: cleanedImages.map((image) => ({ ...image, alt: image.alt.trim() || formTitle.trim() })),
+      images: cleanedImages.map((image, index) => ({
+        ...image,
+        alt: image.alt.trim() || formTitle.trim(),
+        order: index,
+        fitMode: image.fitMode ?? "contain",
+        focalPosition: image.focalPosition ?? "center",
+      })),
     };
 
     let updatedList: SolutionItem[];
@@ -329,17 +348,32 @@ export function SolutionsManager({
       </div>
 
       {/* Edit / Add Modal */}
-      {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center">
-          <div className="relative my-8 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-slate-700 shadow-2xl">
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">
-              {isNew ? "Add New Solution" : `Edit "${editingItem.title}"`}
-            </h3>
-            <p className="mb-6 text-xs text-slate-500">
-              Configure parameters, deliverables, and gallery images for this solution.
-            </p>
-
-            <form onSubmit={handleSaveModal} className="space-y-4">
+      <Modal
+        open={Boolean(editingItem)}
+        onClose={() => setEditingItem(null)}
+        eyebrow="Solution content"
+        title={isNew ? "Add New Solution" : `Edit "${editingItem?.title ?? ""}"`}
+        description="Configure parameters, deliverables, and gallery images for this solution."
+        onSubmit={handleSaveModal}
+        bodyClassName="space-y-4"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setEditingItem(null)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
+            >
+              Save Changes
+            </button>
+          </>
+        }
+      >
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Solution Title
@@ -453,37 +487,25 @@ export function SolutionsManager({
 
               {/* Images */}
               <div>
-                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-slate-900">Solution images</label><p className="mt-0.5 text-xs text-slate-500">Upload images to store them in the database, or use an external image URL.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50">Add image</button></div>
+                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-slate-900">Solution images</label><p className="mt-0.5 text-xs text-slate-500">Upload images, reorder them, and control framing. The first image appears first in the carousel.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url", order: formImages.length, fitMode: "contain", focalPosition: "center" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50">Add image</button></div>
                 {formImages.map((img, idx) => (
                   <ImageMediaEditor
                     key={idx}
                     index={idx}
+                    title={`Image ${idx + 1}`}
                     image={img}
+                    showFramingControls
+                    onMoveUp={() => moveImage(idx, -1)}
+                    onMoveDown={() => moveImage(idx, 1)}
+                    canMoveUp={idx > 0}
+                    canMoveDown={idx < formImages.length - 1}
                     onChange={(updatedImage) => setFormImages(formImages.map((image, index) => index === idx ? updatedImage : image))}
                     onRemove={() => setFormImages(formImages.filter((_, index) => index !== idx))}
                   />
                 ))}
               </div>
 
-              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingItem(null)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

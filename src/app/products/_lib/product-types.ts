@@ -1,4 +1,4 @@
-import type { ProductDownloadItem } from "@/lib/content-types";
+import type { ImageFitMode, ImageFocalPosition, ProductDownloadItem } from "@/lib/content-types";
 import { PRODUCT_TAXONOMY } from "@/lib/product-taxonomy";
 
 export type ProductImage = {
@@ -7,6 +7,9 @@ export type ProductImage = {
   caption?: string;
   source?: "upload" | "url";
   mediaId?: string;
+  order?: number;
+  fitMode?: ImageFitMode;
+  focalPosition?: ImageFocalPosition;
 };
 
 export type Product = {
