@@ -21,11 +21,16 @@ import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
 import {
   type ContentImage,
+  type DescriptionAlignment,
   type ProductDownloadItem,
   type ProductItem,
 } from "@/lib/content-types";
 import { PRODUCT_TAXONOMY } from "@/lib/product-taxonomy";
 import { ImageMediaEditor } from "./ImageMediaEditor";
+import { normalizeFaqs } from "@/lib/faq-defaults";
+import { resolveDescriptionAlignment } from "@/lib/description-alignment";
+import { DescriptionAlignmentBar } from "./DescriptionAlignmentBar";
+import { FaqEditor } from "./FaqEditor";
 
 interface ProductsManagerProps {
   products: ProductItem[];
@@ -70,12 +75,14 @@ export function ProductsManager({
   const [formBrandUrl, setFormBrandUrl] = useState("");
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
+  const [formDescriptionAlignment, setFormDescriptionAlignment] =
+    useState<DescriptionAlignment>("justify");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
   const [formImages, setFormImages] = useState<ContentImage[]>([
     { src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" },
   ]);
   const [formResources, setFormResources] = useState<ProductDownloadItem[]>([]);
-  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string }[]>([]);
+  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string; order?: number }[]>([]);
   const [uploadingResourceIndex, setUploadingResourceIndex] = useState<number | null>(null);
 
   // Available subcategories for current form group
@@ -130,6 +137,7 @@ export function ProductsManager({
     setFormBrandUrl("");
     setFormIntro("");
     setFormDesc("");
+    setFormDescriptionAlignment("justify");
     setFormOutcomes(["Survey-grade accuracy", "IP55 weather resistance", "High payload capacity"]);
     setFormFaqs([]);
     setFormImages([{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]);
@@ -158,8 +166,9 @@ export function ProductsManager({
     setFormBrandUrl(item.brandUrl || "");
     setFormIntro(item.intro);
     setFormDesc(item.description);
+    setFormDescriptionAlignment(resolveDescriptionAlignment(item.descriptionAlignment));
     setFormOutcomes(item.outcomes.length > 0 ? [...item.outcomes] : [""]);
-    setFormFaqs(item.faqs || []);
+    setFormFaqs(normalizeFaqs(item.faqs));
     setFormResources(
       item.resources
         ? item.resources.map((resource) => ({
@@ -235,8 +244,11 @@ export function ProductsManager({
       brandUrl: formBrandUrl.trim() || undefined,
       intro: formIntro.trim(),
       description: formDesc.trim(),
+      descriptionAlignment: formDescriptionAlignment,
       outcomes: cleanedOutcomes.length > 0 ? cleanedOutcomes : ["Standard calibration certified"],
-      faqs: formFaqs.filter((faq) => faq.question.trim() && faq.answer.trim()),
+      faqs: formFaqs
+        .filter((faq) => faq.question.trim() && faq.answer.trim())
+        .map((faq, index) => ({ ...faq, order: index })),
       images: cleanedImages.slice(0, 4).map((image, index) => ({
         ...image,
         alt: image.alt.trim() || formTitle.trim(),
@@ -676,10 +688,14 @@ export function ProductsManager({
               </div>
 
               {/* Full Description */}
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Full Technical Description
                 </label>
+                <DescriptionAlignmentBar
+                  value={formDescriptionAlignment}
+                  onChange={setFormDescriptionAlignment}
+                />
                 <textarea
                   rows={3}
                   value={formDesc}
@@ -868,55 +884,7 @@ export function ProductsManager({
                 ))}
               </section>
 
-              {/* FAQs */}
-              <section className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Frequently asked questions</label>
-                  <button
-                    type="button"
-                    onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
-                  >
-                    Add FAQ
-                  </button>
-                </div>
-                {formFaqs.map((faq, index) => (
-                  <div key={index} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <input
-                      value={faq.question}
-                      onChange={(e) =>
-                        setFormFaqs(
-                          formFaqs.map((item, i) =>
-                            i === index ? { ...item, question: e.target.value } : item
-                          )
-                        )
-                      }
-                      placeholder="Question"
-                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
-                    />
-                    <textarea
-                      value={faq.answer}
-                      onChange={(e) =>
-                        setFormFaqs(
-                          formFaqs.map((item, i) =>
-                            i === index ? { ...item, answer: e.target.value } : item
-                          )
-                        )
-                      }
-                      placeholder="Answer"
-                      rows={2}
-                      className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))}
-                      className="text-xs font-medium text-rose-600 hover:text-rose-700"
-                    >
-                      Remove FAQ
-                    </button>
-                  </div>
-                ))}
-              </section>
+              <FaqEditor faqs={formFaqs} onChange={setFormFaqs} />
 
               <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
                 <button

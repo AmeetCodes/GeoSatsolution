@@ -3,6 +3,7 @@ import { solutionService } from "@/lib/db/services/solution.service";
 import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { solutionItemSchema } from "@/lib/validations/solution.schema";
 import { getErrorMessage } from "@/lib/utils";
+import { canonicalServiceSlug, canonicalServiceTitle } from "@/lib/service-routing";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,12 @@ export async function GET(req: Request) {
       ? await solutionService.getAllForAdmin(group)
       : await solutionService.getAllPublished();
 
-    return NextResponse.json({ success: true, data: solutions });
+    const canonicalSolutions = solutions.map((solution) => ({
+      ...solution,
+      title: canonicalServiceTitle(solution.title, solution.slug),
+      slug: canonicalServiceSlug(solution.title, solution.slug),
+    }));
+    return NextResponse.json({ success: true, data: canonicalSolutions });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: getErrorMessage(error, "Failed to fetch solutions") },
@@ -42,7 +48,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const created = await solutionService.create(parsed.data);
+    const created = await solutionService.create({
+      ...parsed.data,
+      title: canonicalServiceTitle(parsed.data.title, parsed.data.slug),
+      slug: canonicalServiceSlug(parsed.data.title, parsed.data.slug),
+    });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error) {
     return NextResponse.json(

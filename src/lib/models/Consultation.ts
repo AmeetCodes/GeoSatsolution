@@ -14,6 +14,7 @@ export interface IConsultation extends Document {
   email: string;
   phone?: string;
   interest: string;
+  interests?: string[];
   otherInterest?: string;
   details: string;
   type?: ConsultationType;
@@ -29,6 +30,7 @@ const ConsultationSchema = new Schema<IConsultation>(
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, trim: true },
     interest: { type: String, required: true, trim: true },
+    interests: { type: [String], default: [] },
     otherInterest: { type: String, trim: true },
     details: { type: String, required: true },
     type: {

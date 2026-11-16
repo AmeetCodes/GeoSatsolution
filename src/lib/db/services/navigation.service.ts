@@ -7,6 +7,7 @@ import {
   NavTreeTab,
   NavTreeColumn,
   NavTreeItem,
+  canonicalizeNavigationTree,
 } from "../../tree-store";
 
 const getTreeForRequest = cache(async (): Promise<NavigationTree> => {
@@ -14,22 +15,26 @@ const getTreeForRequest = cache(async (): Promise<NavigationTree> => {
   if (!tree || tree.tabs.length === 0) {
     return navigationRepository.saveTree(DEFAULT_NAVIGATION_TREE);
   }
+  const canonical = canonicalizeNavigationTree(tree);
+  if (JSON.stringify(canonical.tabs) !== JSON.stringify(tree.tabs)) {
+    return navigationRepository.saveTree(canonical);
+  }
   return tree;
 });
 
 export class NavigationService {
   async getTree(): Promise<NavigationTree> {
-    return getTreeForRequest();
+    return canonicalizeNavigationTree(await getTreeForRequest());
   }
 
   async saveTree(tree: NavigationTree): Promise<NavigationTree> {
-    const saved = await navigationRepository.saveTree(tree);
+    const saved = await navigationRepository.saveTree(canonicalizeNavigationTree(tree));
     this.revalidateAll(saved);
     return saved;
   }
 
   async resetTree(): Promise<NavigationTree> {
-    const saved = await navigationRepository.resetTree();
+    const saved = canonicalizeNavigationTree(await navigationRepository.resetTree());
     this.revalidateAll(saved);
     return saved;
   }

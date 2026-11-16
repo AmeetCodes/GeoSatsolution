@@ -1,4 +1,4 @@
-import type { ImageFitMode, ImageFocalPosition, ProductDownloadItem } from "@/lib/content-types";
+import type { DescriptionAlignment, ImageFitMode, ImageFocalPosition, ProductDownloadItem } from "@/lib/content-types";
 import { PRODUCT_TAXONOMY } from "@/lib/product-taxonomy";
 
 export type ProductImage = {
@@ -22,9 +22,10 @@ export type Product = {
   brandUrl?: string;
   intro: string;
   description: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes: string[];
   specifications?: Record<string, string>;
-  faqs?: { question: string; answer: string }[];
+  faqs?: { question: string; answer: string; order?: number }[];
   resources?: ProductDownloadItem[];
   images: ProductImage[];
   isPublished?: boolean;

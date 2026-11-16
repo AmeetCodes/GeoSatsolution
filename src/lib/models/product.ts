@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import type { DescriptionAlignment } from "../description-alignment";
 
 export type ProductImageFitMode = "contain" | "cover";
 export type ProductImageFocalPosition = "center" | "top" | "bottom" | "left" | "right";
@@ -23,10 +24,12 @@ export interface IProduct extends Document {
   brandUrl?: string;          // Official brand/product website URL
   intro: string;
   description: string;
+  descriptionAlignment: DescriptionAlignment;
   outcomes: string[];         // Specifications/Features list
   images: IProductImage[];
   specifications?: Record<string, string>;
-  faqs: { question: string; answer: string }[];
+  faqs: { question: string; answer: string; order?: number }[];
+  faqsInitialized: boolean;
   resources: { title: string; fileUrl: string; fileSource?: "upload" | "url"; fileMediaId?: string; fileName?: string }[];
   isPublished: boolean;
   order: number;
@@ -44,6 +47,7 @@ const ProductSchema = new Schema<IProduct>(
     brandUrl: { type: String, default: "", trim: true },
     intro: { type: String, default: "" },
     description: { type: String, default: "" },
+    descriptionAlignment: { type: String, enum: ["justify", "left"], default: "justify" },
     outcomes: { type: [String], default: [] },
     images: [
       {
@@ -58,7 +62,12 @@ const ProductSchema = new Schema<IProduct>(
       },
     ],
     specifications: { type: Schema.Types.Mixed, default: {} },
-    faqs: [{ question: { type: String, required: true }, answer: { type: String, required: true } }],
+    faqs: [{
+      question: { type: String, required: true },
+      answer: { type: String, required: true },
+      order: { type: Number, default: 0 },
+    }],
+    faqsInitialized: { type: Boolean, default: false },
     resources: [{
       title: { type: String, required: true, trim: true },
       fileUrl: { type: String, required: true, trim: true },
@@ -74,7 +83,7 @@ const ProductSchema = new Schema<IProduct>(
 
 // Rebuild a stale dev-server model after schema changes so newly added resource
 // fields are not dropped by Mongoose strict mode during hot reloads.
-if (mongoose.models.Product && (!mongoose.models.Product.schema.path("resources") || !mongoose.models.Product.schema.path("subcategory") || !mongoose.models.Product.schema.path("images.fitMode"))) {
+if (mongoose.models.Product && (!mongoose.models.Product.schema.path("resources") || !mongoose.models.Product.schema.path("subcategory") || !mongoose.models.Product.schema.path("images.fitMode") || !mongoose.models.Product.schema.path("descriptionAlignment") || !mongoose.models.Product.schema.path("faqsInitialized"))) {
   delete mongoose.models.Product;
 }
 

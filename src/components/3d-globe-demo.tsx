@@ -6,7 +6,7 @@ export function Globe3DDemo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative mx-auto flex aspect-square h-auto w-full max-w-[600px] items-center justify-center overflow-hidden rounded-full bg-transparent lg:max-w-[700px]",
+        "relative mx-auto flex aspect-square h-auto w-full max-w-[600px] items-center justify-center overflow-hidden rounded-full bg-transparent lg:max-w-[760px]",
         className,
       )}
     >

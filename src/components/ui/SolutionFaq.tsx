@@ -1,31 +1,14 @@
 import { ChevronDown } from "lucide-react";
 
 export function SolutionFaq({
-  solutionTitle,
-  deliverables,
   items,
   className,
 }: {
-  solutionTitle: string;
-  deliverables: string[];
   items?: { question: string; answer: string }[];
   className?: string;
 }) {
-  const generatedFaqs = [
-    {
-      question: `What is included with ${solutionTitle}?`,
-      answer: `A ${solutionTitle} engagement is scoped to your site and decisions. Typical handover items include ${deliverables.join(", ")}, along with the supporting checks and metadata agreed during planning.`,
-    },
-    {
-      question: "What information do we need to prepare a proposal?",
-      answer: "Share the site location or coverage area, intended use, required accuracy or output, access constraints, and target schedule. If some details are still unknown, we can help define them during the first consultation.",
-    },
-    {
-      question: "How do you choose the method and confirm quality?",
-      answer: `We plan ${solutionTitle} around the terrain, project tolerance, and how the results will be used. The proposed capture and verification steps are agreed before fieldwork, then checked against the project control and acceptance criteria.`,
-    },
-  ];
-  const faqs = items?.length ? items : generatedFaqs;
+  if (!items?.length) return null;
+
   const sectionClassName =
     className ?? "mt-14 border-t border-line pt-10 sm:mt-16 sm:pt-12";
 
@@ -38,13 +21,13 @@ export function SolutionFaq({
         <div>
           <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Good to know</p>
           <h2 id="solution-faq-heading" className="mt-4 max-w-sm font-heading text-3xl font-semibold leading-tight tracking-tight text-ink">
-            Questions about {solutionTitle}?
+            Frequently asked questions
           </h2>
         </div>
 
         <div className="space-y-2">
-          {faqs.map((faq) => (
-            <details key={faq.question} className="group rounded-lg border border-line bg-white">
+          {items.map((faq, index) => (
+            <details key={`${faq.question}-${index}`} className="group rounded-lg border border-line bg-white">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-4 font-sans font-medium leading-normal text-ink transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
                 <span>{faq.question}</span>
                 <ChevronDown

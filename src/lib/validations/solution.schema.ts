@@ -1,8 +1,15 @@
 import { z } from "zod";
 
-import { requiredText, textList, uniqueBy, imageListSchema, optionalText, slugSchema } from "./shared.schema";
-
-const faqListSchema = z.array(z.object({ question: requiredText(300, "FAQ question"), answer: requiredText(3000, "FAQ answer") })).max(50).default([]);
+import {
+  requiredText,
+  textList,
+  uniqueBy,
+  imageListSchema,
+  optionalText,
+  slugSchema,
+  faqListSchema,
+  descriptionAlignmentSchema,
+} from "./shared.schema";
 
 export const solutionItemSchema = z.object({
   id: z.string().regex(/^[a-f\d]{24}$/i, "Solution id is invalid").optional(),
@@ -11,6 +18,7 @@ export const solutionItemSchema = z.object({
   group: requiredText(120, "Solution group"),
   intro: optionalText(600, "Solution intro"),
   description: optionalText(5000, "Solution description"),
+  descriptionAlignment: descriptionAlignmentSchema,
   outcomes: textList(40, 300, "Solution outcomes"),
   images: imageListSchema,
   faqs: faqListSchema,

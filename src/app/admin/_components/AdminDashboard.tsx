@@ -10,9 +10,7 @@ import { AdminOverview } from "./AdminOverview";
 import { TreeCMSManager } from "./TreeCMSManager";
 import { SolutionsManager } from "./SolutionsManager";
 import { ProductsManager } from "./ProductsManager";
-import { ProjectsManager } from "./ProjectsManager";
-import { DistrictProjectsManager } from "./DistrictProjectsManager";
-import { IndustriesManager } from "./IndustriesManager";
+import { UnifiedProjectsManager } from "./UnifiedProjectsManager";
 import { CompanyManager } from "./CompanyManager";
 import { LivePreview } from "./LivePreview";
 import { InquiryTable } from "./InquiryTable";
@@ -20,8 +18,6 @@ import { InquiryDrawer } from "./InquiryDrawer";
 import { INQUIRY_STATUS_META } from "./inquiry-status";
 import SwipeToast from "@/components/ui/SwipeToast";
 import type { NavigationTree } from "@/lib/tree-store";
-import type { ProjectItem } from "@/lib/data/project-content";
-import type { DistrictProjectRecord } from "@/lib/nepal-map-types";
 import {
   computeInquiryCounts,
   type InquiryRecord,
@@ -42,8 +38,7 @@ interface ToastState {
 interface AdminDashboardProps {
   initialContent: SiteContentData;
   initialTree?: NavigationTree;
-  initialProjects: ProjectItem[];
-  initialDistrictProjects?: DistrictProjectRecord[];
+  initialShowcaseProjects?: Array<{ _id?: string; id?: string; type: "service" | "sales"; slug: string; projectName?: string; productName?: string; districts: string[]; latitude?: number; longitude?: number; avgElevation?: number; client: string; partner: string; area: number; coverImage: string; galleryImages: string[] }>;
   initialInquiries?: InquiryRecord[];
   initialInquiryCounts?: InquiryStatusCounts;
   userEmail?: string;
@@ -52,8 +47,7 @@ interface AdminDashboardProps {
 export function AdminDashboard({
   initialContent,
   initialTree,
-  initialProjects,
-  initialDistrictProjects = [],
+  initialShowcaseProjects = [],
   initialInquiries = [],
   initialInquiryCounts,
   userEmail = "",
@@ -61,7 +55,6 @@ export function AdminDashboard({
   const { showWarning, warningRemainingMs, extendSession, logout } = useAdminSession();
   const [content, setContent] = useState<SiteContentData>(initialContent);
   const [tree, setTree] = useState<NavigationTree>(initialTree || { tabs: [] });
-  const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
   const [inquiries, setInquiries] = useState<InquiryRecord[]>(initialInquiries);
   const [inquiryCounts, setInquiryCounts] = useState<InquiryStatusCounts>(
     initialInquiryCounts ?? computeInquiryCounts(initialInquiries),
@@ -112,31 +105,6 @@ export function AdminDashboard({
     } catch (err) {
       addToast("Save Failed", getErrorMessage(err, "Could not persist to server"));
       throw err;
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleSaveProjects = async (updated: ProjectItem[]) => {
-    setIsSaving(true);
-    setSavedRecently(false);
-    try {
-      const res = await fetch("/api/admin/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save", data: updated }),
-      });
-      const result = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(result?.message || "Failed to save projects");
-
-      setProjects(result.data);
-      setSavedRecently(true);
-      if (savedTimer.current) clearTimeout(savedTimer.current);
-      savedTimer.current = setTimeout(() => setSavedRecently(false), 3000);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Could not save projects";
-      addToast("Save Failed", message);
-      throw error;
     } finally {
       setIsSaving(false);
     }
@@ -229,11 +197,9 @@ export function AdminDashboard({
   const tabLabels: Record<AdminTab, string> = {
     overview: "Dashboard Overview",
     tree: "Mega-Menu & Hierarchy CMS",
-    solutions: "Solutions Manager",
+    solutions: "Services Manager",
     products: "Products Manager",
     projects: "Projects Manager",
-    district: "District Project Map",
-    industries: "Industries Manager",
     company: "Company Manager",
     transactions: "Orders & Requests",
     preview: "Live Site Preview",
@@ -322,24 +288,8 @@ export function AdminDashboard({
         )}
 
         {activeTab === "projects" && (
-          <ProjectsManager
-            projects={projects}
-            onSaveProjects={handleSaveProjects}
-            onTriggerToast={addToast}
-          />
-        )}
-
-        {activeTab === "district" && (
-          <DistrictProjectsManager
-            initialProjects={initialDistrictProjects}
-            onTriggerToast={addToast}
-          />
-        )}
-
-        {activeTab === "industries" && (
-          <IndustriesManager
-            industries={content.Industries || []}
-            onSaveIndustries={(updated) => handleSaveSection("Industries", updated)}
+          <UnifiedProjectsManager
+            initialProjects={initialShowcaseProjects}
             onTriggerToast={addToast}
           />
         )}

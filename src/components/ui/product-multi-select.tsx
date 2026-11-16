@@ -33,7 +33,7 @@ type ProductMultiSelectProps = {
 }
 
 const triggerClassName =
-  "relative flex min-h-11 w-full items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 p-2 pr-10 text-left text-sm text-slate-900 shadow-xs outline-none transition-colors hover:bg-slate-100/80 focus-visible:border-teal-600 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-teal-500/10 aria-invalid:border-rose-500 aria-invalid:focus-visible:ring-rose-500/15 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-900/80 dark:focus-visible:bg-slate-950"
+  "relative flex min-h-11 w-full items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 p-2 pr-10 text-left font-sans text-sm text-slate-900 shadow-xs outline-none transition-colors hover:bg-slate-100/80 focus-visible:border-teal-600 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-teal-500/10 aria-invalid:border-rose-500 aria-invalid:focus-visible:ring-rose-500/15 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-900/80 dark:focus-visible:bg-slate-950"
 
 export function ProductMultiSelect({
   id,
@@ -141,7 +141,7 @@ export function ProductMultiSelect({
               return (
                 <span
                   key={productId}
-                  className="inline-flex max-w-full items-center gap-1 rounded-lg border border-teal-200 bg-teal-100 px-2.5 py-1 text-xs font-semibold text-teal-800 dark:border-teal-800 dark:bg-teal-950/70 dark:text-teal-200"
+                  className="inline-flex max-w-full items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2.5 py-1 font-sans text-xs font-normal text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
                   <span className="truncate">{label}</span>
                   <button
@@ -152,7 +152,7 @@ export function ProductMultiSelect({
                       removeProduct(productId);
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
-                    className="ml-0.5 rounded-sm text-teal-700 transition-colors hover:text-teal-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 dark:text-teal-300 dark:hover:text-teal-100"
+                    className="ml-0.5 rounded-sm text-slate-500 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 dark:text-slate-400 dark:hover:text-slate-100"
                   >
                     <X className="size-3" aria-hidden="true" />
                   </button>
@@ -186,9 +186,9 @@ export function ProductMultiSelect({
                 aria-selected={isSelected}
                 onClick={() => toggleProduct(product.id)}
                 className={cn(
-                  "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors",
+                  "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left font-sans text-sm font-normal transition-colors",
                   isSelected
-                    ? "bg-teal-50 font-medium text-teal-900 dark:bg-teal-950/60 dark:text-teal-100"
+                    ? "bg-teal-50 text-slate-900 dark:bg-teal-950/60 dark:text-slate-100"
                     : "text-slate-800 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900"
                 )}
               >
@@ -207,7 +207,7 @@ export function ProductMultiSelect({
                   </span>
                   <span className="truncate">{product.name}</span>
                 </span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                <span className="shrink-0 font-sans text-xs font-normal text-slate-500 dark:text-slate-400">
                   {product.category}
                 </span>
               </button>

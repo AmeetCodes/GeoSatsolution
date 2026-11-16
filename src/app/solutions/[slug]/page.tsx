@@ -9,6 +9,7 @@ import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
 import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
+import { resolveDescriptionAlignment } from "@/lib/description-alignment";
 import {
   solutionPathSlug,
   getDynamicSolutionBySlug,
@@ -32,15 +33,15 @@ export async function generateMetadata({ params }: SolutionPageProps): Promise<M
 
   if (!solution) {
     return {
-      title: "Solution | GeoSAT Solutions",
-      description: "Geospatial solutions and engineering services.",
+      title: "Service | GeoSAT Solutions",
+      description: "Geospatial services and engineering expertise.",
     };
   }
 
   const title = `${solution.title} | GeoSAT Solutions`;
   const description = solution.intro || solution.description;
   const canonicalSlug = solution.slug || slug;
-  const canonicalUrl = `https://www.geosatsolutions.com.np/solutions/${canonicalSlug}`;
+  const canonicalUrl = `https://www.geosatsolutions.com.np/services/${canonicalSlug}`;
 
   return {
     title,
@@ -97,8 +98,8 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
   };
   const breadcrumb = breadcrumbJsonLd([
     { name: "Home", url: "https://www.geosatsolutions.com.np/" },
-    { name: "Solutions", url: "https://www.geosatsolutions.com.np/solutions" },
-    { name: solution.title, url: `https://www.geosatsolutions.com.np/solutions/${solution.slug || slug}` },
+    { name: "Services", url: "https://www.geosatsolutions.com.np/services" },
+    { name: solution.title, url: `https://www.geosatsolutions.com.np/services/${solution.slug || slug}` },
   ]);
 
   return (
@@ -112,11 +113,11 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
         <section className="w-full min-h-[calc(100vh-5rem)] flex flex-col justify-center py-8 lg:py-12 px-6 sm:px-10 lg:px-16">
           <div className="max-w-[1536px] w-full mx-auto">
             <Link
-              href="/solutions"
+              href="/services"
               className="mb-4 inline-flex items-center gap-2 text-xs font-bold tracking-wider text-slate-500 hover:text-teal-600 uppercase transition-colors"
             >
               <ArrowLeft className="size-4" aria-hidden="true" />
-              All solutions
+              All services
             </Link>
 
             <article className="my-auto grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
@@ -145,7 +146,10 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
                 </div>
 
                 {solution.description ? (
-                  <div className="mt-8 pt-6 border-t border-slate-200/80 text-slate-600 text-sm sm:text-base lg:text-lg leading-relaxed space-y-4 max-w-2xl">
+                  <div
+                    className="description-copy mt-8 max-w-2xl border-t border-slate-200/80 pt-6 text-sm text-slate-600 sm:text-base lg:text-lg"
+                    data-align={resolveDescriptionAlignment(solution.descriptionAlignment)}
+                  >
                     {solution.description
                       .split(/\n+/)
                       .map((paragraph) => paragraph.trim())
@@ -192,8 +196,6 @@ export default async function SolutionPage({ params }: SolutionPageProps) {
           </div>
 
           <SolutionFaq
-            solutionTitle={solution.title}
-            deliverables={solution.outcomes}
             items={solution.faqs}
             className="mt-14 border-t border-slate-200/80 pt-10 sm:mt-16 sm:pt-12"
           />

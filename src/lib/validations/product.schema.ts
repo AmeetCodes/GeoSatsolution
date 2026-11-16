@@ -1,6 +1,15 @@
 import { z } from "zod";
 
-import { requiredText, textList, uniqueBy, optionalText, slugSchema, imageSchema } from "./shared.schema";
+import {
+  requiredText,
+  textList,
+  uniqueBy,
+  optionalText,
+  slugSchema,
+  imageSchema,
+  faqListSchema,
+  descriptionAlignmentSchema,
+} from "./shared.schema";
 
 export const productItemSchema = z.object({
   id: z.string().regex(/^[a-f\d]{24}$/i, "Product id is invalid").optional(),
@@ -12,10 +21,11 @@ export const productItemSchema = z.object({
   brandUrl: z.string().trim().max(2048).refine((val) => !val || /^https?:\/\//i.test(val) || val.startsWith("/"), "Brand URL must be valid").optional(),
   intro: optionalText(600, "Product intro"),
   description: optionalText(5000, "Product description"),
+  descriptionAlignment: descriptionAlignmentSchema,
   outcomes: textList(40, 300, "Product outcomes"),
   images: z.array(imageSchema).max(4, "A product may use one main image and up to three carousel images").default([]),
   specifications: z.record(z.string(), z.string()).default({}),
-  faqs: z.array(z.object({ question: requiredText(300, "FAQ question"), answer: requiredText(3000, "FAQ answer") })).max(50).default([]),
+  faqs: faqListSchema,
   resources: z.array(z.object({
     title: requiredText(200, "Download title"),
     fileUrl: z.string().trim().min(1).max(2048).refine((value) => (value.startsWith("/") && !value.startsWith("//")) || /^https?:\/\//i.test(value), "Download must use a site path or http(s) URL"),

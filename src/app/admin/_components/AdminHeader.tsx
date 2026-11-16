@@ -8,8 +8,6 @@ import {
   Layers,
   Box,
   Briefcase,
-  MapPinned,
-  Building2,
   Users,
   Inbox,
   MonitorPlay,
@@ -26,8 +24,6 @@ export type AdminTab =
   | "solutions"
   | "products"
   | "projects"
-  | "district"
-  | "industries"
   | "company"
   | "transactions"
   | "preview";
@@ -52,11 +48,9 @@ export function AdminHeader({
   const tabs = [
     { id: "overview",     label: "Dashboard",      icon: LayoutDashboard, description: "Overview & stats" },
     { id: "tree",         label: "Mega-Menu CMS",  icon: Layers,          description: "N-Level tree & columns" },
-    { id: "solutions",    label: "Solutions",      icon: Layers,          description: "Manage services" },
+    { id: "solutions",    label: "Services",       icon: Layers,          description: "Manage service content" },
     { id: "products",     label: "Products",       icon: Box,             description: "Manage catalog" },
-    { id: "projects",     label: "Projects",       icon: Briefcase,       description: "Featured work" },
-    { id: "district",     label: "District Map",   icon: MapPinned,       description: "Nepal coverage" },
-    { id: "industries",   label: "Industries",     icon: Building2,       description: "Sector pages" },
+    { id: "projects",     label: "Projects",       icon: Briefcase,       description: "Service and sales projects" },
     { id: "company",      label: "Company",        icon: Users,           description: "Team & partners" },
     { id: "transactions", label: "Inquiries",      icon: Inbox,           description: "Client requests" },
     { id: "preview",      label: "Live Preview",   icon: MonitorPlay,     description: "See changes live" },

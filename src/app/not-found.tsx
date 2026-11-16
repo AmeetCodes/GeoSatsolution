@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, Compass, Layers, Package } from "lucide-react";
+import { ArrowRight, Compass, Package } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { Container } from "@/components/ui/Section";
 
 const SUGGESTIONS = [
   {
-    href: "/solutions",
-    label: "Solutions",
+    href: "/services",
+    label: "Services",
     copy: "Survey, GIS, monitoring and engineering services.",
     Icon: Compass,
   },
@@ -16,12 +16,6 @@ const SUGGESTIONS = [
     label: "Products",
     copy: "Certified hardware, UAV payloads and software.",
     Icon: Package,
-  },
-  {
-    href: "/industries",
-    label: "Industries",
-    copy: "Sector-specific geospatial intelligence.",
-    Icon: Layers,
   },
 ];
 
@@ -66,7 +60,7 @@ export default function NotFound() {
               </Link>
             </div>
 
-            <nav aria-label="Suggested sections" className="mt-12 grid gap-3 sm:grid-cols-3">
+            <nav aria-label="Suggested sections" className="mt-12 grid gap-3 sm:grid-cols-2">
               {SUGGESTIONS.map(({ href, label, copy, Icon }) => (
                 <Link
                   key={href}

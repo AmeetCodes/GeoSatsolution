@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     if (action === "update-all") {
       const all = parsePayload(siteContentSchema, data, "Content payload is invalid");
       if (!all.ok) return all.response;
-      for (const key of ["Solutions", "Products", "Industries", "Company"] as const) {
+      for (const key of ["Solutions", "Products", "Company"] as const) {
         await siteContentService.updateSection(key, all.data[key]);
       }
     } else if (section) {

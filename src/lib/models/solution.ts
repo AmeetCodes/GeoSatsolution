@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { slugify } from "../utils";
+import type { DescriptionAlignment } from "../description-alignment";
 
 export type SolutionImageFitMode = "contain" | "cover";
 export type SolutionImageFocalPosition = "center" | "top" | "bottom" | "left" | "right";
@@ -16,13 +17,15 @@ export interface ISolutionImage {
 }
 
 export interface ISolution extends Document {
-  title: string;              // Subclass Name (e.g., "UAV LiDAR Survey")
-  slug: string;               // URL-friendly slug (e.g., "uav-lidar-survey")
+  title: string;              // Service name (e.g., "LiDAR Survey")
+  slug: string;               // URL-friendly slug (e.g., "lidar-survey")
   group: string;              // Class / Category Name (e.g., "Survey & Mapping")
   intro: string;              // Short summary
   description: string;        // Full details
+  descriptionAlignment: DescriptionAlignment;
   outcomes: string[];         // Key deliverables/outcomes list
-  faqs: { question: string; answer: string }[];
+  faqs: { question: string; answer: string; order?: number }[];
+  faqsInitialized: boolean;
   images: ISolutionImage[];   // Gallery/Header images
   isPublished: boolean;
   order: number;
@@ -37,8 +40,14 @@ const SolutionSchema = new Schema<ISolution>(
     group: { type: String, required: true, trim: true, index: true },
     intro: { type: String, default: "" },
     description: { type: String, default: "" },
+    descriptionAlignment: { type: String, enum: ["justify", "left"], default: "justify" },
     outcomes: { type: [String], default: [] },
-    faqs: [{ question: { type: String, required: true }, answer: { type: String, required: true } }],
+    faqs: [{
+      question: { type: String, required: true },
+      answer: { type: String, required: true },
+      order: { type: Number, default: 0 },
+    }],
+    faqsInitialized: { type: Boolean, default: false },
     images: [
       {
         src: { type: String, required: true },
@@ -66,7 +75,7 @@ SolutionSchema.pre("validate", function () {
 
 // Rebuild a stale dev-server model after schema changes so newly added image
 // fields are not dropped by Mongoose strict mode during hot reloads.
-if (mongoose.models.Solution && !mongoose.models.Solution.schema.path("images.fitMode")) {
+if (mongoose.models.Solution && (!mongoose.models.Solution.schema.path("images.fitMode") || !mongoose.models.Solution.schema.path("descriptionAlignment") || !mongoose.models.Solution.schema.path("faqsInitialized"))) {
   delete mongoose.models.Solution;
 }
 

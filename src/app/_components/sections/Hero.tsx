@@ -10,30 +10,24 @@ import Text3DFlip from "@/components/ui/text-3d-flip";
 
 export function Hero() {
   return (
-    <section id="top" className="relative isolate overflow-hidden pt-[var(--nav-h)]">
-      {/* Engineering grid, faded out toward the bottom of the viewport. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 blueprint [mask-image:linear-gradient(to_bottom,black,transparent_78%)]"
-      />
-
-      <div className="relative mx-auto flex min-h-[calc(100vh-var(--nav-h))] w-full max-w-[1440px] flex-col justify-center px-6 py-8 sm:px-8 md:px-10 lg:px-12 lg:py-12">
-        <div className="grid w-full grid-cols-1 items-center justify-between gap-8 lg:grid-cols-12 lg:gap-12">
+    <section id="top" className="relative isolate overflow-hidden bg-white pt-[var(--nav-h)]">
+      <div className="mx-auto flex min-h-[calc(100svh-var(--nav-h))] w-full max-w-[1680px] flex-col justify-center px-6 py-8 sm:px-8 md:px-10 lg:px-10 lg:py-10">
+        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-8 xl:gap-10">
           {/* Text column */}
-          <div className="flex flex-col items-start justify-center text-left lg:col-span-6">
+          <div className="flex flex-col items-start justify-center text-left">
             {/* Eyebrow Label */}
             <Reveal>
-              <p className="label mb-4 inline-flex items-center gap-2.5 text-xs font-bold tracking-widest text-slate-500 uppercase sm:text-sm">
+              <p className="label mb-5 inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-bold tracking-[0.1em] text-slate-600 uppercase sm:text-base sm:tracking-[0.16em]">
                 <span
                   aria-hidden="true"
-                  className="size-1.5 rounded-full bg-[#16264A] [animation:pulse-dot_2.6s_ease-in-out_infinite]"
+                  className="size-2 rounded-full bg-[#16264A] [animation:pulse-dot_2.6s_ease-in-out_infinite]"
                 />
                 {HERO.eyebrow}
               </p>
             </Reveal>
 
             <Reveal delay={0.06}>
-              <h1 className="font-['Mona_Sans',sans-serif] text-4xl leading-[1.05] font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="font-['Mona_Sans',sans-serif] text-5xl leading-[0.98] font-extrabold tracking-[-0.055em] text-slate-900 sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.25rem] 2xl:text-8xl">
                 <span className="block">
                   <Text3DFlip
                     className="bg-transparent"
@@ -69,7 +63,7 @@ export function Hero() {
               </h1>
             </Reveal>
 
-            <p className="mt-6 mb-8 max-w-2xl font-['Roboto',sans-serif] text-base leading-relaxed text-slate-600 md:text-lg lg:text-xl">
+            <p className="mt-7 mb-9 max-w-2xl font-['Roboto',sans-serif] text-lg leading-[1.65] text-slate-600 md:text-xl xl:text-[1.35rem]">
               We equip surveying professionals with{" "}
               <span className="font-medium underline decoration-[#FF9800] decoration-2 underline-offset-4">
                 enterprise-grade positioning hardware
@@ -92,15 +86,15 @@ export function Hero() {
                   href="/request-assessment"
                   size="lg"
                   trailingIcon
-                  className="h-auto rounded-full px-6 py-3.5 text-base font-semibold"
+                  className="h-auto rounded-full px-7 py-4 text-base font-semibold sm:text-lg"
                 >
                   {HERO.primaryCta}
                 </Button>
                 <Button
-                  href="/solutions"
+                  href="/services"
                   variant="secondary"
                   size="lg"
-                  className="h-auto rounded-full px-6 py-3.5 text-base font-semibold"
+                  className="h-auto rounded-full border border-slate-300 bg-white px-7 py-4 text-base font-semibold text-slate-800 shadow-sm hover:border-slate-400 hover:bg-slate-50 sm:text-lg"
                 >
                   {HERO.secondaryCta}
                 </Button>
@@ -109,7 +103,7 @@ export function Hero() {
 
             {/* Trust Badges */}
             <Reveal delay={0.24}>
-              <ul className="mt-8 flex flex-wrap gap-6 border-t border-slate-100 pt-6 text-xs font-medium text-slate-500 md:text-sm">
+              <ul className="mt-9 flex max-w-3xl flex-wrap gap-x-7 gap-y-3 border-t border-slate-200 pt-6 text-sm font-medium text-slate-600 md:text-base">
                 {CREDENTIALS.map((credential) => (
                   <li key={credential}>{credential}</li>
                 ))}
@@ -120,10 +114,10 @@ export function Hero() {
             <Reveal className="mt-5" delay={0.3}>
               <Link
                 href="/request-assessment"
-                className="group inline-flex items-center gap-2 py-1.5 text-xs text-slate-500 transition-colors duration-200 hover:text-slate-900"
+                className="group inline-flex items-center gap-2 py-2 text-sm text-slate-600 transition-colors duration-200 hover:text-slate-900 sm:text-base"
               >
                 <ArrowRight
-                  className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                  className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
                   aria-hidden="true"
                 />
                 Request an assessment
@@ -132,7 +126,7 @@ export function Hero() {
           </div>
 
           {/* Globe column */}
-          <div className="flex items-center justify-center lg:col-span-6 lg:justify-end">
+          <div className="flex items-center justify-center lg:justify-end">
             <Globe3DDemo />
           </div>
         </div>

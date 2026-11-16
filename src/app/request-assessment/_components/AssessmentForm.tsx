@@ -1,21 +1,82 @@
 "use client";
 
 import { ChevronDown, LoaderCircle } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { DEFAULT_INTEREST_OPTIONS } from "@/lib/consultation-interests";
 
 export function AssessmentForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [interestOptions, setInterestOptions] = useState<string[]>([...DEFAULT_INTEREST_OPTIONS]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [interestError, setInterestError] = useState("");
+  const interestDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/solutions", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json: { data?: Array<{ title?: string }> } | null) => {
+        if (!active) return;
+        const titles = (json?.data ?? [])
+          .map((solution) => solution.title?.trim() ?? "")
+          .filter(Boolean)
+          .filter((title, index, all) => all.indexOf(title) === index);
+        if (titles.length) {
+          setInterestOptions([...new Set([...titles, ...DEFAULT_INTEREST_OPTIONS])]);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!interestOpen) return;
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!interestDropdownRef.current?.contains(event.target as Node)) setInterestOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setInterestOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [interestOpen]);
+
+  function toggleInterest(value: string) {
+    setSelectedInterests((current) =>
+      current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
+    );
+    setInterestError("");
+    setMessage("");
+    setStatus("idle");
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("sending");
     setMessage("");
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const interest = String(formData.get("interest") ?? "");
+    const interests = formData.getAll("interest").map(String);
+    const otherInterest = String(formData.get("otherInterest") ?? "").trim();
     const details = String(formData.get("details") ?? "");
+
+    if (!interests.length) {
+      setStatus("error");
+      setInterestError("Select at least one area of interest.");
+      return;
+    }
+
+    setStatus("sending");
+    setInterestError("");
 
     try {
       const response = await fetch("/api/consultation", {
@@ -26,8 +87,8 @@ export function AssessmentForm() {
           organisation: formData.get("organisation"),
           email: formData.get("email"),
           phone: formData.get("phone"),
-          interest: "Other",
-          otherInterest: interest,
+          interest: interests,
+          otherInterest,
           details,
           type: "ASSESSMENT",
           website: formData.get("website"),
@@ -40,6 +101,8 @@ export function AssessmentForm() {
       }
 
       form.reset();
+      setSelectedInterests([]);
+      setInterestOpen(false);
       setStatus("success");
       setMessage("Thanks for reaching out. The GeoSAT team will be in touch soon.");
     } catch (error) {
@@ -73,15 +136,60 @@ export function AssessmentForm() {
             <input className={fieldClass} name="phone" type="tel" autoComplete="tel" maxLength={60} placeholder="+977 ..." />
           </label>
         </div>
-        <label className={labelClass}>Area of interest <span className="text-[#00a884]">*</span>
-          <span className="relative block">
-            <select className={`${fieldClass} appearance-none pr-11`} name="interest" required defaultValue="">
-              <option value="" disabled>Select a service</option>
-              <option value="Other">Other / not sure yet</option>
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#76828d]" aria-hidden="true" />
-          </span>
-        </label>
+        <fieldset className="min-w-0 border-0 p-0">
+          <legend className={`${labelClass} mb-2`}>Area of interest <span className="text-[#00a884]">*</span></legend>
+          <div className="relative" ref={interestDropdownRef}>
+            <button
+              type="button"
+              aria-haspopup="true"
+              aria-expanded={interestOpen}
+              aria-controls="assessment-interest-options"
+              aria-invalid={Boolean(interestError)}
+              aria-describedby={interestError ? "assessment-interest-error" : undefined}
+              onClick={() => setInterestOpen((open) => !open)}
+              className={`${fieldClass} !mt-0 flex items-center justify-between gap-3 text-left`}
+            >
+              <span className={selectedInterests.length ? "truncate text-[#18212b]" : "truncate text-[#89939e]"}>
+                {selectedInterests.length
+                  ? selectedInterests.map((item) => item === "Other" ? "Other / not sure yet" : item).join(", ")
+                  : "Select one or more services"}
+              </span>
+              <ChevronDown className={`size-4 shrink-0 text-[#76828d] transition-transform ${interestOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+            </button>
+            <div
+              id="assessment-interest-options"
+              role="group"
+              aria-label="Choose areas of interest"
+              hidden={!interestOpen}
+              className="absolute inset-x-0 top-[calc(100%+6px)] z-20 max-h-64 overflow-y-auto rounded-xl border border-[#d8dee5] bg-white p-2 shadow-[0_16px_36px_-18px_rgba(17,35,48,0.38)]"
+            >
+              <p className="px-3 py-2 text-xs font-medium text-[#697581]">Choose all that apply</p>
+              {[...interestOptions.filter((option) => option !== "Other"), "Other"].map((option) => (
+                <label key={option} className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#293440] transition-colors hover:bg-[#f3f7f8]">
+                  <input
+                    type="checkbox"
+                    name="interest"
+                    value={option}
+                    checked={selectedInterests.includes(option)}
+                    onChange={() => toggleInterest(option)}
+                    className="size-4 shrink-0 accent-[#00a884]"
+                  />
+                  {option === "Other" ? "Other / not sure yet" : option}
+                </label>
+              ))}
+              <div className="sticky bottom-0 mt-1 flex items-center justify-between border-t border-[#e7ecef] bg-white px-3 py-2">
+                <span className="text-xs text-[#697581]">{selectedInterests.length} selected</span>
+                <button type="button" onClick={() => setInterestOpen(false)} className="rounded-full px-3 py-1.5 text-xs font-semibold text-[#008b70] transition-colors hover:bg-[#eaf7f4]">Done</button>
+              </div>
+            </div>
+          </div>
+          {interestError ? <p id="assessment-interest-error" className="mt-1.5 text-xs text-red-700">{interestError}</p> : null}
+        </fieldset>
+        {selectedInterests.includes("Other") ? (
+          <label className={labelClass}>Tell us what service you need <span className="text-[#00a884]">*</span>
+            <input className={fieldClass} name="otherInterest" required maxLength={160} placeholder="Describe the service you need" />
+          </label>
+        ) : null}
         <label className={labelClass}>Project details <span className="text-[#00a884]">*</span>
           <textarea className={`${fieldClass} min-h-32 resize-y`} name="details" required minLength={12} maxLength={3000} placeholder="Where is the project, what do you need to understand, and what deliverables would help?" />
         </label>

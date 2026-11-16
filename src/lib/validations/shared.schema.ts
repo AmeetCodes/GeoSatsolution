@@ -47,6 +47,26 @@ export function orderSchema() {
     .max(10_000, "Order is out of range");
 }
 
+export const descriptionAlignmentSchema = z
+  .enum(["justify", "left"])
+  .default("justify");
+
+export const faqItemSchema = z.object({
+  question: requiredText(300, "FAQ question"),
+  answer: requiredText(3000, "FAQ answer"),
+  order: z
+    .number({ error: "FAQ order must be a number" })
+    .int("FAQ order must be a whole number")
+    .min(0, "FAQ order cannot be negative")
+    .max(10_000, "FAQ order is out of range")
+    .optional(),
+});
+
+export const faqListSchema = z
+  .array(faqItemSchema)
+  .max(50, "A record may have up to 50 FAQs")
+  .default([]);
+
 export const imageSchema = z.object({
   src: z
     .string()

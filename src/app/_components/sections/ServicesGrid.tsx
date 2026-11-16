@@ -2,7 +2,7 @@ import {
   Aperture,
   ArrowRight,
   Compass,
-  Crosshair,
+  Layers,
   Radar,
   Route,
   Waves,
@@ -22,11 +22,11 @@ type Service = {
 const SERVICES: Service[] = [
   {
     icon: Radar,
-    title: "UAV LiDAR Survey",
+    title: "LiDAR Survey",
     tag: "3D Point Cloud",
     description:
       "High-density aerial 3D point cloud generation for detailed terrain modeling, corridor mapping, and canopy penetration.",
-    href: "/solutions/uav-lidar-survey",
+    href: "/services/lidar-survey",
   },
   {
     icon: Aperture,
@@ -34,7 +34,7 @@ const SERVICES: Service[] = [
     tag: "Orthomosaic & Mesh",
     description:
       "Ultra-high resolution aerial imagery processing, orthomosaic creation, and accurate 3D surface mesh modeling.",
-    href: "/solutions/drone-photogrammetry",
+    href: "/services/drone-photogrammetry",
   },
   {
     icon: Compass,
@@ -42,15 +42,15 @@ const SERVICES: Service[] = [
     tag: "Cadastral & Site",
     description:
       "Precise topographic mapping, boundary verification, and structural layout support for civil infrastructure projects.",
-    href: "/solutions/engineering-survey",
+    href: "/services/engineering-survey",
   },
   {
-    icon: Crosshair,
-    title: "GNSS & Total Station Survey",
-    tag: "Sub-cm RTK",
+    icon: Layers,
+    title: "Spatial Data Processing",
+    tag: "GIS & Point Cloud",
     description:
-      "Sub-centimeter geodetic positioning, control point setup, and boundary surveying using modern RTK GNSS systems.",
-    href: "/solutions/gnss-and-total-station-survey",
+      "High-volume raster, vector, and 3D point cloud classification pipelines.",
+    href: "/services/spatial-data-processing",
   },
   {
     icon: Route,
@@ -58,7 +58,7 @@ const SERVICES: Service[] = [
     tag: "Corridor LiDAR",
     description:
       "Rapid 3D data capture along road corridors, urban environments, and infrastructure assets using vehicle-mounted LiDAR.",
-    href: "/solutions/mobile-mapping",
+    href: "/services/mobile-mapping",
   },
   {
     icon: Waves,
@@ -66,7 +66,7 @@ const SERVICES: Service[] = [
     tag: "Bathymetric",
     description:
       "Bathymetric mapping, riverbed profiling, and underwater topography for water resources and marine engineering.",
-    href: "/solutions/hydrographic-survey",
+    href: "/services/hydrographic-survey",
   },
 ];
 

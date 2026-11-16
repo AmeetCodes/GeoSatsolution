@@ -6,7 +6,6 @@ import React from "react";
 import {
   Layers,
   Package,
-  Building2,
   Inbox,
   Plus,
   ArrowRight,
@@ -48,7 +47,6 @@ export function AdminOverview({
 }: AdminOverviewProps) {
   const totalSolutions = content?.Solutions?.length || 0;
   const totalProducts = content?.Products?.length || 0;
-  const totalIndustries = content?.Industries?.length || 0;
 
   const stats: {
     title: string;
@@ -61,7 +59,7 @@ export function AdminOverview({
     tab: AdminTab;
   }[] = [
     {
-      title: "Total Solutions",
+      title: "Total Services",
       count: totalSolutions,
       sub: "Service offerings",
       icon: Layers,
@@ -81,16 +79,6 @@ export function AdminOverview({
       tab: "products",
     },
     {
-      title: "Target Industries",
-      count: totalIndustries,
-      sub: "Client sectors",
-      icon: Building2,
-      iconWrap: "bg-amber-50",
-      iconColor: "text-amber-600",
-      hoverBorder: "hover:border-amber-300",
-      tab: "industries",
-    },
-    {
       title: "Incoming Inquiries",
       count: inquiryCounts.total,
       sub: `${inquiryCounts.pending} awaiting response`,
@@ -107,9 +95,9 @@ export function AdminOverview({
     icon: LucideIconLike;
     action: () => void;
   }[] = [
-    { label: "Add Solution", icon: Plus, action: () => onOpenAddModal("solution") },
+    { label: "Add Service", icon: Plus, action: () => onOpenAddModal("solution") },
     { label: "Add Product", icon: Plus, action: () => onOpenAddModal("product") },
-    { label: "Manage District Map", icon: MapPinned, action: () => onNavigateTab("district") },
+    { label: "Manage Projects", icon: MapPinned, action: () => onNavigateTab("projects") },
     { label: "View Inquiries", icon: Inbox, action: () => onNavigateTab("transactions") },
   ];
 
@@ -120,7 +108,7 @@ export function AdminOverview({
     icon: LucideIconLike;
   }[] = [
     {
-      label: "Solutions",
+      label: "Services",
       items: (() => {
         const groups: Record<string, number> = {};
         (content?.Solutions ?? []).forEach((s) => {
@@ -153,7 +141,7 @@ export function AdminOverview({
   return (
     <div className="space-y-6">
       {/* KPI summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (

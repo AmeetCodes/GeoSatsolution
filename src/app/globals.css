@@ -62,7 +62,7 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --nav-h: 72px;
+    --nav-h: 76px;
   }
 
   * {
@@ -176,7 +176,7 @@
     border: 1px solid var(--color-line);
   }
 
-  /* Fine engineering grid used behind sections and the hero fallback. */
+  /* Fine engineering grid used on selected informational and error surfaces. */
   .blueprint {
     background-image:
       linear-gradient(to right, rgba(140, 176, 214, 0.055) 1px, transparent 1px),
@@ -192,6 +192,25 @@
       rgba(140, 176, 214, 0.22) 82%,
       transparent
     );
+  }
+
+  /* Word-style technical copy: even left/right edges without cramped spacing. */
+  .description-copy {
+    line-height: 1.8;
+    text-justify: inter-word;
+    word-spacing: normal;
+  }
+
+  .description-copy[data-align="justify"] {
+    text-align: justify;
+  }
+
+  .description-copy[data-align="left"] {
+    text-align: left;
+  }
+
+  .description-copy > p + p {
+    margin-top: 1rem;
   }
 }
 

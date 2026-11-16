@@ -229,11 +229,11 @@ export function NepalProjectMap({
             <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-left shadow-sm backdrop-blur-sm md:p-5">
               <dt className="flex flex-col items-start">
                 <span className="text-[10px] font-bold uppercase leading-tight tracking-wider text-slate-400 md:text-xs">
-                  Top province
+                  Total area
                 </span>
               </dt>
               <dd className="mt-1 truncate text-xl font-bold text-slate-900 md:text-2xl">
-                {summary.mostActiveProvince?.name ?? "—"}
+                {(summary.totalArea ?? 0).toLocaleString()} km²
               </dd>
             </div>
           </dl>
@@ -273,8 +273,9 @@ export function NepalProjectMap({
                       fill={isActive ? "#93c5fd" : hasProjects ? "#c7ddf7" : "#e8eef5"}
                       stroke="#ffffff"
                       strokeWidth={1.5}
-                      className="cursor-default transition-colors duration-150"
+                      className={`${hasProjects ? "cursor-pointer" : "cursor-default"} transition-colors duration-150`}
                       onMouseEnter={() => setHovered(district.name)}
+                      onClick={() => { const project = entry?.projects.find((item) => item.slug); if (project?.slug) window.location.href = `/project/${project.slug}`; }}
                     />
                   );
                 })}
@@ -306,7 +307,7 @@ export function NepalProjectMap({
 
           {hovered && tooltip && entryFor(hovered) ? (
             <div
-              className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-[calc(100%+14px)]"
+              className="absolute z-20 -translate-x-1/2 -translate-y-[calc(100%+14px)]"
               style={{ left: tooltip.x, top: tooltip.y }}
             >
               <div className="rounded-lg border border-slate-200 bg-white px-4 py-2 shadow-xl">
@@ -315,8 +316,9 @@ export function NepalProjectMap({
                   <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 font-semibold text-blue-700">
                     Projects: {entryFor(hovered)?.count ?? 0}
                   </span>
-                  <span>Province {entryFor(hovered)?.province}</span>
+                  <span>{entryFor(hovered)?.provinceName ?? `Province ${entryFor(hovered)?.province}`}</span>
                 </p>
+                {entryFor(hovered)?.projects.map((project) => project.slug ? <a key={project.id} href={`/project/${project.slug}`} className="mt-1 block text-xs font-medium text-blue-700 hover:underline">{project.title}</a> : null)}
               </div>
             </div>
           ) : null}

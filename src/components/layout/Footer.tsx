@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { CONTACT, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
 import { normalizeSlug, solutionSlug } from "@/lib/utils";
+import { canonicalServiceSlug, canonicalServiceTitle } from "@/lib/service-routing";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
 
 type FooterCol = {
@@ -61,11 +62,9 @@ export function Footer() {
       links: col.links.map((link) => ({
         label: link,
         href:
-          col.title === "Solutions"
-            ? `/solutions#${solutionSlug(link)}`
-            : col.title === "Industries"
-              ? `/industries/${solutionSlug(link)}`
-              : "/request-assessment",
+          col.title === "Services"
+            ? `/services#${solutionSlug(link)}`
+            : "/request-assessment",
       })),
     })),
   );
@@ -77,7 +76,6 @@ export function Footer() {
         if (data?.tree?.tabs) {
           const tabs = data.tree.tabs;
           const solTab = tabs.find((t) => t.id === "solutions");
-          const indTab = tabs.find((t) => t.id === "industries");
           const compTab = tabs.find((t) => t.id === "company");
 
           const dynamicCols: FooterCol[] = [];
@@ -87,28 +85,18 @@ export function Footer() {
               .filter((solution) => solution.isPublished !== false)
               .slice(0, 6)
               .map((solution) => ({
-                label: solution.title,
-                href: `/solutions/${normalizeSlug(solution.slug || solutionSlug(solution.title))}`,
+                label: canonicalServiceTitle(solution.title, solution.slug),
+                href: `/services/${canonicalServiceSlug(solution.title, solution.slug) || normalizeSlug(solution.slug || solutionSlug(solution.title))}`,
               }));
 
             dynamicCols.push({
-              title: solTab.label || "Solutions",
+              title: solTab.label || "Services",
               links: solutionLinks.length
                 ? solutionLinks
                 : solTab.columns.slice(0, 5).map((col) => ({
                     label: col.title,
-                    href: `/solutions#${col.slug}`,
+                    href: `/services#${col.slug}`,
                   })),
-            });
-          }
-
-          if (indTab) {
-            dynamicCols.push({
-              title: indTab.label || "Industries",
-              links: indTab.columns.slice(0, 5).map((col) => ({
-                label: col.title,
-                href: `/industries/${col.slug}`,
-              })),
             });
           }
 
@@ -144,7 +132,7 @@ export function Footer() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px hairline" aria-hidden="true" />
 
       <Container className="py-16 sm:py-20">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))] lg:gap-12">
           <div>
             <Link
               href="/"

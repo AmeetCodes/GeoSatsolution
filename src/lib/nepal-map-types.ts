@@ -34,6 +34,8 @@ export type DistrictCountEntry = {
   projects: {
     id: string;
     status: DistrictProjectStatus;
+    slug?: string;
+    title?: string;
   }[];
 };
 
@@ -43,6 +45,7 @@ export type DistrictCountResponse = {
     districtsCovered: number;
     totalDistricts: number;
     mostActiveProvince: { id: number; name: string; count: number } | null;
+    totalArea?: number;
   };
   districts: Record<string, DistrictCountEntry>;
 };

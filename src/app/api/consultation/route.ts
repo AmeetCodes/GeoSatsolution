@@ -8,6 +8,7 @@ import { solutionService } from "@/lib/db/services/solution.service";
 import connectDB from "@/lib/db/connection";
 import { Consultation } from "@/lib/models/Consultation";
 import { createConsultationSchema } from "@/lib/validations/consultation.schema";
+import { DEFAULT_INTEREST_OPTIONS } from "@/lib/consultation-interests";
 
 export const runtime = "nodejs";
 
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
   }
 
   const solutions = await solutionService.getAllPublished();
-  const validSolutionNames = solutions.map((s) => s.title);
+  const validSolutionNames = [...new Set([
+    ...DEFAULT_INTEREST_OPTIONS,
+    ...solutions.map((solution) => solution.title),
+  ])];
   const parsed = createConsultationSchema(validSolutionNames).safeParse(parsedBody);
 
   if (!parsed.success) {
@@ -62,7 +66,11 @@ export async function POST(request: Request) {
   }
 
   const { name, organisation, email, phone, interest, otherInterest, details, type } = parsed.data;
-  const interestLabel = interest === "Other" ? otherInterest : interest;
+  const selectedInterests = Array.isArray(interest) ? interest : [interest];
+  const includesOther = selectedInterests.includes("Other");
+  const interestLabel = selectedInterests
+    .map((value) => (value === "Other" ? `Other: ${otherInterest}` : value))
+    .join(", ");
 
   try {
     await connectDB();
@@ -72,7 +80,8 @@ export async function POST(request: Request) {
       email,
       phone,
       interest: interestLabel,
-      otherInterest: interest === "Other" ? otherInterest : undefined,
+      interests: selectedInterests.map((value) => value === "Other" ? `Other: ${otherInterest}` : value),
+      otherInterest: includesOther ? otherInterest : undefined,
       details,
       type,
       status: "pending",
@@ -90,10 +99,10 @@ export async function POST(request: Request) {
 
   try {
     const content = buildNotificationContent({
-      heading: "New solution consultation request",
+      heading: type === "ASSESSMENT" ? "New assessment request" : "New solution consultation request",
       messageLabel: "Project details",
       fields: [
-        { label: "Inquiry type", value: "Solution consultation" },
+        { label: "Inquiry type", value: type === "ASSESSMENT" ? "Assessment request" : "Solution consultation" },
         { label: "Area of interest", value: interestLabel },
         { label: "Customer name", value: name },
         { label: "Organisation", value: organisation },
@@ -107,7 +116,7 @@ export async function POST(request: Request) {
       from: { name: "GeoSAT Website Consultations", address: account.user },
       to: account.user,
       replyTo: { name, address: email },
-      subject: `Solution consultation: ${interestLabel}`,
+      subject: `${type === "ASSESSMENT" ? "Assessment request" : "Solution consultation"}: ${interestLabel}`,
       text: content.text,
       html: content.html,
     });

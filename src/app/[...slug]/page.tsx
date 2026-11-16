@@ -7,13 +7,11 @@ import { Footer } from "@/components/layout/Footer";
 import { navigationService } from "@/lib/db/services/navigation.service";
 import { solutionService } from "@/lib/db/services/solution.service";
 import { productService } from "@/lib/db/services/product.service";
-import { industryService } from "@/lib/db/services/industry.service";
 import { contentService } from "@/lib/db/services/content.service";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem } from "@/lib/tree-store";
 import {
   SolutionsTemplate,
   ProductsTemplate,
-  IndustriesTemplate,
   CompanyTemplate,
   FallbackTemplate,
   OurWorkTemplate,
@@ -52,9 +50,6 @@ const getCachedDbContent = cache(async (
     if (tabId === "products") {
       return (explicitSlug ? await productService.getBySlug(explicitSlug) : null)
         || await productService.getBySlug(slugifiedTitle);
-    }
-    if (tabId === "industries") {
-      return await industryService.getBySlug(slugifiedTitle);
     }
   } catch (err) {
     console.error("Error fetching DB content for tree item:", err);
@@ -281,19 +276,6 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
         url: "https://www.geosatsolutions.com.np",
       },
     };
-  } else if (tab.id === "industries") {
-    jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      name: resolvedItem.title,
-      serviceType: column?.title || tab.label,
-      description: resolvedItem.intro || resolvedItem.description,
-      provider: {
-        "@type": "Organization",
-        name: "GeoSAT Solutions",
-        url: "https://www.geosatsolutions.com.np",
-      },
-    };
   } else if (tab.id === "company") {
     jsonLd = {
       "@context": "https://schema.org",
@@ -323,8 +305,6 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
       <Navbar />
       {tab.id === "products" ? (
         <ProductsTemplate item={resolvedItem} tab={tab} column={column!} galleryImages={galleryImages} />
-      ) : tab.id === "industries" ? (
-        <IndustriesTemplate item={resolvedItem} tab={tab} column={column!} />
       ) : tab.id === "company" ? (
         isOurWork ? <OurWorkTemplate item={resolvedItem} tab={tab} column={column!} projects={projectRecords.map((project) => ({
           code: project.code,

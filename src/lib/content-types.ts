@@ -1,3 +1,7 @@
+import type { DescriptionAlignment } from "./description-alignment";
+
+export type { DescriptionAlignment } from "./description-alignment";
+
 export type ImageFitMode = "contain" | "cover";
 export type ImageFocalPosition = "center" | "top" | "bottom" | "left" | "right";
 
@@ -27,6 +31,7 @@ export type ContentImage = {
 export type ContentFaq = {
   question: string;
   answer: string;
+  order?: number;
 };
 
 export type ProductDownloadItem = {
@@ -52,6 +57,7 @@ export type ProductItem = {
   brandUrl?: string;
   intro: string;
   description: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes: string[];
   images?: ContentImage[];
   specifications?: Record<string, string>;
@@ -70,22 +76,9 @@ export type SolutionItem = {
   group: string;
   intro: string;
   description: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes: string[];
   faqs?: ContentFaq[];
-  images?: ContentImage[];
-  isPublished?: boolean;
-  order?: number;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
-};
-
-export type IndustryItem = {
-  id?: string;
-  title: string;
-  slug?: string;
-  intro: string;
-  description: string;
-  items: string[];
   images?: ContentImage[];
   isPublished?: boolean;
   order?: number;
@@ -167,6 +160,5 @@ export type CompanyContent = {
 export type SiteContentData = {
   Solutions: SolutionItem[];
   Products: ProductItem[];
-  Industries: IndustryItem[];
   Company: CompanyContent;
 };

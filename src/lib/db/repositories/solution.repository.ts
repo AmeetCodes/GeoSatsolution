@@ -2,6 +2,8 @@ import connectDB from "../connection";
 import { Types } from "mongoose";
 import { Solution, ISolution, ISolutionImage } from "../../models/solution";
 import { normalizeSlug, stripTrailingNumericSuffix } from "../../utils";
+import type { ContentFaq } from "../../content-types";
+import type { DescriptionAlignment } from "../../description-alignment";
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -24,8 +26,10 @@ export interface CreateSolutionDTO {
   group: string;
   intro?: string;
   description?: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes?: string[];
-  faqs?: { question: string; answer: string }[];
+  faqs?: ContentFaq[];
+  faqsInitialized?: boolean;
   images?: ISolutionImage[];
   isPublished?: boolean;
   order?: number;
@@ -37,8 +41,10 @@ export interface UpdateSolutionDTO {
   group?: string;
   intro?: string;
   description?: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes?: string[];
-  faqs?: { question: string; answer: string }[];
+  faqs?: ContentFaq[];
+  faqsInitialized?: boolean;
   images?: ISolutionImage[];
   isPublished?: boolean;
   order?: number;
@@ -79,6 +85,19 @@ export class SolutionRepository {
     return Solution.findOne({ slug: { $regex: tolerantPattern } })
       .lean()
       .exec() as unknown as Promise<ISolution | null>;
+  }
+
+  async initializeFaqs(entries: { id: string; faqs: ContentFaq[] }[]): Promise<void> {
+    if (!entries.length) return;
+    await connectDB();
+    await Solution.bulkWrite(
+      entries.map(({ id, faqs }) => ({
+        updateOne: {
+          filter: { _id: new Types.ObjectId(id), faqsInitialized: { $ne: true } },
+          update: { $set: { faqs, faqsInitialized: true } },
+        },
+      })),
+    );
   }
 
   async findByTitle(title: string): Promise<ISolution | null> {

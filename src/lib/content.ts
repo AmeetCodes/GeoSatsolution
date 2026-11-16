@@ -1,8 +1,7 @@
 /**
  * Single source of truth for every string rendered on the marketing site.
- * The information architecture mirrors the GeoSAT Solutions navigation model —
- * four solution groups, four industry groups — so the site and the product
- * catalogue stay in step.
+ * The information architecture mirrors the GeoSAT Services navigation model,
+ * so the site and the product catalogue stay in step.
  */
 
 export type NavGroup = {
@@ -12,13 +11,13 @@ export type NavGroup = {
 
 export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
   {
-    label: "Solutions",
-    href: "/solutions",
+    label: "Services",
+    href: "/services",
     groups: [
       {
         title: "Survey & Mapping",
         links: [
-          "UAV LiDAR Survey",
+          "LiDAR Survey",
           "Drone Photogrammetry",
           "Engineering Survey",
           "GNSS & Total Station Survey",
@@ -29,7 +28,7 @@ export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
       {
         title: "GIS & Data",
         links: [
-          "Spatial Database & GIS Solutions",
+          "Spatial Database & GIS Services",
           "Enterprise GIS Deployment",
           "Remote Sensing & Analytics",
           "Spatial Data Processing",
@@ -98,8 +97,8 @@ export const NAV: { label: string; href: string; groups?: NavGroup[] }[] = [
     ],
   },
   {
-    label: "Industries",
-    href: "/industries",
+    label: "Project",
+    href: "/project",
   },
   {
     label: "Company",
@@ -125,7 +124,7 @@ export const HERO = {
   eyebrow: "Survey · LiDAR · GIS · Monitoring",
   /** Rendered as three lines; the middle one carries the gradient accent. */
   title: ["Precision you can", "build on.", ""] as const,
-  sub: "GeoSAT captures survey-grade spatial data — UAV LiDAR, drone photogrammetry, engineering survey, enterprise GIS and continuous asset monitoring — for the infrastructure, institutions and industries that cannot afford to guess.",
+  sub: "GeoSAT captures survey-grade spatial data — UAV LiDAR, drone photogrammetry, engineering survey, enterprise GIS and continuous asset monitoring — for the infrastructure, institutions and sectors that cannot afford to guess.",
   primaryCta: "Request a site assessment",
   secondaryCta: "Explore our platform",
 } as const;
@@ -142,12 +141,8 @@ export const CREDENTIALS = [
 
 export const FOOTER_COLUMNS = [
   {
-    title: "Solutions",
+    title: "Services",
     links: ["Survey & Mapping", "GIS & Data", "Monitoring", "Professional Services"],
-  },
-  {
-    title: "Industries",
-    links: ["Infrastructure", "Government & Urban", "Natural Resources", "Safety & Research"],
   },
   {
     title: "Company",

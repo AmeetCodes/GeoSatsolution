@@ -11,6 +11,14 @@ import {
 
 export function createConsultationSchema(interests: readonly string[]) {
   const validInterests = new Set(interests);
+  const interestValueSchema = z
+    .string({ error: "Choose a valid area of interest." })
+    .trim()
+    .min(1, "Choose a valid area of interest.")
+    .refine(
+      (value) => value === "Other" || validInterests.has(value),
+      "Choose a valid area of interest.",
+    );
 
   return z
     .object({
@@ -39,16 +47,21 @@ export function createConsultationSchema(interests: readonly string[]) {
       phone: z
         .string({ error: "Enter your phone number." })
         .trim()
-        .min(1, "Enter your phone number.")
-        .refine((value) => isValidPhone(value), "Enter a valid 10-digit phone number starting with 6-9."),
-      interest: z
-        .string({ error: "Choose a valid area of interest." })
-        .trim()
-        .min(1, "Choose a valid area of interest.")
+        .max(60, "Enter a valid phone number.")
+        .optional()
+        .default("")
         .refine(
-          (value) => value === "Other" || validInterests.has(value),
-          "Choose a valid area of interest.",
+          (value) => value.length === 0 || isValidPhone(value),
+          "Enter a valid 10-digit phone number starting with 6-9.",
         ),
+      interest: z.union([
+        interestValueSchema,
+        z
+          .array(interestValueSchema)
+          .min(1, "Choose at least one area of interest.")
+          .max(20, "Choose no more than 20 areas of interest.")
+          .refine((values) => new Set(values).size === values.length, "Remove duplicate areas of interest."),
+      ]),
       otherInterest: z
         .string({ error: "Tell us what service you need." })
         .trim()
@@ -76,7 +89,11 @@ export function createConsultationSchema(interests: readonly string[]) {
         });
       }
 
-      if (value.interest === "Other") {
+      const hasOther = Array.isArray(value.interest)
+        ? value.interest.includes("Other")
+        : value.interest === "Other";
+
+      if (hasOther) {
         if (value.otherInterest.trim().length === 0) {
           ctx.addIssue({
             code: "custom",

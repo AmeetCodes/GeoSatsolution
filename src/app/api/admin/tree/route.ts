@@ -4,7 +4,6 @@ import { getAdminSessionServer } from "@/app/admin/_lib/admin-auth";
 import { navigationService } from "@/lib/db/services/navigation.service";
 import { solutionRepository } from "@/lib/db/repositories/solution.repository";
 import { productRepository } from "@/lib/db/repositories/product.repository";
-import { industryRepository } from "@/lib/db/repositories/industry.repository";
 import {
   type NavigationTree,
   type NavTreeTab,
@@ -15,7 +14,6 @@ import {
 import {
   columnPayloadSchema,
   itemPayloadSchema,
-  navigationTreeSchema,
   reorderColumnsPayloadSchema,
   reorderItemsPayloadSchema,
   reorderTabsPayloadSchema,
@@ -24,18 +22,41 @@ import {
 } from "@/lib/validations/navigation.schema";
 import { parsePayload, validationErrorResponse } from "@/lib/validations/utils";
 import { getErrorMessage } from "@/lib/utils";
+import { legacyServiceSlug, legacyServiceTitle } from "@/lib/service-routing";
 
 export const dynamic = "force-dynamic";
+
+const EDITABLE_NAV_TAB_IDS = new Set(["solutions", "products"]);
+
+function isEditableNavTab(tabId: string | null | undefined): boolean {
+  return Boolean(tabId && EDITABLE_NAV_TAB_IDS.has(tabId.toLowerCase()));
+}
+
+function lockedNavigationResponse() {
+  return NextResponse.json(
+    {
+      success: false,
+      message:
+        "Mega-Menu editing is limited to Services and Products. Project is managed by its page and Company is managed in the Company admin.",
+    },
+    { status: 403 },
+  );
+}
 
 async function syncTreeItemWithDatabase(targetTab: NavTreeTab, targetColumn: NavTreeColumn, item: NavTreeItem) {
   try {
     const tabKey = targetTab.id.toLowerCase();
     const slug = item.slug || slugify(item.title);
     if (tabKey === "solutions") {
-      const existing = await solutionRepository.findBySlug(slug);
+      const oldSlug = legacyServiceSlug(slug);
+      const oldTitle = legacyServiceTitle(slug);
+      const existing = await solutionRepository.findBySlug(slug)
+        || (oldSlug ? await solutionRepository.findBySlug(oldSlug) : null)
+        || (oldTitle ? await solutionRepository.findByTitle(oldTitle) : null);
       if (existing) {
-        await solutionRepository.updateBySlug(slug, {
+        await solutionRepository.updateBySlug(existing.slug, {
           title: item.title,
+          slug,
           group: targetColumn.title,
           intro: item.intro,
           description: item.description,
@@ -77,25 +98,6 @@ async function syncTreeItemWithDatabase(targetTab: NavTreeTab, targetColumn: Nav
           isPublished: true,
         });
       }
-    } else if (tabKey === "industries") {
-      const existing = await industryRepository.findBySlug(slug);
-      if (existing) {
-        await industryRepository.updateBySlug(slug, {
-          title: item.title,
-          intro: item.intro,
-          description: item.description,
-          items: item.outcomes || [],
-        });
-      } else {
-        await industryRepository.create({
-          title: item.title,
-          slug,
-          intro: item.intro || "",
-          description: item.description || "",
-          items: item.outcomes || [],
-          isPublished: true,
-        });
-      }
     }
   } catch (err) {
     console.error("Failed to sync tree item to database:", err);
@@ -110,8 +112,6 @@ async function removeTreeItemFromDatabase(tabId: string, item: NavTreeItem) {
       await solutionRepository.deleteBySlug(slug);
     } else if (tabKey === "products") {
       await productRepository.deleteBySlug(slug);
-    } else if (tabKey === "industries") {
-      await industryRepository.deleteBySlug(slug);
     }
   } catch (err) {
     console.error("Failed to remove tree item from database:", err);
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
       return validationErrorResponse(parsedRequest.error, "Navigation payload is invalid");
     }
 
-    const { action, tree, tabId, columnId, itemId, payload } = parsedRequest.data;
+    const { action, tabId, columnId, itemId, payload } = parsedRequest.data;
 
     // Action 1: Reset to factory default
     if (action === "reset") {
@@ -159,55 +159,29 @@ export async function POST(request: Request) {
       });
     }
 
-    // Action 2: Save entire tree directly
+    // Action 2: Bulk tree saving is disabled so locked tabs cannot be bypassed.
     if (action === "saveTree") {
-      const parsedTree = parsePayload(navigationTreeSchema, tree, "Navigation tree is invalid");
-      if (!parsedTree.ok) return parsedTree.response;
-
-      const saved = await navigationService.saveTree(parsedTree.data);
-      revalidatePath("/", "layout");
-      return NextResponse.json({
-        success: true,
-        message: "Navigation tree saved successfully in database",
-        data: saved,
-      });
+      return lockedNavigationResponse();
     }
 
     const currentTree: NavigationTree = await navigationService.getTree();
 
-    // Action 3: Add new Level 1 Tab
+    // Action 3: Add new Level 1 Tab (disabled)
     if (action === "addTab") {
-      const parsedPayload = parsePayload(tabPayloadSchema, payload, "Tab payload is invalid");
-      if (!parsedPayload.ok) return parsedPayload.response;
-
-      const { label, href, footerNote, catalogueCta } = parsedPayload.data;
-      const id = slugify(label);
-      if (currentTree.tabs.some((existing) => existing.id === id)) {
-        return NextResponse.json(
-          { success: false, message: `A tab named "${label}" already exists` },
-          { status: 409 }
-        );
-      }
-      const newTab: NavTreeTab = {
-        id,
-        label,
-        slug: id,
-        href: href || `#${id}`,
-        order: currentTree.tabs.length + 1,
-        type: "columns",
-        footerNote: footerNote || "Every engagement is scoped against a tolerance, not a template.",
-        catalogueCta: catalogueCta || `Request the full ${label.toLowerCase()} catalogue`,
-        columns: [],
-      };
-      currentTree.tabs.push(newTab);
-      await navigationService.saveTree(currentTree);
-      revalidatePath("/", "layout");
-      return NextResponse.json({ success: true, message: `Added tab "${label}"`, data: currentTree });
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Adding main navigation tabs is disabled. Manage Services and Products in their dedicated admin tabs.",
+        },
+        { status: 403 },
+      );
     }
 
     // Action 4: Edit Level 1 Tab
     if (action === "editTab") {
       if (!tabId) return NextResponse.json({ success: false, message: "Tab id is required" }, { status: 400 });
+      if (!isEditableNavTab(tabId)) return lockedNavigationResponse();
       const tab = currentTree.tabs.find((t) => t.id === tabId);
       if (!tab) return NextResponse.json({ success: false, message: "Tab not found" }, { status: 404 });
       const parsedPayload = parsePayload(tabPayloadSchema, payload, "Tab payload is invalid");
@@ -226,6 +200,7 @@ export async function POST(request: Request) {
     // Action 5: Delete Level 1 Tab
     if (action === "deleteTab") {
       if (!tabId) return NextResponse.json({ success: false, message: "Tab id is required" }, { status: 400 });
+      if (!isEditableNavTab(tabId)) return lockedNavigationResponse();
       currentTree.tabs = currentTree.tabs.filter((t) => t.id !== tabId);
       await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
@@ -249,6 +224,17 @@ export async function POST(request: Request) {
       });
       // Append any remaining
       tabMap.forEach((tab) => reordered.push(tab));
+
+      const lockedBefore = currentTree.tabs
+        .filter((tab) => !isEditableNavTab(tab.id))
+        .map((tab) => tab.id);
+      const lockedAfter = reordered
+        .filter((tab) => !isEditableNavTab(tab.id))
+        .map((tab) => tab.id);
+      if (lockedBefore.join("|") !== lockedAfter.join("|")) {
+        return lockedNavigationResponse();
+      }
+
       currentTree.tabs = reordered;
       await navigationService.saveTree(currentTree);
       revalidatePath("/", "layout");
@@ -259,6 +245,9 @@ export async function POST(request: Request) {
     const targetTab = currentTree.tabs.find((t) => t.id === tabId);
     if (!targetTab && (action.includes("Column") || action.includes("Item"))) {
       return NextResponse.json({ success: false, message: `Tab "${tabId}" not found` }, { status: 404 });
+    }
+    if (targetTab && !isEditableNavTab(targetTab.id)) {
+      return lockedNavigationResponse();
     }
 
     // Action 7: Add Column to Tab

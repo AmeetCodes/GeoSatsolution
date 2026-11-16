@@ -1,6 +1,6 @@
 "use client";
 
-import type { ContentImage, SolutionItem } from '@/lib/content-types';
+import type { ContentImage, DescriptionAlignment, SolutionItem } from '@/lib/content-types';
 import React, { useState, useMemo } from "react";
 import {
   Plus,
@@ -16,6 +16,10 @@ import { Archive02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import SwipeRow from "@/components/ui/SwipeRow";
 import { ImageMediaEditor } from "./ImageMediaEditor";
 import { Modal } from "@/components/ui/modal";
+import { normalizeFaqs } from "@/lib/faq-defaults";
+import { resolveDescriptionAlignment } from "@/lib/description-alignment";
+import { DescriptionAlignmentBar } from "./DescriptionAlignmentBar";
+import { FaqEditor } from "./FaqEditor";
 
 interface SolutionsManagerProps {
   solutions: SolutionItem[];
@@ -46,10 +50,12 @@ export function SolutionsManager({
   const [formTitle, setFormTitle] = useState("");
   const [formSlug, setFormSlug] = useState("");
   const [formPublished, setFormPublished] = useState(true);
-  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string }[]>([]);
+  const [formFaqs, setFormFaqs] = useState<{ question: string; answer: string; order?: number }[]>([]);
   const [formGroup, setFormGroup] = useState<string>("Survey & Mapping");
   const [formIntro, setFormIntro] = useState("");
   const [formDesc, setFormDesc] = useState("");
+  const [formDescriptionAlignment, setFormDescriptionAlignment] =
+    useState<DescriptionAlignment>("justify");
   const [formOutcomes, setFormOutcomes] = useState<string[]>([""]);
   const [formImages, setFormImages] = useState<ContentImage[]>([
     { src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" },
@@ -75,6 +81,7 @@ export function SolutionsManager({
     setFormGroup(selectedGroup !== "All" ? selectedGroup : "Survey & Mapping");
     setFormIntro("");
     setFormDesc("");
+    setFormDescriptionAlignment("justify");
     setFormOutcomes([""]);
     setFormImages([{ src: "", alt: "", caption: "", source: "url", order: 0, fitMode: "contain", focalPosition: "center" }]);
     setEditingItem({
@@ -93,10 +100,11 @@ export function SolutionsManager({
     setFormTitle(item.title);
     setFormSlug(item.slug || "");
     setFormPublished(item.isPublished !== false);
-    setFormFaqs(item.faqs || []);
+    setFormFaqs(normalizeFaqs(item.faqs));
     setFormGroup(item.group);
     setFormIntro(item.intro);
     setFormDesc(item.description);
+    setFormDescriptionAlignment(resolveDescriptionAlignment(item.descriptionAlignment));
     setFormOutcomes(item.outcomes.length > 0 ? [...item.outcomes] : [""]);
     setFormImages(
       item.images && item.images.length > 0
@@ -133,10 +141,13 @@ export function SolutionsManager({
       title: formTitle.trim(),
       slug: formSlug.trim() || formTitle.trim().toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       isPublished: formPublished,
-      faqs: formFaqs.filter((faq) => faq.question.trim() && faq.answer.trim()),
+      faqs: formFaqs
+        .filter((faq) => faq.question.trim() && faq.answer.trim())
+        .map((faq, index) => ({ ...faq, order: index })),
       group: formGroup,
       intro: formIntro.trim(),
       description: formDesc.trim(),
+      descriptionAlignment: formDescriptionAlignment,
       outcomes: cleanedOutcomes,
       images: cleanedImages.map((image, index) => ({
         ...image,
@@ -155,7 +166,7 @@ export function SolutionsManager({
     }
 
     await onSaveSolutions(updatedList);
-    onTriggerToast(isNew ? "Solution Added" : "Solution Updated", isNew ? `"${newSolution.title}" is now active in ${newSolution.group}` : `Saved changes to "${newSolution.title}"`);
+    onTriggerToast(isNew ? "Service Added" : "Service Updated", isNew ? `"${newSolution.title}" is now active in ${newSolution.group}` : `Saved changes to "${newSolution.title}"`);
     setEditingItem(null);
   };
 
@@ -169,7 +180,7 @@ export function SolutionsManager({
     await onSaveSolutions(updated);
 
     onTriggerToast(
-      "Solution Deleted",
+      "Service Deleted",
       `Removed "${removedItem.title}"`,
       "Undo",
       async () => {
@@ -190,7 +201,7 @@ export function SolutionsManager({
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search solutions by title, intro, or discipline..."
+            placeholder="Search services by title, intro, or discipline..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
@@ -223,17 +234,17 @@ export function SolutionsManager({
           className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
         >
           <Plus className="w-4 h-4" />
-          <span>Add New Solution</span>
+          <span>Add New Service</span>
         </button>
       </div>
 
-      {/* Solutions List with SwipeRow & Detailed Cards */}
+      {/* Services List with SwipeRow & Detailed Cards */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white/60 py-16 text-center">
             <Layers className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-            <p className="text-sm font-semibold text-slate-700">No solutions match your filter</p>
-            <p className="mt-1 text-xs text-slate-500">Try another search keyword or add a new solution.</p>
+            <p className="text-sm font-semibold text-slate-700">No services match your filter</p>
+            <p className="mt-1 text-xs text-slate-500">Try another search keyword or add a new service.</p>
           </div>
         ) : (
           filtered.map((item) => (
@@ -262,7 +273,7 @@ export function SolutionsManager({
                 onAction={(act) => {
                   if (act.id === "delete") handleDelete(item.title);
                   if (act.id === "archive") {
-                    onTriggerToast("Archived", `Solution "${item.title}" moved to archive`);
+                    onTriggerToast("Archived", `Service "${item.title}" moved to archive`);
                   }
                 }}
                 onCommit={(act) => {
@@ -310,7 +321,7 @@ export function SolutionsManager({
                       type="button"
                       onClick={() => handleDelete(item.title)}
                       className="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-600 transition-colors hover:bg-rose-100"
-                      title="Delete solution"
+                      title="Delete service"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -351,9 +362,9 @@ export function SolutionsManager({
       <Modal
         open={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
-        eyebrow="Solution content"
-        title={isNew ? "Add New Solution" : `Edit "${editingItem?.title ?? ""}"`}
-        description="Configure parameters, deliverables, and gallery images for this solution."
+        eyebrow="Service content"
+        title={isNew ? "Add New Service" : `Edit "${editingItem?.title ?? ""}"`}
+        description="Configure parameters, deliverables, and gallery images for this service."
         onSubmit={handleSaveModal}
         bodyClassName="space-y-4"
         footer={
@@ -376,13 +387,13 @@ export function SolutionsManager({
       >
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Solution Title
+                  Service Title
                 </label>
                 <input
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  placeholder="e.g. UAV LiDAR Survey"
+                  placeholder="e.g. LiDAR Survey"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   required
                 />
@@ -390,13 +401,10 @@ export function SolutionsManager({
 
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">Page slug</label>
-                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="uav-lidar-survey" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" />
+                <input value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="lidar-survey" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" />
               </div>
               <label className="flex items-center gap-2 text-xs font-medium text-slate-600"><input type="checkbox" checked={formPublished} onChange={(e) => setFormPublished(e.target.checked)} /> Published</label>
-              <section className="space-y-2">
-                <div className="flex items-center justify-between"><label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Frequently asked questions</label><button type="button" onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">Add FAQ</button></div>
-                {formFaqs.map((faq, index) => <div key={index} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3"><input value={faq.question} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, question: e.target.value } : item))} placeholder="Question" className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" /><textarea value={faq.answer} onChange={(e) => setFormFaqs(formFaqs.map((item, i) => i === index ? { ...item, answer: e.target.value } : item))} placeholder="Answer" rows={2} className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15" /><button type="button" onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== index))} className="text-xs font-medium text-rose-600 hover:text-rose-700">Remove FAQ</button></div>)}
-              </section>
+              <FaqEditor faqs={formFaqs} onChange={setFormFaqs} />
 
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -422,16 +430,20 @@ export function SolutionsManager({
                   rows={2}
                   value={formIntro}
                   onChange={(e) => setFormIntro(e.target.value)}
-                  placeholder="High-level introductory pitch rendered at the top of the solution page..."
+                  placeholder="High-level introductory pitch rendered at the top of the service page..."
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   required
                 />
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Full Technical Description
                 </label>
+                <DescriptionAlignmentBar
+                  value={formDescriptionAlignment}
+                  onChange={setFormDescriptionAlignment}
+                />
                 <textarea
                   rows={3}
                   value={formDesc}
@@ -487,7 +499,7 @@ export function SolutionsManager({
 
               {/* Images */}
               <div>
-                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-slate-900">Solution images</label><p className="mt-0.5 text-xs text-slate-500">Upload images, reorder them, and control framing. The first image appears first in the carousel.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url", order: formImages.length, fitMode: "contain", focalPosition: "center" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50">Add image</button></div>
+                <div className="mb-3 flex items-center justify-between"><div><label className="block text-sm font-semibold text-slate-900">Service images</label><p className="mt-0.5 text-xs text-slate-500">Upload images, reorder them, and control framing. The first image appears first in the carousel.</p></div><button type="button" disabled={formImages.length >= 30} onClick={() => setFormImages([...formImages, { src: "", alt: "", caption: "", source: "url", order: formImages.length, fitMode: "contain", focalPosition: "center" }])} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50">Add image</button></div>
                 {formImages.map((img, idx) => (
                   <ImageMediaEditor
                     key={idx}

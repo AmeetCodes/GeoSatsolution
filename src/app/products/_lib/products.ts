@@ -1,4 +1,6 @@
 import { productService } from "@/lib/db/services/product.service";
+import { normalizeFaqs } from "@/lib/faq-defaults";
+import { resolveDescriptionAlignment } from "@/lib/description-alignment";
 import {
   type Product,
   type ProductImage,
@@ -25,9 +27,10 @@ export async function getDynamicProducts(): Promise<Product[]> {
         brandUrl: item.brandUrl,
         intro: item.intro || "",
         description: item.description || "",
+        descriptionAlignment: resolveDescriptionAlignment(item.descriptionAlignment),
         outcomes: item.outcomes || [],
         specifications: item.specifications || {},
-        faqs: item.faqs || [],
+        faqs: normalizeFaqs(item.faqs),
         resources: (item.resources || []).map((resource) => ({
           ...resource,
           fileMediaId: resource.fileMediaId ? String(resource.fileMediaId) : undefined,
@@ -87,9 +90,10 @@ export async function getDynamicProductBySlug(slug: string): Promise<Product | u
         brandUrl: item.brandUrl,
         intro: item.intro || "",
         description: item.description || "",
+        descriptionAlignment: resolveDescriptionAlignment(item.descriptionAlignment),
         outcomes: item.outcomes || [],
         specifications: item.specifications || {},
-        faqs: item.faqs || [],
+        faqs: normalizeFaqs(item.faqs),
         resources: (item.resources || []).map((resource) => ({
           ...resource,
           fileMediaId: resource.fileMediaId ? String(resource.fileMediaId) : undefined,

@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Layers,
   Box,
-  Building2,
   Users,
   Plus,
   Edit2,
@@ -25,6 +24,21 @@ import type {
 } from "@/lib/tree-store";
 import { getErrorMessage } from "@/lib/utils";
 
+const CMS_TAB_IDS = new Set(["solutions", "products", "company"]);
+const EDITABLE_TAB_IDS = new Set(["solutions", "products"]);
+
+function isCmsTab(tab: NavTreeTab): boolean {
+  return CMS_TAB_IDS.has(tab.id.toLowerCase());
+}
+
+function isEditableTab(tab: NavTreeTab): boolean {
+  return EDITABLE_TAB_IDS.has(tab.id.toLowerCase());
+}
+
+function getCmsTabs(tree: NavigationTree): NavTreeTab[] {
+  return tree.tabs.filter(isCmsTab);
+}
+
 interface TreeCMSManagerProps {
   initialTree: NavigationTree;
   onTriggerToast: (
@@ -43,7 +57,7 @@ export function TreeCMSManager({
 }: TreeCMSManagerProps) {
   const [tree, setTree] = useState<NavigationTree>(initialTree);
   const [activeTabId, setActiveTabId] = useState<string>(
-    initialTree.tabs[0]?.id || "solutions",
+    () => getCmsTabs(initialTree)[0]?.id || "solutions",
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -90,7 +104,9 @@ export function TreeCMSManager({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [tabModalOpen, colModalOpen, itemModalOpen]);
 
-  const activeTab = tree.tabs.find((t) => t.id === activeTabId) || tree.tabs[0];
+  const cmsTabs = useMemo(() => getCmsTabs(tree), [tree]);
+  const activeTab = cmsTabs.find((t) => t.id === activeTabId) || cmsTabs[0];
+  const activeTabEditable = Boolean(activeTab && isEditableTab(activeTab));
 
   // Helper to send tree API requests
   const apiCall = async (body: Record<string, unknown>) => {
@@ -119,17 +135,6 @@ export function TreeCMSManager({
   };
 
   // ================= TAB HANDLERS =================
-  const openAddTabModal = () => {
-    setEditingTab(null);
-    setTabForm({
-      label: "",
-      href: "",
-      footerNote: "Every engagement is scoped against a tolerance, not a template.",
-      catalogueCta: "",
-    });
-    setTabModalOpen(true);
-  };
-
   const openEditTabModal = (tab: NavTreeTab) => {
     setEditingTab(tab);
     setTabForm({
@@ -143,22 +148,14 @@ export function TreeCMSManager({
 
   const handleSaveTab = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tabForm.label.trim()) return;
+    if (!editingTab || !tabForm.label.trim()) return;
 
-    if (editingTab) {
-      await apiCall({
-        action: "editTab",
-        tabId: editingTab.id,
-        payload: tabForm,
-      });
-      onTriggerToast("Tab Updated", `"${tabForm.label}" saved successfully`);
-    } else {
-      await apiCall({
-        action: "addTab",
-        payload: tabForm,
-      });
-      onTriggerToast("Tab Added", `"${tabForm.label}" added to main navigation`);
-    }
+    await apiCall({
+      action: "editTab",
+      tabId: editingTab.id,
+      payload: tabForm,
+    });
+    onTriggerToast("Tab Updated", `"${tabForm.label}" saved successfully`);
     setTabModalOpen(false);
   };
 
@@ -171,19 +168,29 @@ export function TreeCMSManager({
       return;
     await apiCall({ action: "deleteTab", tabId: tab.id });
     onTriggerToast("Tab Deleted", `Removed "${tab.label}"`);
-    if (activeTabId === tab.id) {
-      const remaining = tree.tabs.filter((t) => t.id !== tab.id);
-      if (remaining.length > 0) setActiveTabId(remaining[0].id);
+    if (activeTab?.id === tab.id) {
+      const remaining = cmsTabs.filter((t) => t.id !== tab.id);
+      setActiveTabId(remaining[0]?.id || "solutions");
     }
   };
 
-  const handleMoveTab = async (tabIndex: number, direction: "left" | "right") => {
-    const newIndex = direction === "left" ? tabIndex - 1 : tabIndex + 1;
-    if (newIndex < 0 || newIndex >= tree.tabs.length) return;
-    const tabIds = tree.tabs.map((t) => t.id);
-    const temp = tabIds[tabIndex];
-    tabIds[tabIndex] = tabIds[newIndex];
-    tabIds[newIndex] = temp;
+  const handleMoveTab = async (
+    tabId: string,
+    direction: "left" | "right",
+  ) => {
+    const editableTabs = cmsTabs.filter(isEditableTab);
+    const currentIndex = editableTabs.findIndex((tab) => tab.id === tabId);
+    const neighbor = editableTabs[currentIndex + (direction === "left" ? -1 : 1)];
+    if (currentIndex < 0 || !neighbor) return;
+
+    const tabIds = tree.tabs.map((tab) => tab.id);
+    const currentPosition = tabIds.indexOf(tabId);
+    const neighborPosition = tabIds.indexOf(neighbor.id);
+    if (currentPosition < 0 || neighborPosition < 0) return;
+    [tabIds[currentPosition], tabIds[neighborPosition]] = [
+      tabIds[neighborPosition],
+      tabIds[currentPosition],
+    ];
     await apiCall({ action: "reorderTabs", payload: { tabIds } });
     onTriggerToast("Reordered Tabs", "Navigation order updated");
   };
@@ -369,8 +376,6 @@ export function TreeCMSManager({
         return Layers;
       case "products":
         return Box;
-      case "industries":
-        return Building2;
       case "company":
         return Users;
       default:
@@ -388,39 +393,33 @@ export function TreeCMSManager({
               <span className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold tracking-wider uppercase">
                 Dynamic CMS &amp; Mega-Menu Engine
               </span>
-              <span className="text-xs text-slate-500">Full N-Level Tree CRUD</span>
+              <span className="text-xs text-slate-500">Services &amp; Products only</span>
             </div>
             <h2 className="text-xl font-semibold text-slate-900">
               Navigation Hierarchy &amp; Page CMS
             </h2>
             <p className="text-sm text-slate-700 mt-1 max-w-3xl leading-relaxed">
-              Manage all 3 levels of your site tree:{" "}
-              <span className="text-slate-900 font-medium">Main Tabs (Level 1)</span>,{" "}
-              <span className="text-slate-900 font-medium">Column Headers (Level 2)</span>, and{" "}
+              Manage the{" "}
+              <span className="text-slate-900 font-medium">Services</span> and{" "}
+              <span className="text-slate-900 font-medium">Products</span> mega-menus, including{" "}
+              <span className="text-slate-900 font-medium">Column Headers (Level 2)</span> and{" "}
               <span className="text-slate-900 font-medium">Nav Items &amp; Page Content (Level 3/4)</span>.
-              Any addition, rename, reordering, or deletion syncs directly to the frontend mega-menu and dynamic routes.
+              Project and Company navigation are locked here; manage Company content from its dedicated admin tab.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            type="button"
-            onClick={openAddTabModal}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-60"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Main Tab</span>
-          </button>
-          </div>
         </div>
       </div>
 
       {/* Level 1: Main Tabs Bar */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-slate-200">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {tree.tabs.map((tab, idx) => {
+          {cmsTabs.map((tab) => {
             const Icon = getTabIcon(tab.id);
-            const isActive = tab.id === activeTabId;
+            const isActive = tab.id === activeTab?.id;
+            const editable = isEditableTab(tab);
+            const editableTabs = cmsTabs.filter(isEditableTab);
+            const editableIndex = editableTabs.findIndex((item) => item.id === tab.id);
             const totalItems = tab.columns.reduce(
               (acc, col) => acc + col.items.length,
               0,
@@ -457,59 +456,61 @@ export function TreeCMSManager({
                   </span>
                 </button>
 
-                {/* Tab actions hover menu */}
-                <div className="flex items-center pr-1.5 gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                  {idx > 0 && (
+                {/* Company is locked; only Services and Products expose structural actions. */}
+                {editable && (
+                  <div className="flex items-center pr-1.5 gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                    {editableIndex > 0 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveTab(tab.id, "left");
+                        }}
+                        className="p-1 hover:bg-slate-100 text-slate-500 rounded"
+                        title="Move tab left"
+                      >
+                        <MoveUp className="w-3 h-3 rotate-[-90deg]" />
+                      </button>
+                    )}
+                    {editableIndex >= 0 && editableIndex < editableTabs.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveTab(tab.id, "right");
+                        }}
+                        className="p-1 hover:bg-slate-100 text-slate-500 rounded"
+                        title="Move tab right"
+                      >
+                        <MoveDown className="w-3 h-3 rotate-[-90deg]" />
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleMoveTab(idx, "left");
+                        openEditTabModal(tab);
                       }}
                       className="p-1 hover:bg-slate-100 text-slate-500 rounded"
-                      title="Move tab left"
+                      title="Edit tab settings"
                     >
-                      <MoveUp className="w-3 h-3 rotate-[-90deg]" />
+                      <Settings className="w-3 h-3" />
                     </button>
-                  )}
-                  {idx < tree.tabs.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMoveTab(idx, "right");
-                      }}
-                      className="p-1 hover:bg-slate-100 text-slate-500 rounded"
-                      title="Move tab right"
-                    >
-                      <MoveDown className="w-3 h-3 rotate-[-90deg]" />
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditTabModal(tab);
-                    }}
-                    className="p-1 hover:bg-slate-100 text-slate-500 rounded"
-                    title="Edit tab settings"
-                  >
-                    <Settings className="w-3 h-3" />
-                  </button>
-                  {tree.tabs.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteTab(tab);
-                      }}
-                      className="p-1 hover:bg-rose-100 text-rose-600 rounded"
-                      title="Delete tab"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
+                    {tree.tabs.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTab(tab);
+                        }}
+                        className="p-1 hover:bg-rose-100 text-rose-600 rounded"
+                        title="Delete tab"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -544,15 +545,23 @@ export function TreeCMSManager({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => openAddColModal(activeTab.id)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-            >
-              <FolderPlus className="w-4 h-4" />
-              <span>Add Column Header</span>
-            </button>
+            {activeTabEditable && (
+              <button
+                type="button"
+                onClick={() => openAddColModal(activeTab.id)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+              >
+                <FolderPlus className="w-4 h-4" />
+                <span>Add Column Header</span>
+              </button>
+            )}
           </div>
+
+          {!activeTabEditable && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">
+              Company navigation is locked in the Mega-Menu CMS. Manage Company content from the dedicated Company tab in the main Admin navigation.
+            </div>
+          )}
 
           {/* Columns Grid (Level 2 & Level 3) */}
           {activeTab.columns.length === 0 ? (
@@ -560,8 +569,11 @@ export function TreeCMSManager({
               <FolderPlus className="w-10 h-10 mx-auto text-slate-400 mb-3" />
               <p className="text-sm text-slate-700 font-medium">No column headers in this tab yet</p>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Click &quot;Add Column Header&quot; to create your first mega-menu column (e.g., &quot;Survey &amp; Mapping&quot;, &quot;About&quot;).
+                {activeTabEditable
+                  ? "Click \"Add Column Header\" to create your first mega-menu column (e.g., \"Survey & Mapping\")."
+                  : "This navigation category is locked and has no editable columns."}
               </p>
+              {activeTabEditable && (
                 <button
                   type="button"
                   onClick={() => openAddColModal(activeTab.id)}
@@ -570,6 +582,7 @@ export function TreeCMSManager({
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Column Header</span>
                 </button>
+              )}
             </div>
           ) : (
             <div
@@ -600,7 +613,8 @@ export function TreeCMSManager({
                       </span>
                     </div>
 
-                    {/* Column controls */}
+                    {/* Column controls (Services/Products only) */}
+                    {activeTabEditable && (
                     <div className="flex items-center gap-1 shrink-0">
                       {colIdx > 0 && (
                         <button
@@ -639,6 +653,7 @@ export function TreeCMSManager({
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
+                    )}
                   </div>
 
                   {/* Level 3: Items in this Column */}
@@ -666,7 +681,8 @@ export function TreeCMSManager({
                               </div>
                             </div>
 
-                            {/* Item action controls */}
+                            {/* Item action controls (Services/Products only) */}
+                            {activeTabEditable && (
                             <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100">
                               {itemIdx > 0 && (
                                 <button
@@ -713,6 +729,7 @@ export function TreeCMSManager({
                                 <Trash2 className="w-3 h-3" />
                               </button>
                             </div>
+                            )}
                           </div>
 
                           {/* Quick details preview */}
@@ -733,17 +750,19 @@ export function TreeCMSManager({
                     )}
                   </div>
 
-                  {/* Add Item to this column */}
-                  <div className="p-3 border-t border-slate-200">
-                    <button
-                      type="button"
-                      onClick={() => openAddItemModal(activeTab.id, column.id)}
-                      className="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 text-slate-500 text-xs font-medium transition-colors hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center gap-1.5"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Item under &quot;{column.title}&quot;</span>
-                    </button>
-                  </div>
+                  {/* Add Item to this column (Services/Products only) */}
+                  {activeTabEditable && (
+                    <div className="p-3 border-t border-slate-200">
+                      <button
+                        type="button"
+                        onClick={() => openAddItemModal(activeTab.id, column.id)}
+                        className="w-full py-2 px-3 rounded-lg border border-dashed border-slate-300 text-slate-500 text-xs font-medium transition-colors hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Item under &quot;{column.title}&quot;</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -757,7 +776,7 @@ export function TreeCMSManager({
           <div onClick={(event) => event.stopPropagation()} className="relative my-8 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
             <div className="sticky top-0 z-10 flex items-center justify-between bg-white pb-4 border-b border-slate-200">
               <h3 className="text-base font-semibold text-slate-900">
-                {editingTab ? `Edit Tab: ${editingTab.label}` : "Add Main Navigation Tab"}
+                {editingTab ? `Edit Tab: ${editingTab.label}` : "Edit Main Navigation Tab"}
               </h3>
               <button
                 type="button"
@@ -778,7 +797,7 @@ export function TreeCMSManager({
                   required
                   value={tabForm.label}
                   onChange={(e) => setTabForm({ ...tabForm, label: e.target.value })}
-                  placeholder="e.g. Solutions, Products, Company, Services"
+                  placeholder="e.g. Services, Products, Project, Company"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
@@ -791,7 +810,7 @@ export function TreeCMSManager({
                   type="text"
                   value={tabForm.href}
                   onChange={(e) => setTabForm({ ...tabForm, href: e.target.value })}
-                  placeholder="e.g. /solutions or /services"
+                  placeholder="e.g. /services or /products"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-mono text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                 />
               </div>
@@ -936,7 +955,7 @@ export function TreeCMSManager({
                   required
                   value={itemForm.title}
                   onChange={(e) => setItemForm({ ...itemForm, title: e.target.value })}
-                  placeholder="e.g. UAV LiDAR Survey or Executive & Technical Leads"
+                  placeholder="e.g. LiDAR Survey or Executive & Technical Leads"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15"
                   autoFocus
                 />

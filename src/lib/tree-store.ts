@@ -1,8 +1,10 @@
+import { canonicalServiceHref, canonicalServiceSlug, canonicalServiceTitle } from "@/lib/service-routing";
+
 export interface NavTreeItem {
   id: string;
   title: string;
   slug: string;
-  href?: string; // Optional custom URL or auto-generated, e.g. /solutions/uav-lidar-survey
+  href?: string; // Optional custom URL or auto-generated, e.g. /services/lidar-survey
   order: number;
   intro?: string;
   description?: string;
@@ -23,10 +25,10 @@ export interface NavTreeColumn {
 }
 
 export interface NavTreeTab {
-  id: string; // e.g. "solutions", "products", "industries", "company"
-  label: string; // e.g. "Solutions", "Products", "Industries", "Company"
+  id: string; // e.g. "solutions", "products", "project", "company"
+  label: string; // e.g. "Services", "Products", "Project", "Company"
   slug: string;
-  href: string; // e.g. "/solutions", "/products", "/industries", "/company/about/geosat-partners"
+  href: string; // e.g. "/services", "/products", "/project", "/company/about/geosat-partners"
   order: number;
   type?: "columns" | "cards";
   footerNote?: string;
@@ -36,6 +38,63 @@ export interface NavTreeTab {
 
 export interface NavigationTree {
   tabs: NavTreeTab[];
+}
+
+function createProjectTab(): NavTreeTab {
+  return {
+    id: "project",
+    label: "Project",
+    slug: "project",
+    href: "/project",
+    order: 3,
+    type: "columns",
+    columns: [],
+  };
+}
+
+function isIndustriesTab(tab: NavTreeTab): boolean {
+  return (
+    tab.id === "industries" ||
+    tab.slug === "industries" ||
+    tab.label.trim().toLowerCase() === "industries"
+  );
+}
+
+/** Normalize legacy database labels and slugs for public and admin presentation. */
+export function canonicalizeNavigationTree(tree: NavigationTree): NavigationTree {
+  const tabs = tree.tabs
+    .filter((tab) => !isIndustriesTab(tab))
+    .map((tab) => {
+      const isServicesTab = tab.id === "solutions" || tab.slug === "solutions" || tab.label.trim().toLowerCase() === "solutions";
+      if (!isServicesTab) return tab;
+
+      return {
+        ...tab,
+        label: "Services",
+        slug: "services",
+        href: "/services",
+        catalogueCta: tab.catalogueCta?.replace(/solutions/gi, "services"),
+        columns: tab.columns.map((column) => ({
+          ...column,
+          items: column.items.map((item) => ({
+            ...item,
+            title: canonicalServiceTitle(item.title, item.slug),
+            slug: canonicalServiceSlug(item.title, item.slug),
+            href: canonicalServiceHref(item.href || `/services/${canonicalServiceSlug(item.title, item.slug)}`),
+          })),
+        })),
+      };
+    });
+
+  if (!tabs.some((tab) => tab.id === "project" || tab.slug === "project")) {
+    const productsIndex = tabs.findIndex((tab) => tab.id === "products" || tab.slug === "products");
+    const insertionIndex = productsIndex >= 0 ? productsIndex + 1 : tabs.length;
+    const projectTab = createProjectTab();
+    projectTab.order = insertionIndex + 1;
+    tabs.splice(insertionIndex, 0, projectTab);
+  }
+
+  return { ...tree, tabs };
 }
 
 export function slugify(text: string): string {
@@ -51,13 +110,13 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
   tabs: [
     {
       id: "solutions",
-      label: "Solutions",
-      slug: "solutions",
-      href: "/solutions",
+      label: "Services",
+      slug: "services",
+      href: "/services",
       order: 1,
       type: "columns",
       footerNote: "Every engagement is scoped against a tolerance, not a template.",
-      catalogueCta: "Request the full solutions catalogue",
+      catalogueCta: "Request the full services catalogue",
       columns: [
         {
           id: "col-survey-mapping",
@@ -67,9 +126,9 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
           items: [
             {
               id: "item-uav-lidar",
-              title: "UAV LiDAR Survey",
-              slug: "uav-lidar-survey",
-              href: "/solutions/uav-lidar-survey",
+              title: "LiDAR Survey",
+              slug: "lidar-survey",
+              href: "/services/lidar-survey",
               order: 1,
               intro: "A dependable picture of the ground, even where the ground is hard to reach.",
               description: "Dense point clouds penetrating steep slopes and heavy vegetation to produce true bare-earth terrain models.",
@@ -84,7 +143,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-drone-photo",
               title: "Drone Photogrammetry",
               slug: "drone-photogrammetry",
-              href: "/solutions/drone-photogrammetry",
+              href: "/services/drone-photogrammetry",
               order: 2,
               intro: "High-resolution orthomosaics and visual terrain records for site planning.",
               description: "Sub-centimeter aerial imagery tied to survey-grade ground control for engineering and cadastral requirements.",
@@ -99,7 +158,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-eng-survey",
               title: "Engineering Survey",
               slug: "engineering-survey",
-              href: "/solutions/engineering-survey",
+              href: "/services/engineering-survey",
               order: 3,
               intro: "Precise dimensional control and as-built verification for heavy infrastructure.",
               description: "Millimeter-level alignments for tunnels, bridges, highways, and industrial structures with complete audit trails.",
@@ -114,7 +173,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-gnss-total",
               title: "GNSS & Total Station Survey",
               slug: "gnss-and-total-station-survey",
-              href: "/solutions/gnss-and-total-station-survey",
+              href: "/services/gnss-and-total-station-survey",
               order: 4,
               intro: "Geodetic framework establishment and tight network adjustments across complex terrain.",
               description: "Static and kinematic GNSS baseline measurements tied to national datum and global reference frames.",
@@ -129,7 +188,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-mobile-map",
               title: "Mobile Mapping",
               slug: "mobile-mapping",
-              href: "/solutions/mobile-mapping",
+              href: "/services/mobile-mapping",
               order: 5,
               intro: "High-speed road, railway, and corridor laser scanning at highway speeds.",
               description: "Vehicle-mounted multi-camera LiDAR capture providing asset inventories and streetscape point clouds.",
@@ -143,7 +202,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-hydro-survey",
               title: "Hydrographic Survey",
               slug: "hydrographic-survey",
-              href: "/solutions/hydrographic-survey",
+              href: "/services/hydrographic-survey",
               order: 6,
               intro: "Bathymetric mapping and riverbed cross-sections for hydropower and water resources.",
               description: "Single-beam and multibeam sonar profiling coupled with RTK GNSS for reservoir volume calculations and river morphology.",
@@ -163,9 +222,9 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
           items: [
             {
               id: "item-spatial-db",
-              title: "Spatial Database & GIS Solutions",
-              slug: "spatial-database-and-gis-solutions",
-              href: "/solutions/spatial-database-and-gis-solutions",
+              title: "Spatial Database & GIS Services",
+              slug: "spatial-database-and-gis-services",
+              href: "/services/spatial-database-and-gis-services",
               order: 1,
               intro: "Centralized enterprise spatial databases and spatial analytics infrastructure.",
               description: "Cloud and on-premise PostGIS, Oracle Spatial, and ArcGIS Enterprise architectures.",
@@ -175,7 +234,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-enterprise-gis",
               title: "Enterprise GIS Deployment",
               slug: "enterprise-gis-deployment",
-              href: "/solutions/enterprise-gis-deployment",
+              href: "/services/enterprise-gis-deployment",
               order: 2,
               intro: "Scalable web GIS portals and field data capture synchronization for organizations.",
               description: "Turnkey enterprise GIS rollouts connecting field inspectors with decision-makers.",
@@ -185,7 +244,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-remote-sensing",
               title: "Remote Sensing & Analytics",
               slug: "remote-sensing-and-analytics",
-              href: "/solutions/remote-sensing-and-analytics",
+              href: "/services/remote-sensing-and-analytics",
               order: 3,
               intro: "Multispectral, hyperspectral, and satellite radar image processing for land use and forestry.",
               description: "Automated classification pipelines for crop health, forest canopy, and environmental change.",
@@ -195,7 +254,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-spatial-processing",
               title: "Spatial Data Processing",
               slug: "spatial-data-processing",
-              href: "/solutions/spatial-data-processing",
+              href: "/services/spatial-data-processing",
               order: 4,
               intro: "High-volume raster, vector, and 3D point cloud classification pipelines.",
               description: "Automated feature extraction, contour generation, and clean geodatabase delivery.",
@@ -213,7 +272,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-geotech-disp",
               title: "Geotechnical Displacement Monitoring",
               slug: "geotechnical-displacement-monitoring",
-              href: "/solutions/geotechnical-displacement-monitoring",
+              href: "/services/geotechnical-displacement-monitoring",
               order: 1,
               intro: "Automated sub-millimeter displacement tracking for dams, slopes, and deep excavations.",
               description: "Automated total stations, inclinometers, and piezometers transmitting real-time sensor streams.",
@@ -223,7 +282,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-geospatial-opt",
               title: "Geospatial Optical Monitoring",
               slug: "geospatial-optical-monitoring",
-              href: "/solutions/geospatial-optical-monitoring",
+              href: "/services/geospatial-optical-monitoring",
               order: 2,
               intro: "Time-lapse photogrammetry and robotic camera surveillance for critical structural stability.",
               description: "Continuous automated optical imaging tracking crack propagation and surface deformation.",
@@ -233,7 +292,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-hydro-met",
               title: "Hydrological & Meteorological Sensors",
               slug: "hydrological-and-meteorological-sensors",
-              href: "/solutions/hydrological-and-meteorological-sensors",
+              href: "/services/hydrological-and-meteorological-sensors",
               order: 3,
               intro: "Automated water level, rainfall, and meteorological telemetry for early warning and watershed management.",
               description: "Solar-powered telemetry stations logging radar river level and weather data with satellite backup.",
@@ -251,7 +310,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-equip-rental",
               title: "Equipment Rental",
               slug: "equipment-rental",
-              href: "/solutions/equipment-rental",
+              href: "/services/equipment-rental",
               order: 1,
               intro: "Survey-grade GNSS, robotic total stations, UAV platforms, and LiDAR payloads on flexible terms.",
               description: "Calibrated and field-ready instruments with full accessory packages and technical mobilization support.",
@@ -261,7 +320,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-soft-dev",
               title: "Software Development",
               slug: "software-development",
-              href: "/solutions/software-development",
+              href: "/services/software-development",
               order: 2,
               intro: "Bespoke geospatial algorithms, desktop plugins, and cloud data distribution portals.",
               description: "Custom python plugins for QGIS/ArcGIS, automated CAD LISP routines, and scalable Next.js map apps.",
@@ -271,7 +330,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-capacity-bldg",
               title: "Capacity Building",
               slug: "capacity-building",
-              href: "/solutions/capacity-building",
+              href: "/services/capacity-building",
               order: 3,
               intro: "Hands-on training for engineers, surveyors, and GIS technicians using real project datasets.",
               description: "Specialized training programs in drone piloting, point cloud processing, and GIS analysis.",
@@ -281,7 +340,7 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
               id: "item-calib-maint",
               title: "Calibration & Maintenance",
               slug: "calibration-and-maintenance",
-              href: "/solutions/calibration-and-maintenance",
+              href: "/services/calibration-and-maintenance",
               order: 4,
               intro: "Collimator bench testing, baseline EDM calibration, and preventative servicing.",
               description: "Routine servicing and accuracy audits for optical total stations, digital levels, and GNSS receivers.",
@@ -506,59 +565,13 @@ export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
       ],
     },
     {
-      id: "industries",
-      label: "Industries",
-      slug: "industries",
-      href: "/industries",
+      id: "project",
+      label: "Project",
+      slug: "project",
+      href: "/project",
       order: 3,
-      type: "cards",
-      columns: [
-        {
-          id: "col-infrastructure",
-          title: "Infrastructure",
-          slug: "infrastructure",
-          order: 1,
-          items: [
-            { id: "ind-hydro-energy", title: "Hydropower & Energy", slug: "hydropower-and-energy", href: "/industries/infrastructure#hydropower", order: 1, intro: "High-precision surveys for dam axes, headrace tunnels, and powerhouses." },
-            { id: "ind-roads-bridges", title: "Roads, Highways & Bridges", slug: "roads-highways-and-bridges", href: "/industries/infrastructure#roads", order: 2, intro: "Corridor LiDAR and alignment staking for mountainous highways." },
-            { id: "ind-trans-lines", title: "Transmission Lines", slug: "transmission-lines", href: "/industries/infrastructure#transmission", order: 3, intro: "Danger tree clearance and tower spot surveys across remote ridges." },
-            { id: "ind-telecom", title: "Telecom Networks", slug: "telecom-networks", href: "/industries/infrastructure#telecom", order: 4, intro: "Line-of-sight analysis and tower structural audit surveys." },
-          ],
-        },
-        {
-          id: "col-govt-urban",
-          title: "Government & Urban",
-          slug: "government-and-urban",
-          order: 2,
-          items: [
-            { id: "ind-smart-cities", title: "Smart Cities & Digital Twins", slug: "smart-cities-and-digital-twins", href: "/industries/government-and-urban#smart-cities", order: 1, intro: "Citywide 3D textured mesh and street-level asset inventory." },
-            { id: "ind-municipalities", title: "Municipalities", slug: "municipalities", href: "/industries/government-and-urban#municipalities", order: 2, intro: "Cadastral parcel updating and tax assessment GIS databases." },
-            { id: "ind-national-mapping", title: "National Mapping Agencies", slug: "national-mapping-agencies", href: "/industries/government-and-urban#mapping", order: 3, intro: "Geodetic network adjustments and 1:1000 base mapping." },
-          ],
-        },
-        {
-          id: "col-natural-resources",
-          title: "Natural Resources",
-          slug: "natural-resources",
-          order: 3,
-          items: [
-            { id: "ind-forestry", title: "Forestry & Biomass", slug: "forestry-and-biomass", href: "/industries/natural-resources#forestry", order: 1, intro: "Canopy height modeling and individual tree biomass inventory." },
-            { id: "ind-agri", title: "Agriculture & Irrigation", slug: "agriculture-and-irrigation", href: "/industries/natural-resources#agriculture", order: 2, intro: "Canal network alignments and crop stress multispectral mapping." },
-            { id: "ind-mining", title: "Mining & Quarrying", slug: "mining-and-quarrying", href: "/industries/natural-resources#mining", order: 3, intro: "Stockpile volume audits and highwall geotechnical stability." },
-          ],
-        },
-        {
-          id: "col-safety-research",
-          title: "Safety & Research",
-          slug: "safety-and-research",
-          order: 4,
-          items: [
-            { id: "ind-disaster-flood", title: "Disaster & Flood Management", slug: "disaster-and-flood-management", href: "/industries/safety-and-research#disaster", order: 1, intro: "Flood inundation modeling and landslide hazard mapping." },
-            { id: "ind-construction", title: "Construction & Site Layout", slug: "construction-and-site-layout", href: "/industries/safety-and-research#construction", order: 2, intro: "Millimeter-level dimensional verification for structural civil engineering." },
-            { id: "ind-univ-rd", title: "Universities & R&D", slug: "universities-and-rd", href: "/industries/safety-and-research#research", order: 3, intro: "High-accuracy baseline datasets for academic geosciences research." },
-          ],
-        },
-      ],
+      type: "columns",
+      columns: [],
     },
     {
       id: "company",

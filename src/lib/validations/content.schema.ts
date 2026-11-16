@@ -3,7 +3,6 @@ import { z } from "zod";
 import { requiredText, optionalText, slugSchema, imageSchema, uniqueBy } from "./shared.schema";
 import { solutionListSchema } from "./solution.schema";
 import { productListSchema } from "./product.schema";
-import { industryListSchema } from "./industry.schema";
 import { articleListSchema } from "./article.schema";
 
 const leaderItemSchema = z.object({
@@ -115,14 +114,12 @@ export const companySchema = z.object({
 export const siteContentSchema = z.object({
   Solutions: solutionListSchema.default([]),
   Products: productListSchema.default([]),
-  Industries: industryListSchema.default([]),
   Company: companySchema,
 });
 
 export const SITE_CONTENT_SECTIONS = [
   "Solutions",
   "Products",
-  "Industries",
   "Company",
 ] as const;
 
@@ -135,14 +132,12 @@ export const siteContentSectionSchema = z.enum(SITE_CONTENT_SECTIONS, {
 export const siteContentSectionPayloadSchema = z.discriminatedUnion("section", [
   z.object({ section: z.literal("Solutions"), data: solutionListSchema }),
   z.object({ section: z.literal("Products"), data: productListSchema }),
-  z.object({ section: z.literal("Industries"), data: industryListSchema }),
   z.object({ section: z.literal("Company"), data: companySchema }),
 ]);
 
 export const siteContentSectionPayloadSchemas = {
   Solutions: solutionListSchema,
   Products: productListSchema,
-  Industries: industryListSchema,
   Company: companySchema,
 } as const;
 

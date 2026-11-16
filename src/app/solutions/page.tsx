@@ -7,17 +7,17 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { getDynamicSolutions, solutionPathSlug } from "./_lib/solutions";
 
 export const metadata: Metadata = {
-  title: "Solutions | GeoSAT Solutions",
+  title: "Services | GeoSAT Solutions",
   description:
     "Comprehensive geospatial survey, enterprise GIS, displacement monitoring, and professional engineering services.",
   alternates: {
-    canonical: "https://www.geosatsolutions.com.np/solutions",
+    canonical: "https://www.geosatsolutions.com.np/services",
   },
   openGraph: {
-    title: "Solutions | GeoSAT Solutions",
+    title: "Services | GeoSAT Solutions",
     description:
       "Comprehensive geospatial survey, enterprise GIS, displacement monitoring, and professional engineering services.",
-    url: "https://www.geosatsolutions.com.np/solutions",
+    url: "https://www.geosatsolutions.com.np/services",
     siteName: "GeoSAT Solutions",
     type: "website",
   },
@@ -35,7 +35,7 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
 
   // Group solutions by group
   const groupedSolutions = solutions.reduce((acc, solution) => {
-    const groupName = solution.group || "General Solutions";
+    const groupName = solution.group || "General Services";
     if (!acc[groupName]) {
       acc[groupName] = [];
     }
@@ -60,19 +60,19 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
               Survey-grade accuracy and actionable spatial intelligence.
             </h1>
             <p className="mt-5 max-w-2xl font-sans text-base font-normal leading-relaxed text-slate-600">
-              Explore our turnkey survey solutions, enterprise GIS architectures, geotechnical monitoring systems, and specialized engineering advisory.
+              Explore our turnkey survey services, enterprise GIS architectures, geotechnical monitoring systems, and specialized engineering advisory.
             </p>
-            <form action="/solutions" role="search" className="mt-7 flex max-w-xl gap-3">
-              <label htmlFor="solution-search" className="sr-only">Search solutions</label>
-              <input id="solution-search" name="search" type="search" defaultValue={search} placeholder="Search solutions" className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-4 py-3 font-sans text-sm text-ink placeholder:text-ink-4 focus:border-aqua focus:outline-none" />
+            <form action="/services" role="search" className="mt-7 flex max-w-xl gap-3">
+              <label htmlFor="service-search" className="sr-only">Search services</label>
+              <input id="service-search" name="search" type="search" defaultValue={search} placeholder="Search services" className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-4 py-3 font-sans text-sm text-ink placeholder:text-ink-4 focus:border-aqua focus:outline-none" />
               <button type="submit" className="rounded-lg bg-aqua px-5 py-3 font-sans text-sm font-medium tracking-normal text-abyss">Search</button>
             </form>
             {search ? <p className="mt-4 font-sans text-sm text-slate-600">{solutions.length} {solutions.length === 1 ? "result" : "results"} for “{search}”.</p> : null}
           </div>
 
-          {/* Grouped Solutions List */}
+          {/* Grouped Services List */}
           <div className="mt-16 space-y-16">
-            {groups.length === 0 ? <p className="rounded-xl border border-line p-6 text-sm text-ink-3">No solutions match your search.</p> : null}
+            {groups.length === 0 ? <p className="rounded-xl border border-line p-6 text-sm text-ink-3">No services match your search.</p> : null}
             {groups.map((group) => {
               const items = groupedSolutions[group];
               return (
@@ -82,7 +82,7 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
                       {group}
                     </h2>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-sans text-xs text-ink-3">
-                      {items.length} {items.length === 1 ? "solution" : "solutions"}
+                      {items.length} {items.length === 1 ? "service" : "services"}
                     </span>
                   </div>
 
@@ -98,7 +98,7 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
                               {solution.group}
                             </span>
                             <Link
-                              href={`/solutions/${solutionPathSlug(solution)}`}
+                              href={`/services/${solutionPathSlug(solution)}`}
                               className="text-ink-3 transition-colors hover:text-aqua"
                               aria-label={`View details for ${solution.title}`}
                             >
@@ -108,7 +108,7 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
 
                           <h3 className="mt-3 font-heading text-xl font-medium tracking-tight text-ink">
                             <Link
-                              href={`/solutions/${solutionPathSlug(solution)}`}
+                              href={`/services/${solutionPathSlug(solution)}`}
                               className="hover:underline"
                             >
                               {solution.title}
@@ -139,10 +139,10 @@ export default async function SolutionsPage({ searchParams }: { searchParams: Pr
 
                         <div className="mt-6 pt-4">
                           <Link
-                            href={`/solutions/${solutionPathSlug(solution)}`}
+                            href={`/services/${solutionPathSlug(solution)}`}
                             className="inline-flex w-full items-center justify-center rounded-lg border border-line bg-surface px-4 py-2 font-sans text-sm font-medium tracking-normal text-ink transition-colors hover:border-aqua/50 hover:bg-aqua/10 hover:text-aqua"
                           >
-                            Explore Solution
+                            Explore Service
                           </Link>
                         </div>
                       </div>

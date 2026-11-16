@@ -1,6 +1,8 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { solutionRepository, CreateSolutionDTO, UpdateSolutionDTO } from "../repositories/solution.repository";
 import { ISolution } from "../../models/solution";
+import { buildStarterFaqs, normalizeFaqs } from "../../faq-defaults";
+import { resolveDescriptionAlignment } from "../../description-alignment";
 
 export function slugify(text: string): string {
   return text
@@ -12,22 +14,67 @@ export function slugify(text: string): string {
 
 export class SolutionService {
   async getAllPublished(): Promise<ISolution[]> {
-    return solutionRepository.findAll({ isPublished: true });
+    return this.initializeMissingFaqs(await solutionRepository.findAll({ isPublished: true }));
   }
 
   async getAllForAdmin(group?: string): Promise<ISolution[]> {
-    return solutionRepository.findAll(group ? { group } : {});
+    return this.initializeMissingFaqs(await solutionRepository.findAll(group ? { group } : {}));
   }
 
   async getBySlug(slug: string, requirePublished = false): Promise<ISolution | null> {
     const solution = await solutionRepository.findBySlug(slug);
     if (!solution) return null;
     if (requirePublished && !solution.isPublished) return null;
-    return solution;
+    const [initialized] = await this.initializeMissingFaqs([solution]);
+    return initialized;
   }
 
   async getByTitle(title: string): Promise<ISolution | null> {
-    return solutionRepository.findByTitle(title);
+    const solution = await solutionRepository.findByTitle(title);
+    if (!solution) return null;
+    const [initialized] = await this.initializeMissingFaqs([solution]);
+    return initialized;
+  }
+
+  private async initializeMissingFaqs(items: ISolution[]): Promise<ISolution[]> {
+    const pending = items.filter((item) => item.faqsInitialized !== true);
+    if (!pending.length) return items;
+
+    const faqsById = new Map<string, ReturnType<typeof normalizeFaqs>>();
+    const entries = pending.map((item) => {
+      const id = String(item._id);
+      const faqs = normalizeFaqs(
+        item.faqs?.length ? item.faqs : buildStarterFaqs(item.title, item.outcomes || []),
+      );
+      faqsById.set(id, faqs);
+      return { id, faqs };
+    });
+
+    try {
+      await solutionRepository.initializeFaqs(entries);
+    } catch (error) {
+      console.error("Failed to initialize solution FAQs:", error);
+      return items;
+    }
+
+    return items.map((item) => {
+      const faqs = faqsById.get(String(item._id));
+      if (faqs) {
+        item.faqs = faqs;
+        item.faqsInitialized = true;
+      }
+      return item;
+    });
+  }
+
+  private normalizeInput<T extends { descriptionAlignment?: string; faqs?: Parameters<typeof normalizeFaqs>[0] }>(data: T) {
+    return {
+      ...data,
+      ...(data.descriptionAlignment !== undefined
+        ? { descriptionAlignment: resolveDescriptionAlignment(data.descriptionAlignment) }
+        : {}),
+      ...(data.faqs !== undefined ? { faqs: normalizeFaqs(data.faqs) } : {}),
+    };
   }
 
   async create(data: CreateSolutionDTO): Promise<ISolution> {
@@ -40,12 +87,14 @@ export class SolutionService {
     }
 
     const created = await solutionRepository.create({
-      ...data,
+      ...this.normalizeInput(data),
       slug,
       intro: data.intro || "",
       description: data.description || "",
+      descriptionAlignment: resolveDescriptionAlignment(data.descriptionAlignment),
       outcomes: data.outcomes || [],
-      faqs: data.faqs || [],
+      faqs: normalizeFaqs(data.faqs),
+      faqsInitialized: true,
       images: data.images || [],
       isPublished: data.isPublished !== undefined ? data.isPublished : true,
     });
@@ -72,8 +121,9 @@ export class SolutionService {
     }
 
     const updated = await solutionRepository.updateBySlug(target.slug, {
-      ...data,
+      ...this.normalizeInput(data),
       ...(newSlug ? { slug: newSlug } : {}),
+      ...(data.faqs !== undefined ? { faqsInitialized: true } : {}),
     });
 
     if (!updated) {
@@ -106,12 +156,14 @@ export class SolutionService {
 
   async replaceAll(items: CreateSolutionDTO[]): Promise<ISolution[]> {
     const docs = items.map((item, index) => ({
-      ...item,
+      ...this.normalizeInput(item),
       slug: item.slug || slugify(item.title),
       order: item.order !== undefined ? item.order : index + 1,
       isPublished: item.isPublished !== undefined ? item.isPublished : true,
+      descriptionAlignment: resolveDescriptionAlignment(item.descriptionAlignment),
       outcomes: item.outcomes || [],
-      faqs: item.faqs || [],
+      faqs: normalizeFaqs(item.faqs),
+      faqsInitialized: true,
       images: item.images || [],
     }));
 
@@ -124,9 +176,12 @@ export class SolutionService {
     try {
       revalidateTag("public-navigation", { expire: 0 });
       revalidatePath("/", "layout");
+      revalidatePath("/services");
+      revalidatePath("/services/[slug]", "page");
       revalidatePath("/solutions");
       revalidatePath("/solutions/[slug]", "page");
       if (slug) {
+        revalidatePath(`/services/${slug}`);
         revalidatePath(`/solutions/${slug}`);
         revalidatePath(`/${slug}`);
       }

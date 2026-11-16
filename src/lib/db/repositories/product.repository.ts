@@ -1,6 +1,8 @@
 import connectDB from "../connection";
 import { Types } from "mongoose";
 import { Product, IProduct, IProductImage } from "../../models/product";
+import type { ContentFaq } from "../../content-types";
+import type { DescriptionAlignment } from "../../description-alignment";
 
 export interface CreateProductDTO {
   id?: string;
@@ -12,10 +14,12 @@ export interface CreateProductDTO {
   brandUrl?: string;
   intro?: string;
   description?: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes?: string[];
   images?: IProductImage[];
   specifications?: Record<string, string>;
-  faqs?: { question: string; answer: string }[];
+  faqs?: ContentFaq[];
+  faqsInitialized?: boolean;
   resources?: IProduct["resources"];
   isPublished?: boolean;
   order?: number;
@@ -30,10 +34,12 @@ export interface UpdateProductDTO {
   brandUrl?: string;
   intro?: string;
   description?: string;
+  descriptionAlignment?: DescriptionAlignment;
   outcomes?: string[];
   images?: IProductImage[];
   specifications?: Record<string, string>;
-  faqs?: { question: string; answer: string }[];
+  faqs?: ContentFaq[];
+  faqsInitialized?: boolean;
   resources?: IProduct["resources"];
   isPublished?: boolean;
   order?: number;
@@ -54,6 +60,19 @@ export class ProductRepository {
   async findBySlug(slug: string): Promise<IProduct | null> {
     await connectDB();
     return Product.findOne({ slug }).lean().exec() as unknown as Promise<IProduct | null>;
+  }
+
+  async initializeFaqs(entries: { id: string; faqs: ContentFaq[] }[]): Promise<void> {
+    if (!entries.length) return;
+    await connectDB();
+    await Product.bulkWrite(
+      entries.map(({ id, faqs }) => ({
+        updateOne: {
+          filter: { _id: new Types.ObjectId(id), faqsInitialized: { $ne: true } },
+          update: { $set: { faqs, faqsInitialized: true } },
+        },
+      })),
+    );
   }
 
   async findByTitle(title: string): Promise<IProduct | null> {

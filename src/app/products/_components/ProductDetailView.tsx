@@ -7,6 +7,7 @@ import { SolutionFaq } from "@/components/ui/SolutionFaq";
 import { SolutionGallery } from "@/components/ui/SolutionGallery";
 import { RelatedProducts } from "@/components/products/RelatedProducts";
 import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
+import { resolveDescriptionAlignment } from "@/lib/description-alignment";
 import type { Product } from "../_lib/product-types";
 import { productPathSlug, productSlug } from "../_lib/product-types";
 
@@ -139,9 +140,20 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
               </div>
             )}
 
-            <p className="max-w-xl whitespace-pre-line font-sans text-base leading-relaxed text-slate-600">
-              {product.description}
-            </p>
+            {product.description ? (
+              <div
+                className="description-copy max-w-xl font-sans text-base text-slate-600"
+                data-align={resolveDescriptionAlignment(product.descriptionAlignment)}
+              >
+                {product.description
+                  .split(/\n+/)
+                  .map((paragraph) => paragraph.trim())
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+              </div>
+            ) : null}
           </header>
 
           <div className="lg:col-span-7">
@@ -213,16 +225,16 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
 
       </div>
 
-      <div className="w-full border-t border-slate-100 bg-slate-50/50">
-        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-12">
-          <SolutionFaq
-            solutionTitle={product.title}
-            deliverables={product.outcomes}
-            items={product.faqs}
-            className="mt-0 py-16 lg:py-24"
-          />
+      {product.faqs && product.faqs.length > 0 ? (
+        <div className="w-full border-t border-slate-100 bg-slate-50/50">
+          <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-12">
+            <SolutionFaq
+              items={product.faqs}
+              className="mt-0 py-16 lg:py-24"
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <RelatedProducts
         currentProductId={product.id || ""}

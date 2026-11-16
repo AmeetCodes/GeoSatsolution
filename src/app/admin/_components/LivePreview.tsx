@@ -11,7 +11,7 @@ interface LivePreviewProps {
 }
 
 export function LivePreview({ content }: LivePreviewProps) {
-  const [view, setView] = useState<"solutions" | "products" | "industries" | "company">("solutions");
+  const [view, setView] = useState<"solutions" | "products" | "company">("solutions");
   const [activeSolution, setActiveSolution] = useState<SolutionItem>(
     content.Solutions[0] || ({} as SolutionItem)
   );
@@ -41,7 +41,7 @@ export function LivePreview({ content }: LivePreviewProps) {
               view === "solutions" ? "bg-emerald-600 text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
-            Solutions View
+            Services View
           </button>
           <button
             type="button"
@@ -51,15 +51,6 @@ export function LivePreview({ content }: LivePreviewProps) {
             }`}
           >
             Products View
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("industries")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "industries" ? "bg-emerald-600 text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
-            }`}
-          >
-            Industries View
           </button>
           <button
             type="button"
@@ -254,47 +245,7 @@ export function LivePreview({ content }: LivePreviewProps) {
           </div>
         )}
 
-        {/* 3. INDUSTRIES VIEW */}
-        {view === "industries" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {content.Industries.map((ind) => (
-              <div
-                key={ind.title}
-                className="rounded-xl border border-slate-200 bg-white p-6 flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-xs uppercase font-bold tracking-wider text-emerald-600">
-                    Industry Sector
-                  </span>
-                  <h3 className="text-2xl font-bold text-slate-900 mt-1 mb-2">
-                    {ind.title}
-                  </h3>
-                  <p className="text-sm text-slate-700 mb-3 font-medium">
-                    {ind.intro}
-                  </p>
-                  <p className="text-xs text-slate-500 leading-relaxed mb-4">
-                    {ind.description}
-                  </p>
-
-                  <div className="pt-3 border-t border-slate-200">
-                    <div className="flex flex-wrap gap-2">
-                      {ind.items.map((sub, sidx) => (
-                        <span
-                          key={sidx}
-                          className="px-2.5 py-1 text-xs rounded bg-slate-100 text-slate-600 border border-slate-200"
-                        >
-                          {sub}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* 4. COMPANY VIEW */}
+        {/* 3. COMPANY VIEW */}
         {view === "company" && (
           <div className="space-y-8">
             <div>
