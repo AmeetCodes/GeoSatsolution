@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ChevronRight } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
-import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import { ServiceGallery } from "@/components/ui/ServiceGallery";
 import { SectionBadge } from "./SectionBadge";
 import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
@@ -84,14 +84,14 @@ export function FallbackTemplate({
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <ConsultationDialog
-                solutionTitle={item.title}
-                solutionGroup={column?.title || tab?.label || "General"}
+                serviceTitle={item.title}
+                serviceGroup={column?.title || tab?.label || "General"}
               />
             </div>
           </header>
 
           <div className="relative">
-            <SolutionGallery images={galleryImages} />
+            <ServiceGallery images={galleryImages} />
           </div>
         </article>
       </div>

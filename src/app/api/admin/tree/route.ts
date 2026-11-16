@@ -26,7 +26,7 @@ import { legacyServiceSlug, legacyServiceTitle } from "@/lib/service-routing";
 
 export const dynamic = "force-dynamic";
 
-const EDITABLE_NAV_TAB_IDS = new Set(["solutions", "products"]);
+const EDITABLE_NAV_TAB_IDS = new Set(["services", "solutions", "products"]);
 
 function isEditableNavTab(tabId: string | null | undefined): boolean {
   return Boolean(tabId && EDITABLE_NAV_TAB_IDS.has(tabId.toLowerCase()));
@@ -47,7 +47,7 @@ async function syncTreeItemWithDatabase(targetTab: NavTreeTab, targetColumn: Nav
   try {
     const tabKey = targetTab.id.toLowerCase();
     const slug = item.slug || slugify(item.title);
-    if (tabKey === "solutions") {
+    if (tabKey === "services" || tabKey === "solutions") {
       const oldSlug = legacyServiceSlug(slug);
       const oldTitle = legacyServiceTitle(slug);
       const existing = await solutionRepository.findBySlug(slug)
@@ -108,7 +108,7 @@ async function removeTreeItemFromDatabase(tabId: string, item: NavTreeItem) {
   try {
     const tabKey = tabId.toLowerCase();
     const slug = item.slug || slugify(item.title);
-    if (tabKey === "solutions") {
+    if (tabKey === "services" || tabKey === "solutions") {
       await solutionRepository.deleteBySlug(slug);
     } else if (tabKey === "products") {
       await productRepository.deleteBySlug(slug);

@@ -13,16 +13,16 @@ export async function GET(req: Request, { params }: RouteProps) {
   try {
     const { slug } = await params;
     const session = await getAdminSessionServer();
-    const solution = await solutionService.getBySlug(slug, !session);
+    const service = await solutionService.getBySlug(slug, !session);
 
-    if (!solution) {
-      return NextResponse.json({ success: false, message: "Solution not found" }, { status: 404 });
+    if (!service) {
+      return NextResponse.json({ success: false, message: "Service not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: solution });
+    return NextResponse.json({ success: true, data: service });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: getErrorMessage(error, "Failed to fetch solution") },
+      { success: false, message: getErrorMessage(error, "Failed to fetch service") },
       { status: 500 }
     );
   }
@@ -42,7 +42,7 @@ export async function PUT(req: Request, { params }: RouteProps) {
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: getErrorMessage(error, "Failed to update solution") },
+      { success: false, message: getErrorMessage(error, "Failed to update service") },
       { status: 500 }
     );
   }
@@ -59,13 +59,13 @@ export async function DELETE(req: Request, { params }: RouteProps) {
     const deleted = await solutionService.delete(slug);
 
     if (!deleted) {
-      return NextResponse.json({ success: false, message: "Solution not found" }, { status: 404 });
+      return NextResponse.json({ success: false, message: "Service not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: "Solution deleted" });
+    return NextResponse.json({ success: true, message: "Service deleted" });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: getErrorMessage(error, "Failed to delete solution") },
+      { success: false, message: getErrorMessage(error, "Failed to delete service") },
       { status: 500 }
     );
   }

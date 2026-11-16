@@ -29,7 +29,7 @@ interface AdminOverviewProps {
   inquiries: InquiryRecord[];
   inquiryCounts: InquiryStatusCounts;
   onNavigateTab: (tab: AdminTab) => void;
-  onOpenAddModal: (type: "solution" | "product") => void;
+  onOpenAddModal: (type: "service" | "product") => void;
   onSelectInquiry: (inquiry: InquiryRecord) => void;
   onStatusChange: (id: string, status: InquiryStatus) => void;
   updatingInquiryId?: string | null;
@@ -45,7 +45,7 @@ export function AdminOverview({
   onStatusChange,
   updatingInquiryId = null,
 }: AdminOverviewProps) {
-  const totalSolutions = content?.Solutions?.length || 0;
+  const totalServices = content?.Solutions?.length || 0;
   const totalProducts = content?.Products?.length || 0;
 
   const stats: {
@@ -60,13 +60,13 @@ export function AdminOverview({
   }[] = [
     {
       title: "Total Services",
-      count: totalSolutions,
+      count: totalServices,
       sub: "Service offerings",
       icon: Layers,
       iconWrap: "bg-emerald-50",
       iconColor: "text-emerald-600",
       hoverBorder: "hover:border-emerald-300",
-      tab: "solutions",
+      tab: "services",
     },
     {
       title: "Total Products",
@@ -95,7 +95,7 @@ export function AdminOverview({
     icon: LucideIconLike;
     action: () => void;
   }[] = [
-    { label: "Add Service", icon: Plus, action: () => onOpenAddModal("solution") },
+    { label: "Add Service", icon: Plus, action: () => onOpenAddModal("service") },
     { label: "Add Product", icon: Plus, action: () => onOpenAddModal("product") },
     { label: "Manage Projects", icon: MapPinned, action: () => onNavigateTab("projects") },
     { label: "View Inquiries", icon: Inbox, action: () => onNavigateTab("transactions") },

@@ -6,7 +6,7 @@ import { canonicalServiceSlug, canonicalServiceTitle, legacyServiceSlug, legacyS
 import { normalizeSlug } from "@/lib/utils";
 import { DEFAULT_NAVIGATION_TREE } from "@/lib/tree-store";
 
-export type SolutionImage = {
+export type ServiceImage = {
   src: string;
   alt: string;
   caption?: string;
@@ -15,7 +15,7 @@ export type SolutionImage = {
   focalPosition?: ImageFocalPosition;
 };
 
-export type Solution = {
+export type Service = {
   slug?: string;
   title: string;
   group: string;
@@ -24,11 +24,11 @@ export type Solution = {
   descriptionAlignment?: DescriptionAlignment;
   outcomes: string[];
   faqs?: { question: string; answer: string; order?: number }[];
-  images: SolutionImage[];
+  images: ServiceImage[];
   isPublished?: boolean;
 };
 
-export function solutionSlug(title: string): string {
+export function serviceSlug(title: string): string {
   return title
     .toLowerCase()
     .replace(/&/g, "and")
@@ -36,11 +36,11 @@ export function solutionSlug(title: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export function solutionPathSlug(solution: Pick<Solution, "title" | "slug">): string {
-  return canonicalServiceSlug(solution.title, solution.slug) || normalizeSlug(solution.slug || solutionSlug(solution.title));
+export function servicePathSlug(service: Pick<Service, "title" | "slug">): string {
+  return canonicalServiceSlug(service.title, service.slug) || normalizeSlug(service.slug || serviceSlug(service.title));
 }
 
-export async function getDynamicSolutions(): Promise<Solution[]> {
+export async function getDynamicServices(): Promise<Service[]> {
   try {
     const list = await solutionService.getAllPublished();
     if (list && list.length > 0) {
@@ -65,12 +65,12 @@ export async function getDynamicSolutions(): Promise<Solution[]> {
       }));
     }
   } catch (err) {
-    console.error("Error fetching dynamic solutions:", err);
+    console.error("Error fetching dynamic services:", err);
   }
   return [];
 }
 
-export async function getDynamicSolutionBySlug(slug: string): Promise<Solution | undefined> {
+export async function getDynamicServiceBySlug(slug: string): Promise<Service | undefined> {
   try {
     const canonicalSlug = canonicalServiceSlug(undefined, slug);
     const legacySlug = legacyServiceSlug(canonicalSlug);
@@ -127,7 +127,7 @@ export async function getDynamicSolutionBySlug(slug: string): Promise<Solution |
   } catch (err) {
     // A database/query failure is not the same as a missing document: let the
     // error bubble up instead of incorrectly rendering the 404 page.
-    console.error("Error fetching dynamic solution by slug:", err);
+    console.error("Error fetching dynamic service by slug:", err);
     throw err;
   }
 }

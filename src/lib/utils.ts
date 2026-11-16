@@ -15,7 +15,7 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export const solutionSlug = slugify;
+export const serviceSlug = slugify;
 
 /** Lowercase a slug and remove whitespace or stray punctuation from its edges. */
 export function normalizeSlug(value: string): string {

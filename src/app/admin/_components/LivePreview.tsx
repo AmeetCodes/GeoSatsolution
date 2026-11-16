@@ -11,8 +11,8 @@ interface LivePreviewProps {
 }
 
 export function LivePreview({ content }: LivePreviewProps) {
-  const [view, setView] = useState<"solutions" | "products" | "company">("solutions");
-  const [activeSolution, setActiveSolution] = useState<SolutionItem>(
+  const [view, setView] = useState<"services" | "products" | "company">("services");
+  const [activeService, setActiveService] = useState<SolutionItem>(
     content.Solutions[0] || ({} as SolutionItem)
   );
   const [activeProduct, setActiveProduct] = useState<ProductItem>(
@@ -36,9 +36,9 @@ export function LivePreview({ content }: LivePreviewProps) {
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           <button
             type="button"
-            onClick={() => setView("solutions")}
+            onClick={() => setView("services")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              view === "solutions" ? "bg-emerald-600 text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+              view === "services" ? "bg-emerald-600 text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
             Services View
@@ -85,22 +85,22 @@ export function LivePreview({ content }: LivePreviewProps) {
           </Link>
         </div>
 
-        {/* 1. SOLUTIONS VIEW */}
-        {view === "solutions" && (
+        {/* 1. SERVICES VIEW */}
+        {view === "services" && (
           <div className="space-y-8">
-            {/* Quick solution pill selector */}
+            {/* Quick service pill selector */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-              {content.Solutions.map((sol) => (
+              {content.Solutions.map((service) => (
                 <button
-                  key={sol.title}
-                  onClick={() => setActiveSolution(sol)}
+                  key={service.title}
+                  onClick={() => setActiveService(service)}
                   className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap border transition-all ${
-                    activeSolution.title === sol.title
+                    activeService.title === service.title
                       ? "bg-emerald-50 text-emerald-700 border-emerald-300"
                       : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  {sol.title}
+                  {service.title}
                 </button>
               ))}
             </div>
@@ -109,19 +109,19 @@ export function LivePreview({ content }: LivePreviewProps) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-7 space-y-4">
                 <span className="inline-block text-xs uppercase font-bold tracking-widest text-emerald-600">
-                  {activeSolution.group || "Survey & Mapping"} · GeoSAT Capability
+                  {activeService.group || "Survey & Mapping"} · GeoSAT Capability
                 </span>
 
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 leading-tight">
-                  {activeSolution.title}
+                  {activeService.title}
                 </h1>
 
                 <p className="text-lg text-slate-700 leading-relaxed font-light">
-                  {activeSolution.intro}
+                  {activeService.intro}
                 </p>
 
                 <p className="text-sm text-slate-500 leading-relaxed pt-2">
-                  {activeSolution.description}
+                  {activeService.description}
                 </p>
 
                 {/* Handover Deliverables */}
@@ -130,7 +130,7 @@ export function LivePreview({ content }: LivePreviewProps) {
                     A Clear Handover · Output Deliverables
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {activeSolution.outcomes?.map((out, i) => (
+                    {activeService.outcomes?.map((out, i) => (
                       <div
                         key={i}
                         className="flex items-center gap-2.5 p-3 rounded-lg bg-white border border-slate-200 text-xs text-slate-700"
@@ -151,15 +151,15 @@ export function LivePreview({ content }: LivePreviewProps) {
                   {/* eslint-disable-next-line @next/next/no-img-element -- preview renders CMS-provided image URLs */}
                   <img
                     src={
-                      activeSolution.images?.[0]?.src ||
+                      activeService.images?.[0]?.src ||
                       "https://images.unsplash.com/photo-1508615070457-7baeba4003ab?auto=format&fit=crop&w=1800&q=85"
                     }
-                    alt={activeSolution.title}
+                    alt={activeService.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
                   <p className="absolute bottom-3 left-3 right-3 text-xs text-slate-100 font-medium">
-                    {activeSolution.images?.[0]?.caption || "Field survey acquisition"}
+                    {activeService.images?.[0]?.caption || "Field survey acquisition"}
                   </p>
                 </div>
               </div>

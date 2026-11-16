@@ -3,6 +3,7 @@ import { solutionService } from "@/lib/db/services/solution.service";
 import { productService } from "@/lib/db/services/product.service";
 import { companyService } from "@/lib/db/services/company.service";
 import { navigationService } from "@/lib/db/services/navigation.service";
+import { listShowcaseProjects } from "@/lib/db/services/showcase-project.service";
 import { canonicalServiceSlug } from "@/lib/service-routing";
 
 const BASE_URL = (
@@ -34,16 +35,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const [solutions, products, articles, treeItems] = await Promise.all([
+    const [services, products, articles, treeItems, projects] = await Promise.all([
       solutionService.getAllPublished().catch(() => []),
       productService.getAllPublished().catch(() => []),
       companyService.getArticles().catch(() => []),
       navigationService.getAllTreeItems().catch(() => []),
+      listShowcaseProjects().catch(() => []),
     ]);
 
-    const solutionRoutes: MetadataRoute.Sitemap = solutions.map((solution) => ({
-      url: `${BASE_URL}/services/${canonicalServiceSlug(solution.title, solution.slug)}`,
-      lastModified: solution.updatedAt || solution.createdAt || new Date(),
+    const serviceRoutes: MetadataRoute.Sitemap = services.map((service) => ({
+      url: `${BASE_URL}/services/${canonicalServiceSlug(service.title, service.slug)}`,
+      lastModified: service.updatedAt || service.createdAt || new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     }));
@@ -73,6 +75,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return routes;
     });
 
+    const projectRoutes: MetadataRoute.Sitemap = projects
+      .filter((project) => Boolean(project.slug))
+      .map((project) => ({
+        url: `${BASE_URL}/project/${project.slug}`,
+        lastModified: project.updatedAt || project.createdAt || new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      }));
+
     const articleRoutes: MetadataRoute.Sitemap = articles
       .filter((article) => article.isPublished === true)
       .map((article) => ({
@@ -84,13 +95,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const staticUrls = new Set(staticRoutes.map((route) => route.url));
     const managedUrls = new Set([
-      ...solutionRoutes.map((route) => route.url),
+      ...serviceRoutes.map((route) => route.url),
+      ...projectRoutes.map((route) => route.url),
       ...productRoutes.map((route) => route.url),
       ...articleRoutes.map((route) => route.url),
     ]);
     const navigationRoutes: MetadataRoute.Sitemap = treeItems.flatMap(({ tab, item }) => {
       // Services and products are sourced from their published DB collections above.
-      if (["solutions", "products"].includes(tab.id)) return [];
+      if (["services", "solutions", "products"].includes(tab.id)) return [];
       if (!item.href || !item.href.startsWith("/") || item.href.startsWith("//")) return [];
       const url = new URL(item.href, BASE_URL).toString();
       if (staticUrls.has(url) || managedUrls.has(url) || url.includes("?") || url.includes("#")) return [];
@@ -98,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return [{ url, changeFrequency: "monthly" as const, priority: 0.6 }];
     });
 
-    const allRoutes = [...staticRoutes, ...solutionRoutes, ...productRoutes, ...articleRoutes, ...navigationRoutes];
+    const allRoutes = [...staticRoutes, ...serviceRoutes, ...productRoutes, ...projectRoutes, ...articleRoutes, ...navigationRoutes];
     return [...new Map(allRoutes.map((route) => [route.url, route])).values()];
   } catch (error) {
     console.error("Error generating sitemap:", error);

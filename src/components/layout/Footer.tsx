@@ -6,7 +6,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CONTACT, FOOTER_COLUMNS } from "@/lib/content";
 import { Container } from "@/components/ui/Section";
-import { normalizeSlug, solutionSlug } from "@/lib/utils";
+import { normalizeSlug, serviceSlug } from "@/lib/utils";
 import { canonicalServiceSlug, canonicalServiceTitle } from "@/lib/service-routing";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
 
@@ -63,7 +63,7 @@ export function Footer() {
         label: link,
         href:
           col.title === "Services"
-            ? `/services#${solutionSlug(link)}`
+            ? `/services#${serviceSlug(link)}`
             : "/request-assessment",
       })),
     })),
@@ -75,25 +75,25 @@ export function Footer() {
         const data = await getPublicNavigation();
         if (data?.tree?.tabs) {
           const tabs = data.tree.tabs;
-          const solTab = tabs.find((t) => t.id === "solutions");
+          const serviceTab = tabs.find((t) => t.id === "services" || t.id === "solutions");
           const compTab = tabs.find((t) => t.id === "company");
 
           const dynamicCols: FooterCol[] = [];
 
-          if (solTab) {
-            const solutionLinks = (data.solutions ?? [])
-              .filter((solution) => solution.isPublished !== false)
+          if (serviceTab) {
+            const serviceLinks = (data.services ?? [])
+              .filter((service) => service.isPublished !== false)
               .slice(0, 6)
-              .map((solution) => ({
-                label: canonicalServiceTitle(solution.title, solution.slug),
-                href: `/services/${canonicalServiceSlug(solution.title, solution.slug) || normalizeSlug(solution.slug || solutionSlug(solution.title))}`,
+              .map((service) => ({
+                label: canonicalServiceTitle(service.title, service.slug),
+                href: `/services/${canonicalServiceSlug(service.title, service.slug) || normalizeSlug(service.slug || serviceSlug(service.title))}`,
               }));
 
             dynamicCols.push({
-              title: solTab.label || "Services",
-              links: solutionLinks.length
-                ? solutionLinks
-                : solTab.columns.slice(0, 5).map((col) => ({
+              title: serviceTab.label || "Services",
+              links: serviceLinks.length
+                ? serviceLinks
+                : serviceTab.columns.slice(0, 5).map((col) => ({
                     label: col.title,
                     href: `/services#${col.slug}`,
                   })),

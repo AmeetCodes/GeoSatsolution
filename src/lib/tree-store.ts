@@ -25,7 +25,7 @@ export interface NavTreeColumn {
 }
 
 export interface NavTreeTab {
-  id: string; // e.g. "solutions", "products", "project", "company"
+  id: string; // e.g. "services", "products", "project", "company"
   label: string; // e.g. "Services", "Products", "Project", "Company"
   slug: string;
   href: string; // e.g. "/services", "/products", "/project", "/company/about/geosat-partners"
@@ -65,11 +65,16 @@ export function canonicalizeNavigationTree(tree: NavigationTree): NavigationTree
   const tabs = tree.tabs
     .filter((tab) => !isIndustriesTab(tab))
     .map((tab) => {
-      const isServicesTab = tab.id === "solutions" || tab.slug === "solutions" || tab.label.trim().toLowerCase() === "solutions";
+      const isServicesTab =
+        tab.id === "services" || tab.id === "solutions" ||
+        tab.slug === "services" || tab.slug === "solutions" ||
+        tab.label.trim().toLowerCase() === "services" ||
+        tab.label.trim().toLowerCase() === "solutions";
       if (!isServicesTab) return tab;
 
       return {
         ...tab,
+        id: "services",
         label: "Services",
         slug: "services",
         href: "/services",
@@ -109,7 +114,7 @@ export function slugify(text: string): string {
 export const DEFAULT_NAVIGATION_TREE: NavigationTree = {
   tabs: [
     {
-      id: "solutions",
+      id: "services",
       label: "Services",
       slug: "services",
       href: "/services",

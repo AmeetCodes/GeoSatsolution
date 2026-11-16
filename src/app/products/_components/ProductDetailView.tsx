@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, Check, ExternalLink } from "lucide-react";
 import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton";
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
-import { SolutionFaq } from "@/components/ui/SolutionFaq";
-import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import { ServiceFaq } from "@/components/ui/ServiceFaq";
+import { ServiceGallery } from "@/components/ui/ServiceGallery";
 import { RelatedProducts } from "@/components/products/RelatedProducts";
 import { breadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/json-ld";
 import { resolveDescriptionAlignment } from "@/lib/description-alignment";
@@ -157,7 +157,7 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
           </header>
 
           <div className="lg:col-span-7">
-            <SolutionGallery
+            <ServiceGallery
               images={product.images && product.images.length > 0 ? product.images : []}
               className="rounded-3xl! border-slate-200/60 shadow-lg"
               frameClassName="min-h-[420px] aspect-[4/3] sm:aspect-[4/3] lg:min-h-[500px] xl:min-h-[560px]"
@@ -228,7 +228,7 @@ export function ProductDetailView({ product, subcategorySlug }: ProductDetailVie
       {product.faqs && product.faqs.length > 0 ? (
         <div className="w-full border-t border-slate-100 bg-slate-50/50">
           <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10 xl:px-12">
-            <SolutionFaq
+            <ServiceFaq
               items={product.faqs}
               className="mt-0 py-16 lg:py-24"
             />

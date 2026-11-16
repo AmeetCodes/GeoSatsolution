@@ -15,12 +15,12 @@ export function AssessmentForm() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/solutions", { cache: "no-store" })
+    fetch("/api/services", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
       .then((json: { data?: Array<{ title?: string }> } | null) => {
         if (!active) return;
         const titles = (json?.data ?? [])
-          .map((solution) => solution.title?.trim() ?? "")
+          .map((service) => service.title?.trim() ?? "")
           .filter(Boolean)
           .filter((title, index, all) => all.indexOf(title) === index);
         if (titles.length) {

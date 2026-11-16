@@ -14,7 +14,7 @@ import {
 import { launchConfetti } from "@/components/ui/confetti";
 import { SpecularButton } from "@/components/ui/SpecularButton";
 import { createConsultationSchema } from "@/lib/validations/consultation.schema";
-const DEFAULT_SOLUTIONS = [
+const DEFAULT_SERVICES = [
   { title: "UAV LiDAR & Aerial Survey" },
   { title: "Drone Photogrammetry" },
   { title: "Engineering & Topographic Survey" },
@@ -82,23 +82,23 @@ function InputField({
 }
 
 type ConsultationDialogProps = {
-  solutionTitle: string;
-  solutionGroup: string;
+  serviceTitle: string;
+  serviceGroup: string;
   triggerLabel?: string;
   triggerVariant?: "specular" | "solid";
   triggerClassName?: string;
 };
 
 export function ConsultationDialog({
-  solutionTitle,
-  solutionGroup,
+  serviceTitle,
+  serviceGroup,
   triggerLabel = "Consult",
   triggerVariant = "specular",
   triggerClassName,
 }: ConsultationDialogProps) {
   const [interestOptions, setInterestOptions] = useState<string[]>(() => {
-    const defaults = DEFAULT_SOLUTIONS.map((solution) => solution.title);
-    return solutionTitle && !defaults.includes(solutionTitle) ? [solutionTitle, ...defaults] : defaults;
+    const defaults = DEFAULT_SERVICES.map((service) => service.title);
+    return serviceTitle && !defaults.includes(serviceTitle) ? [serviceTitle, ...defaults] : defaults;
   });
   const schema = useMemo(() => createConsultationSchema(interestOptions), [interestOptions]);
 
@@ -107,7 +107,7 @@ export function ConsultationDialog({
     organisation: "",
     email: "",
     phone: "",
-    interest: solutionTitle,
+    interest: serviceTitle,
     otherInterest: "",
     details: "",
   });
@@ -118,12 +118,12 @@ export function ConsultationDialog({
 
   useEffect(() => {
     let active = true;
-    fetch("/api/solutions", { cache: "no-store" })
+    fetch("/api/services", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
       .then((json: { data?: Array<{ title?: string }> } | null) => {
         if (!active) return;
         const titles = (json?.data ?? [])
-          .map((solution) => solution.title?.trim() ?? "")
+          .map((service) => service.title?.trim() ?? "")
           .filter(Boolean)
           .filter((title, index, all) => all.indexOf(title) === index);
         if (titles.length > 0) {
@@ -225,7 +225,7 @@ export function ConsultationDialog({
           triggerVariant === "solid" ? (
             <button
               type="button"
-              aria-label={`Consult about ${solutionTitle}`}
+              aria-label={`Consult about ${serviceTitle}`}
               className={triggerClassName}
             >
               {triggerLabel}
@@ -248,7 +248,7 @@ export function ConsultationDialog({
               followMouse
               proximity={260}
               autoAnimate={false}
-              aria-label={`Consult about ${solutionTitle}`}
+              aria-label={`Consult about ${serviceTitle}`}
             >
               {triggerLabel}
             </SpecularButton>
@@ -260,7 +260,7 @@ export function ConsultationDialog({
         showCloseButton
       >
         <DialogHeader className="px-6 pb-5 pt-8 sm:px-8 sm:pt-10">
-          <p className="label text-amber">Consultation request / {solutionGroup}</p>
+          <p className="label text-amber">Consultation request / {serviceGroup}</p>
           <DialogTitle className="font-heading text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
             Let&apos;s plan your survey.
           </DialogTitle>
@@ -268,7 +268,7 @@ export function ConsultationDialog({
             Tell us what you need, and our team will prepare the right next step.
           </DialogDescription>
           <span className="mt-1 inline-flex w-fit border border-aqua/40 px-2.5 py-1 text-xs font-semibold text-aqua-deep">
-            {solutionTitle}
+            {serviceTitle}
           </span>
         </DialogHeader>
 

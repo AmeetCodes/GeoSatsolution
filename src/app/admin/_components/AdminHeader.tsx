@@ -21,7 +21,7 @@ import {
 export type AdminTab =
   | "overview"
   | "tree"
-  | "solutions"
+  | "services"
   | "products"
   | "projects"
   | "company"
@@ -48,7 +48,7 @@ export function AdminHeader({
   const tabs = [
     { id: "overview",     label: "Dashboard",      icon: LayoutDashboard, description: "Overview & stats" },
     { id: "tree",         label: "Mega-Menu CMS",  icon: Layers,          description: "N-Level tree & columns" },
-    { id: "solutions",    label: "Services",       icon: Layers,          description: "Manage service content" },
+    { id: "services",    label: "Services",       icon: Layers,          description: "Manage service content" },
     { id: "products",     label: "Products",       icon: Box,             description: "Manage catalog" },
     { id: "projects",     label: "Projects",       icon: Briefcase,       description: "Service and sales projects" },
     { id: "company",      label: "Company",        icon: Users,           description: "Team & partners" },

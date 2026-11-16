@@ -81,8 +81,8 @@ export function CompanyTemplate({
           {/* CTA row */}
           <div className="mt-12 flex flex-wrap items-center gap-4">
             <ConsultationDialog
-              solutionTitle={item.title}
-              solutionGroup={column.title}
+              serviceTitle={item.title}
+              serviceGroup={column.title}
             />
             <Link
               href="/"

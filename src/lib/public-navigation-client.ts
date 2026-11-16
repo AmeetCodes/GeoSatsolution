@@ -3,10 +3,10 @@ import type { NavigationTree, NavTreeTab } from "@/lib/tree-store";
 type PublicNavigationPayload = {
   tree?: NavigationTree;
   tabs?: NavTreeTab[];
-  solutionGroups?: { title: string; links: string[] }[];
+  serviceGroups?: { title: string; links: string[] }[];
   productGroups?: { title: string; links: string[] }[];
   companyGroups?: { title: string; links: string[] }[];
-  solutions?: { title: string; slug?: string; isPublished?: boolean }[];
+  services?: { title: string; slug?: string; isPublished?: boolean }[];
 };
 
 const CACHE_MS = 15_000;

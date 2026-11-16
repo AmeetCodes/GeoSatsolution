@@ -10,7 +10,7 @@ import { productService } from "@/lib/db/services/product.service";
 import { contentService } from "@/lib/db/services/content.service";
 import type { NavTreeTab, NavTreeColumn, NavTreeItem } from "@/lib/tree-store";
 import {
-  SolutionsTemplate,
+  ServicesTemplate,
   ProductsTemplate,
   CompanyTemplate,
   FallbackTemplate,
@@ -43,7 +43,7 @@ const getCachedDbContent = cache(async (
   slugifiedTitle: string,
 ): Promise<DbContentItem | null> => {
   try {
-    if (tabId === "solutions") {
+    if (tabId === "services" || tabId === "solutions") {
       return (explicitSlug ? await solutionService.getBySlug(explicitSlug) : null)
         || await solutionService.getBySlug(slugifiedTitle);
     }
@@ -138,7 +138,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     "GeoSAT",
   ].filter(Boolean) as string[];
 
-  const dbManagedSection = tab.id === "solutions" || tab.id === "products";
+  const dbManagedSection = tab.id === "services" || tab.id === "solutions" || tab.id === "products";
   const heroImages = dbManagedSection
     ? (dbContent?.images || [])
     : (item.images?.length ? item.images : (dbContent?.images || []));
@@ -196,7 +196,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
 
   const { tab, column, item } = match;
   const dbContent = await getDbContentForTreeItem(match);
-  const dbManagedSection = tab.id === "solutions" || tab.id === "products";
+  const dbManagedSection = tab.id === "services" || tab.id === "solutions" || tab.id === "products";
   const routeLeaf = (Array.isArray(slug) ? slug : [slug]).at(-1);
   const isOurWork = tab.id === "company" && (
     routeLeaf === "our-work" || item.slug === "our-work" || item.title?.trim().toLowerCase() === "our work"
@@ -263,7 +263,7 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
         },
       },
     };
-  } else if (tab.id === "solutions") {
+  } else if (tab.id === "services" || tab.id === "solutions") {
     jsonLd = {
       "@context": "https://schema.org",
       "@type": "Service",
@@ -315,8 +315,8 @@ export default async function DynamicCatchAllPage({ params }: PageProps) {
           images: (project.images || []).map((image) => ({ src: image.src, alt: image.alt || project.title, caption: image.caption || "", source: image.source, mediaId: image.mediaId ? String(image.mediaId) : undefined })),
           isPublished: project.isPublished !== false,
         }))} /> : <CompanyTemplate item={resolvedItem} tab={tab} column={column!} />
-      ) : tab.id === "solutions" ? (
-        <SolutionsTemplate item={resolvedItem} tab={tab} column={column!} galleryImages={galleryImages} />
+      ) : tab.id === "services" || tab.id === "solutions" ? (
+        <ServicesTemplate item={resolvedItem} tab={tab} column={column!} galleryImages={galleryImages} />
       ) : (
         <FallbackTemplate item={resolvedItem} tab={tab} column={column} galleryImages={galleryImages} />
       )}

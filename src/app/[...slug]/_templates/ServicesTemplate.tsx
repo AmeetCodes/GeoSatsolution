@@ -2,23 +2,23 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ChevronRight } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ConsultationDialog } from "@/components/ui/ConsultationDialog";
-import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import { ServiceGallery } from "@/components/ui/ServiceGallery";
 import { SectionBadge } from "./SectionBadge";
 import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
-interface SolutionsTemplateProps {
+interface ServicesTemplateProps {
   item: PageItem;
   tab: NavTreeTab;
   column: NavTreeColumn;
   galleryImages: PageGalleryImage[];
 }
 
-export function SolutionsTemplate({
+export function ServicesTemplate({
   item,
   tab,
   column,
   galleryImages,
-}: SolutionsTemplateProps) {
+}: ServicesTemplateProps) {
   return (
     <PageTransition className="min-h-screen bg-abyss pb-24 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3.5rem)]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
@@ -74,8 +74,8 @@ export function SolutionsTemplate({
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <ConsultationDialog
-                solutionTitle={item.title}
-                solutionGroup={column.title}
+                serviceTitle={item.title}
+                serviceGroup={column.title}
               />
               <Link
                 href="/request-assessment"
@@ -88,7 +88,7 @@ export function SolutionsTemplate({
 
           {/* Gallery */}
           <div className="relative">
-            <SolutionGallery images={galleryImages} />
+            <ServiceGallery images={galleryImages} />
           </div>
         </article>
       </div>

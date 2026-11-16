@@ -8,20 +8,20 @@ import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { NAV } from "@/lib/content";
 import { getPublicNavigation } from "@/lib/public-navigation-client";
-import { cn, normalizeSlug, solutionSlug, stripTrailingNumericSuffix } from "@/lib/utils";
+import { cn, normalizeSlug, serviceSlug, stripTrailingNumericSuffix } from "@/lib/utils";
 import { canonicalServiceSlug } from "@/lib/service-routing";
 import type { NavTreeItem, NavTreeTab, NavTreeColumn, NavigationTree } from "@/lib/tree-store";
 
 // ---------- types ----------
-type DynSolution = { title: string; slug?: string; isPublished?: boolean };
+type DynService = { title: string; slug?: string; isPublished?: boolean };
 
 type DynNavData = {
   tree?: NavigationTree;
   tabs?: NavTreeTab[];
-  solutionGroups?: { title: string; links: string[] }[];
+  serviceGroups?: { title: string; links: string[] }[];
   productGroups?: { title: string; links: string[] }[];
   companyGroups?: { title: string; links: string[] }[];
-  solutions?: DynSolution[];
+  services?: DynService[];
 } | null;
 
 // ---------- Logo ----------
@@ -154,19 +154,19 @@ function pathLeaf(value?: string): string {
   return value.split(/[/?#]/).filter(Boolean).at(-1) ?? "";
 }
 
-/** Resolve a solution menu item to the canonical slug stored in MongoDB. */
-function resolveSolutionHref(item: NavTreeItem, solutionSlugs: Map<string, string>): string {
-  const candidates = [pathLeaf(item.href), item.slug, solutionSlug(item.title)];
+/** Resolve a service menu item to the canonical slug stored in MongoDB. */
+function resolveServiceHref(item: NavTreeItem, serviceSlugs: Map<string, string>): string {
+  const candidates = [pathLeaf(item.href), item.slug, serviceSlug(item.title)];
 
   for (const candidate of candidates) {
     const normalized = normalizeSlug(candidate);
     if (!normalized) continue;
 
-    const direct = solutionSlugs.get(normalized);
+    const direct = serviceSlugs.get(normalized);
     if (direct) return `/services/${direct}`;
 
     const base = stripTrailingNumericSuffix(normalized);
-    const stripped = base ? solutionSlugs.get(base) : undefined;
+    const stripped = base ? serviceSlugs.get(base) : undefined;
     if (stripped) return `/services/${stripped}`;
   }
 
@@ -178,11 +178,11 @@ function resolveSolutionHref(item: NavTreeItem, solutionSlugs: Map<string, strin
 function TreeGroupColumn({
   tabSlug,
   column,
-  solutionSlugs,
+  serviceSlugs,
 }: {
   tabSlug: string;
   column: NavTreeColumn;
-  solutionSlugs: Map<string, string>;
+  serviceSlugs: Map<string, string>;
 }) {
   return (
     <div>
@@ -197,20 +197,20 @@ function TreeGroupColumn({
           // Resolve target URL. Services always use the canonical database slug so
           // stale hrefs/ids are never emitted.
           let href = item.href ?? "";
-          if (tabSlug === "solutions" || tabSlug === "services") {
-            href = resolveSolutionHref(item, solutionSlugs);
+          if (tabSlug === "services" || tabSlug === "services") {
+            href = resolveServiceHref(item, serviceSlugs);
           } else if (!href) {
-            if (tabSlug === "products") href = `/products/${item.slug || solutionSlug(item.title)}`;
+            if (tabSlug === "products") href = `/products/${item.slug || serviceSlug(item.title)}`;
             else if (tabSlug === "company") {
-              const colSlug = column.slug || solutionSlug(column.title);
-              const iSlug = item.slug || solutionSlug(item.title);
+              const colSlug = column.slug || serviceSlug(column.title);
+              const iSlug = item.slug || serviceSlug(item.title);
               if (item.title === "Executive & Technical Leads") href = "/company/about/executive-technical-leads";
               else if (item.title === "GeoSat Partners") href = "/company/about/geosat-partners";
               else if (item.title === "News & Field Notes") href = "/company/insights/news";
               else if (item.title === "Downloads & Technical Resources") href = "/company/insights/downloads-technical-resources";
               else href = `/company/${colSlug}/${iSlug}`;
             } else {
-              href = `/${tabSlug}/${column.slug}/${item.slug || solutionSlug(item.title)}`;
+              href = `/${tabSlug}/${column.slug}/${item.slug || serviceSlug(item.title)}`;
             }
           }
 
@@ -249,7 +249,7 @@ function buildDynamicTabs(dynData: DynNavData): NavTreeTab[] {
 
   // Fallback to static NAV
   return NAV.map((n, index) => ({
-    id: n.label === "Services" ? "solutions" : n.label.toLowerCase(),
+    id: n.label === "Services" ? "services" : n.label.toLowerCase(),
     label: n.label,
     slug: n.label.toLowerCase(),
     href: n.href,
@@ -263,12 +263,12 @@ function buildDynamicTabs(dynData: DynNavData): NavTreeTab[] {
     columns: (n.groups || []).map((g, gIdx) => ({
       id: `col-${gIdx}`,
       title: g.title,
-      slug: solutionSlug(g.title),
+      slug: serviceSlug(g.title),
       order: gIdx + 1,
       items: g.links.map((link, lIdx) => ({
         id: `item-${lIdx}`,
         title: link,
-        slug: solutionSlug(link),
+        slug: serviceSlug(link),
         order: lIdx + 1,
       })),
     })),
@@ -291,13 +291,13 @@ export function Navbar() {
 
   const dynData = useDynamicNav();
   const dynamicTabs = buildDynamicTabs(dynData);
-  const solutionSlugs = useMemo(() => {
+  const serviceSlugs = useMemo(() => {
     const map = new Map<string, string>();
-    for (const solution of dynData?.solutions ?? []) {
-      const slug = canonicalServiceSlug(solution.title, solution.slug);
+    for (const service of dynData?.services ?? []) {
+      const slug = canonicalServiceSlug(service.title, service.slug);
       if (slug) {
-        map.set(normalizeSlug(solution.slug || solutionSlug(solution.title)), slug);
-        map.set(normalizeSlug(solution.title), slug);
+        map.set(normalizeSlug(service.slug || serviceSlug(service.title)), slug);
+        map.set(normalizeSlug(service.title), slug);
       }
     }
     return map;
@@ -514,9 +514,9 @@ export function Navbar() {
                       {columns.map((column) => (
                         <TreeGroupColumn
                           key={column.id || column.title}
-                          tabSlug={item.slug || solutionSlug(item.label)}
+                          tabSlug={item.slug || serviceSlug(item.label)}
                           column={column}
-                          solutionSlugs={solutionSlugs}
+                          serviceSlugs={serviceSlugs}
                         />
                       ))}
                     </div>
@@ -626,9 +626,9 @@ export function Navbar() {
                                   {(item.columns ?? []).map((column) => (
                                     <TreeGroupColumn
                                       key={column.id || column.title}
-                                      tabSlug={item.slug || solutionSlug(item.label)}
+                                      tabSlug={item.slug || serviceSlug(item.label)}
                                       column={column}
-                                      solutionSlugs={solutionSlugs}
+                                      serviceSlugs={serviceSlugs}
                                     />
                                   ))}
                                 </div>

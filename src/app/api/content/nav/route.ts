@@ -15,13 +15,13 @@ const getCachedNavigationPayload = unstable_cache(async () => {
   return {
     tree,
     tabs: tree.tabs,
-    solutionGroups: groups("solutions"),
+    serviceGroups: groups("services"),
     productGroups: groups("products"),
     companyGroups: groups("company"),
-    solutions: content.Solutions.filter((item: { isPublished?: boolean }) => item.isPublished !== false),
+    services: content.Solutions.filter((item: { isPublished?: boolean }) => item.isPublished !== false),
     products: content.Products.filter((item: { isPublished?: boolean }) => item.isPublished !== false),
   };
-}, ["public-navigation-payload-v3"], { revalidate: 3600, tags: ["public-navigation"] });
+}, ["public-navigation-payload-v4"], { revalidate: 3600, tags: ["public-navigation"] });
 
 export async function GET() {
   try {

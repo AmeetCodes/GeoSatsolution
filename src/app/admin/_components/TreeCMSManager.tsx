@@ -24,8 +24,8 @@ import type {
 } from "@/lib/tree-store";
 import { getErrorMessage } from "@/lib/utils";
 
-const CMS_TAB_IDS = new Set(["solutions", "products", "company"]);
-const EDITABLE_TAB_IDS = new Set(["solutions", "products"]);
+const CMS_TAB_IDS = new Set(["services", "solutions", "products", "company"]);
+const EDITABLE_TAB_IDS = new Set(["services", "solutions", "products"]);
 
 function isCmsTab(tab: NavTreeTab): boolean {
   return CMS_TAB_IDS.has(tab.id.toLowerCase());
@@ -57,7 +57,7 @@ export function TreeCMSManager({
 }: TreeCMSManagerProps) {
   const [tree, setTree] = useState<NavigationTree>(initialTree);
   const [activeTabId, setActiveTabId] = useState<string>(
-    () => getCmsTabs(initialTree)[0]?.id || "solutions",
+    () => getCmsTabs(initialTree)[0]?.id || "services",
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -170,7 +170,7 @@ export function TreeCMSManager({
     onTriggerToast("Tab Deleted", `Removed "${tab.label}"`);
     if (activeTab?.id === tab.id) {
       const remaining = cmsTabs.filter((t) => t.id !== tab.id);
-      setActiveTabId(remaining[0]?.id || "solutions");
+      setActiveTabId(remaining[0]?.id || "services");
     }
   };
 
@@ -372,6 +372,7 @@ export function TreeCMSManager({
 
   const getTabIcon = (tabId: string) => {
     switch (tabId.toLowerCase()) {
+      case "services":
       case "solutions":
         return Layers;
       case "products":

@@ -178,11 +178,8 @@ export class SolutionService {
       revalidatePath("/", "layout");
       revalidatePath("/services");
       revalidatePath("/services/[slug]", "page");
-      revalidatePath("/solutions");
-      revalidatePath("/solutions/[slug]", "page");
       if (slug) {
         revalidatePath(`/services/${slug}`);
-        revalidatePath(`/solutions/${slug}`);
         revalidatePath(`/${slug}`);
       }
     } catch {

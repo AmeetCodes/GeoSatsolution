@@ -3,7 +3,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { DownloadResourcesButton } from "@/components/ui/DownloadResourcesButton";
 import { ProductBuyDialog } from "@/components/ui/ProductBuyDialog";
-import { SolutionGallery } from "@/components/ui/SolutionGallery";
+import { ServiceGallery } from "@/components/ui/ServiceGallery";
 import type { NavTreeColumn, NavTreeTab, PageGalleryImage, PageItem } from "./types";
 
 interface ProductsTemplateProps {
@@ -79,7 +79,7 @@ export function ProductsTemplate({
             )}
           </header>
 
-          <SolutionGallery images={galleryImages} />
+          <ServiceGallery images={galleryImages} />
         </article>
 
         {/* Specs / Deliverables */}

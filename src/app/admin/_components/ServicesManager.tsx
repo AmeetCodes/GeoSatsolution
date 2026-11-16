@@ -21,9 +21,9 @@ import { resolveDescriptionAlignment } from "@/lib/description-alignment";
 import { DescriptionAlignmentBar } from "./DescriptionAlignmentBar";
 import { FaqEditor } from "./FaqEditor";
 
-interface SolutionsManagerProps {
-  solutions: SolutionItem[];
-  onSaveSolutions: (updated: SolutionItem[]) => Promise<void>;
+interface ServicesManagerProps {
+  services: SolutionItem[];
+  onSaveServices: (updated: SolutionItem[]) => Promise<void>;
   onTriggerToast: (title: string, desc?: string, actionLabel?: string, onAction?: () => void) => void;
 }
 
@@ -35,11 +35,11 @@ const GROUPS = [
   "Professional Services",
 ] as const;
 
-export function SolutionsManager({
-  solutions,
-  onSaveSolutions,
+export function ServicesManager({
+  services,
+  onSaveServices,
   onTriggerToast,
-}: SolutionsManagerProps) {
+}: ServicesManagerProps) {
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingItem, setEditingItem] = useState<SolutionItem | null>(null);
@@ -62,7 +62,7 @@ export function SolutionsManager({
   ]);
 
   const filtered = useMemo(() => {
-    return solutions.filter((item) => {
+    return services.filter((item) => {
       const matchesGroup = selectedGroup === "All" || item.group === selectedGroup;
       const matchesSearch =
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -70,7 +70,7 @@ export function SolutionsManager({
         item.group.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesGroup && matchesSearch;
     });
-  }, [solutions, selectedGroup, searchQuery]);
+  }, [services, selectedGroup, searchQuery]);
 
   const openAddModal = () => {
     setIsNew(true);
@@ -136,7 +136,7 @@ export function SolutionsManager({
     const cleanedOutcomes = formOutcomes.filter((o) => o.trim() !== "");
     const cleanedImages = formImages.filter((img) => img.src.trim() !== "");
 
-    const newSolution: SolutionItem = {
+    const newService: SolutionItem = {
       id: isNew ? undefined : editingItem?.id,
       title: formTitle.trim(),
       slug: formSlug.trim() || formTitle.trim().toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
@@ -160,24 +160,24 @@ export function SolutionsManager({
 
     let updatedList: SolutionItem[];
     if (isNew) {
-      updatedList = [newSolution, ...solutions];
+      updatedList = [newService, ...services];
     } else {
-      updatedList = solutions.map((s) => (s.title === editingItem?.title ? newSolution : s));
+      updatedList = services.map((s) => (s.title === editingItem?.title ? newService : s));
     }
 
-    await onSaveSolutions(updatedList);
-    onTriggerToast(isNew ? "Service Added" : "Service Updated", isNew ? `"${newSolution.title}" is now active in ${newSolution.group}` : `Saved changes to "${newSolution.title}"`);
+    await onSaveServices(updatedList);
+    onTriggerToast(isNew ? "Service Added" : "Service Updated", isNew ? `"${newService.title}" is now active in ${newService.group}` : `Saved changes to "${newService.title}"`);
     setEditingItem(null);
   };
 
   const handleDelete = async (title: string) => {
-    const idx = solutions.findIndex((s) => s.title === title);
+    const idx = services.findIndex((s) => s.title === title);
     if (idx === -1) return;
-    const removedItem = solutions[idx];
-    const updated = solutions.filter((s) => s.title !== title);
+    const removedItem = services[idx];
+    const updated = services.filter((s) => s.title !== title);
 
     setDeletedCache({ index: idx, item: removedItem });
-    await onSaveSolutions(updated);
+    await onSaveServices(updated);
 
     onTriggerToast(
       "Service Deleted",
@@ -186,7 +186,7 @@ export function SolutionsManager({
       async () => {
         const restored = [...updated];
         restored.splice(idx, 0, removedItem);
-        await onSaveSolutions(restored);
+        await onSaveServices(restored);
         onTriggerToast("Restored", `Restored "${removedItem.title}"`);
       }
     );
@@ -522,4 +522,4 @@ export function SolutionsManager({
   );
 }
 
-export default SolutionsManager;
+export default ServicesManager;

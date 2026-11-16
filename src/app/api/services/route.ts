@@ -14,19 +14,19 @@ export async function GET(req: Request) {
     const includeDrafts = searchParams.get("includeDrafts") === "true";
 
     const session = includeDrafts ? await getAdminSessionServer() : null;
-    const solutions = session
+    const services = session
       ? await solutionService.getAllForAdmin(group)
       : await solutionService.getAllPublished();
 
-    const canonicalSolutions = solutions.map((solution) => ({
-      ...solution,
-      title: canonicalServiceTitle(solution.title, solution.slug),
-      slug: canonicalServiceSlug(solution.title, solution.slug),
+    const canonicalServices = services.map((service) => ({
+      ...service,
+      title: canonicalServiceTitle(service.title, service.slug),
+      slug: canonicalServiceSlug(service.title, service.slug),
     }));
-    return NextResponse.json({ success: true, data: canonicalSolutions });
+    return NextResponse.json({ success: true, data: canonicalServices });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: getErrorMessage(error, "Failed to fetch solutions") },
+      { success: false, message: getErrorMessage(error, "Failed to fetch services") },
       { status: 500 }
     );
   }
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: getErrorMessage(error, "Failed to create solution") },
+      { success: false, message: getErrorMessage(error, "Failed to create service") },
       { status: 500 }
     );
   }

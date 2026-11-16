@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 
-export function SolutionFaq({
+export function ServiceFaq({
   items,
   className,
 }: {
@@ -15,12 +15,12 @@ export function SolutionFaq({
   return (
     <section
       className={sectionClassName}
-      aria-labelledby="solution-faq-heading"
+      aria-labelledby="service-faq-heading"
     >
       <div className="grid gap-7 md:grid-cols-[0.7fr_1.3fr] md:gap-12">
         <div>
           <p className="font-heading text-xs font-medium uppercase tracking-wider text-teal-600">Good to know</p>
-          <h2 id="solution-faq-heading" className="mt-4 max-w-sm font-heading text-3xl font-semibold leading-tight tracking-tight text-ink">
+          <h2 id="service-faq-heading" className="mt-4 max-w-sm font-heading text-3xl font-semibold leading-tight tracking-tight text-ink">
             Frequently asked questions
           </h2>
         </div>

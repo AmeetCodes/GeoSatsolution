@@ -1,5 +1,5 @@
 export { SectionBadge } from "./SectionBadge";
-export { SolutionsTemplate } from "./SolutionsTemplate";
+export { ServicesTemplate } from "./ServicesTemplate";
 export { ProductsTemplate } from "./ProductsTemplate";
 export { CompanyTemplate } from "./CompanyTemplate";
 export { FallbackTemplate } from "./FallbackTemplate";

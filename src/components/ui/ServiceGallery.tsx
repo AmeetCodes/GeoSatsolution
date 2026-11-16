@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { imageFocalPositionCss, type ImageFitMode, type ImageFocalPosition } from "@/lib/content-types";
 import { cn } from "@/lib/utils";
 
-export type SolutionImage = {
+export type ServiceImage = {
   src: string;
   alt: string;
   caption?: string;
@@ -14,12 +14,12 @@ export type SolutionImage = {
   focalPosition?: ImageFocalPosition;
 };
 
-export function SolutionGallery({
+export function ServiceGallery({
   images,
   className,
   frameClassName,
 }: {
-  images: SolutionImage[];
+  images: ServiceImage[];
   className?: string;
   frameClassName?: string;
 }) {
@@ -80,7 +80,7 @@ export function SolutionGallery({
       <div
         role="region"
         aria-roledescription="carousel"
-        aria-label="Solution image gallery"
+        aria-label="Service image gallery"
         className={frameClasses}
         onTouchStart={(event) => {
           touchStartX.current = event.touches[0]?.clientX ?? null;

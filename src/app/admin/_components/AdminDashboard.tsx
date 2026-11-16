@@ -8,7 +8,7 @@ import { AdminSessionWarning } from "./AdminSessionWarning";
 import { useAdminSession } from "../_lib/use-admin-session";
 import { AdminOverview } from "./AdminOverview";
 import { TreeCMSManager } from "./TreeCMSManager";
-import { SolutionsManager } from "./SolutionsManager";
+import { ServicesManager } from "./ServicesManager";
 import { ProductsManager } from "./ProductsManager";
 import { UnifiedProjectsManager } from "./UnifiedProjectsManager";
 import { CompanyManager } from "./CompanyManager";
@@ -197,7 +197,7 @@ export function AdminDashboard({
   const tabLabels: Record<AdminTab, string> = {
     overview: "Dashboard Overview",
     tree: "Mega-Menu & Hierarchy CMS",
-    solutions: "Services Manager",
+    services: "Services Manager",
     products: "Products Manager",
     projects: "Projects Manager",
     company: "Company Manager",
@@ -254,7 +254,7 @@ export function AdminDashboard({
             inquiryCounts={inquiryCounts}
             onNavigateTab={(tab) => setActiveTab(tab)}
             onOpenAddModal={(type) => {
-              if (type === "solution") setActiveTab("solutions");
+              if (type === "service") setActiveTab("services");
               if (type === "product") setActiveTab("products");
             }}
             onSelectInquiry={setSelectedInquiry}
@@ -271,10 +271,10 @@ export function AdminDashboard({
           />
         )}
 
-        {activeTab === "solutions" && (
-          <SolutionsManager
-            solutions={content.Solutions || []}
-            onSaveSolutions={(updated) => handleSaveSection("Solutions", updated)}
+        {activeTab === "services" && (
+          <ServicesManager
+            services={content.Solutions || []}
+            onSaveServices={(updated) => handleSaveSection("Solutions", updated)}
             onTriggerToast={addToast}
           />
         )}
